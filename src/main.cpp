@@ -180,7 +180,7 @@ void loop() {
     matrixLEDs[j].fill(false);
 
   /* Message From StatusBoard */
-  statusClientOption = postStatusToBoard(String(pgm_read_byte(myName)));
+  statusClientOption = postStatusToBoard(myName);
   if (!statusClientOption.skipped()) {
     lastMessage = statusClientOption.retval;
     lastMessage.replace("\n", " ");
@@ -215,7 +215,7 @@ void ep_root() {
 }
 
 void ep_submit() {
-  if (!(server.hasArg("ssid") && server.hasArg("ssid") && server.hasArg("dev_name"))) {
+  if (!(server.hasArg("ssid") && server.hasArg("password") && server.hasArg("dev_name"))) {
       server.send(400, "text/html", "<html><body>400 Bad Request</body></html>");
       return;
   }

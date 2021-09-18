@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <ESP8266WiFi.h>
 
-const int32_t INTERVAL_S = 15 * 60;
+const int32_t INTERVAL_S = 30;
 
 enum StatusClientResult {
   SUCCESS,

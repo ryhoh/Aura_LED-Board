@@ -3,6 +3,7 @@
 StatusClientOption postStatusToBoard(String name)
 {
   const char *host = "aurastatusboard.herokuapp.com";
+  // const char *host = "machine-hub.rycery.tk";
   const char *endpoint = "/api/heartbeat";
   const char *api_password = /* "api_password_here" */;
 
@@ -36,7 +37,7 @@ StatusClientOption postStatusToBoard(String name)
   client.print(
     String("POST ") + endpoint + " HTTP/1.1\r\n" +
     "Host: " + host + "\r\n" +
-    "User-Agent: Aura Machine-Butterfly (ESP8266)\r\n" +
+    "User-Agent: Rycery Machine-Butterfly (ESP8266)\r\n" +
     "Connection: close\r\n" +
     "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n" +
     "Content-Length: " + payload.length() + "\r\n" +

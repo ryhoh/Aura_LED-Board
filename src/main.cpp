@@ -18,8 +18,8 @@
 
 char myName[31];
 
-const char *AP_SSID = "Aura LED-Board";
 const char *AP_PASSWORD = /* PASSWORD_HERE */;
+const char *AP_SSID = "Rycery LED-Board";
 
 const char weekday[] = "日月火水木金土";
 
@@ -134,27 +134,6 @@ void loop() {
     configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
   }
 
-  /* Date */
-  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
-    t = time(NULL);
-    tm = localtime(&t);
-
-    date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
-    date_s[1] = '0' + ((tm->tm_mon+1) % 10);
-    date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
-    date_s[6] = '0' + (tm->tm_mday % 10);
-    date_s[11] = weekday[tm->tm_wday * 3];  // utf-8 1文字分を3byteで
-    date_s[12] = weekday[tm->tm_wday * 3 + 1];
-    date_s[13] = weekday[tm->tm_wday * 3 + 2];
-
-    for (uint8_t j = 0; j < MATRIX_N; ++j)
-      matrixLEDs[j].fill(false);
-
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, date_s, 1);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-    delay(1000);
-  }
-
   /* Time */
   for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
     t = time(NULL);
@@ -179,6 +158,27 @@ void loop() {
   for (uint8_t j = 0; j < MATRIX_N; ++j)
     matrixLEDs[j].fill(false);
 
+  /* Date */
+  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
+    t = time(NULL);
+    tm = localtime(&t);
+
+    date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
+    date_s[1] = '0' + ((tm->tm_mon+1) % 10);
+    date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
+    date_s[6] = '0' + (tm->tm_mday % 10);
+    date_s[11] = weekday[tm->tm_wday * 3];  // utf-8 1文字分を3byteで
+    date_s[12] = weekday[tm->tm_wday * 3 + 1];
+    date_s[13] = weekday[tm->tm_wday * 3 + 2];
+    
+    for (uint8_t j = 0; j < MATRIX_N; ++j)
+      matrixLEDs[j].fill(false);
+    
+    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, date_s, 1);
+    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+    delay(1000);
+  }
+
   /* Message From StatusBoard */
   statusClientOption = postStatusToBoard(myName);
   if (!statusClientOption.skipped()) {
@@ -199,10 +199,10 @@ void ep_root() {
 "<html lang=\"en\">"
 "<head>"
 "  <meta charset=\"UTF-8\">"
-"  <title>Aura LED-Board Setup</title>"
+"  <title>Rycery LED-Board Setup</title>"
 "</head>"
 "<body>"
-"  <h1>Aura LED-Board Setup</h1>"
+"  <h1>Rycery LED-Board Setup</h1>"
 "  <p>Please Register ssid and password.</p>"
 "  <form method=\"POST\" action=\"/submit\">"
 "    SSID: <input type=\"text\" name=\"ssid\" maxlength=\"30\"><br>"

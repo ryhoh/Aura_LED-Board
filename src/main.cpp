@@ -3,6 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
+#include "ESP8266TimerInterrupt.h"
 
 #include "DotMatrixLED.h"
 #include "StatusClient.h"
@@ -34,12 +35,15 @@ ESP8266WebServer server(80);
 
 Max7219 max7219;
 MatrixLED matrixLEDs[MATRIX_N];
+Scroller scroller = Scroller(max7219, matrixLEDs, MATRIX_N);
 
 StatusClientOption statusClientOption;
 String lastMessage = "Hello World!";
+ESP8266Timer ITimer;
 
 void ep_root();
 void ep_submit();
+void intr_LEDPrintMain();
 
 void setup() {
   EEPROM.begin(0x60);
@@ -119,50 +123,63 @@ void setup() {
   writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Connected!", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
   delay(5000);
+  ITimer.attachInterruptInterval(10000, intr_LEDPrintMain);
+  configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
 }
 
 void loop() {
+  /* Message From StatusBoard */
+  statusClientOption = postStatusToBoard(myName);
+  if (!statusClientOption.skipped()) {
+    lastMessage = statusClientOption.retval;
+    lastMessage.replace("\n", " ");
+    lastMessage.replace("\t", " ");
+    lastMessage.replace("\r", " ");
+    lastMessage.trim();
+  }
+  delay(15 * 60000);
+}
+
+void intr_LEDPrintMain() {
   static time_t t;
-  static struct tm *tm;
+  static struct tm *tm; 
   static char date_s[] = "11月11日(火)";
   static char now_s[] = "12:34:56";
   static int32_t last_mday = -1;
+  static int32_t count = 0;
 
   /* Check Date,Time */
-  if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
-    // Routines which run only one time each day
-    configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
-  }
+  t = time(NULL);
+  tm = localtime(&t);
+
+  // if (last_mday == -1 || last_mday != tm->tm_mday) {  // Date changed
+  //   // Routines which run only one time each day
+  //   configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+  // }
+  // last_mday = tm->tm_mday;
 
   /* Time */
-  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
-    t = time(NULL);
-    tm = localtime(&t);
+  if (count < 500) {
+    if (count % 50 == 0) {
+      for (uint8_t j = 0; j < MATRIX_N; ++j)
+        matrixLEDs[j].fill(false);
 
-    now_s[0] = '0' + tm->tm_hour / 10;
-    now_s[1] = '0' + tm->tm_hour % 10;
-    // now_s[2] = (tm->tm_sec % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
-    now_s[3] = '0' + tm->tm_min / 10;
-    now_s[4] = '0' + tm->tm_min % 10;
-    now_s[6] = '0' + tm->tm_sec / 10;
-    now_s[7] = '0' + tm->tm_sec % 10;
+        now_s[0] = '0' + tm->tm_hour / 10;
+        now_s[1] = '0' + tm->tm_hour % 10;
+        now_s[2] = ((count / 50) % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
+        now_s[3] = '0' + tm->tm_min / 10;
+        now_s[4] = '0' + tm->tm_min % 10;
+        now_s[5] = ((count / 50) % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
+        now_s[6] = '0' + tm->tm_sec / 10;
+        now_s[7] = '0' + tm->tm_sec % 10;
 
-    for (uint8_t j = 0; j < MATRIX_N; ++j)
-      matrixLEDs[j].fill(false);
+      for (uint8_t j = 0; j < MATRIX_N; ++j)
+        matrixLEDs[j].fill(false);
 
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, now_s, 9);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-    delay(1000);
-  }
-
-  for (uint8_t j = 0; j < MATRIX_N; ++j)
-    matrixLEDs[j].fill(false);
-
-  /* Date */
-  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
-    t = time(NULL);
-    tm = localtime(&t);
-
+      writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, now_s, 9);
+    }
+  } else if (count < 1000) {
+    /* Date */
     date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
     date_s[1] = '0' + ((tm->tm_mon+1) % 10);
     date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
@@ -175,22 +192,20 @@ void loop() {
       matrixLEDs[j].fill(false);
     
     writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, date_s, 1);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-    delay(1000);
+  } else {
+    if (count == 1000) {
+      scroller.setString(lastMessage.c_str());
+    }
+    if ((count - 1000) % 9 == 0) {
+      scroller.step();
+    }
+    if (scroller.isEnd) {
+      count = -1;
+    }
   }
 
-  /* Message From StatusBoard */
-  statusClientOption = postStatusToBoard(myName);
-  if (!statusClientOption.skipped()) {
-    lastMessage = statusClientOption.retval;
-    lastMessage.replace("\n", " ");
-    lastMessage.replace("\t", " ");
-    lastMessage.replace("\r", " ");
-    lastMessage.trim();
-  }
-  scrollJIS(max7219, 90, matrixLEDs, MATRIX_N, lastMessage.c_str());
-
-  delay(1000);
+  max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+  ++count;
 }
 
 void ep_root() {
@@ -234,7 +249,14 @@ void ep_submit() {
 
   for (uint8_t j = 0; j < MATRIX_N; ++j)
     matrixLEDs[j].fill(false);
-  scrollAscii(max7219, 90, matrixLEDs, MATRIX_N, (String("Registered: ") + server.arg("ssid")).c_str());
+  scroller.setString((String("Registered: ") + server.arg("ssid")).c_str());
+  ITimer.attachInterruptInterval(90000, []() {
+    scroller.step();
+    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+  });
+  while (!scroller.isEnd) {
+    delay(10);
+  }
 
   writeAsciisToMatrixLEDs(matrixLEDs, MATRIX_N, "Registered.", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);

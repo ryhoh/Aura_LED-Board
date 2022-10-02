@@ -8,24 +8,38 @@
 #include "DeviceInterface.h"
 
 
-/**
- * @brief Function for scrolling ascii string.
- * @param max7219 [in] Reference of Max7219.
- * @param tick_ms [in] Interval time[ms]. When this gets bigger, then scroll will be slower.
- * @param matrixLEDs [in] Reference of MatrixLED-Array.
- * @param ledlen [in] Length of MatrixLED-Array.
- * @param string [in] Char-Array to write.
-*/
-void scrollAscii(Max7219 &max7219, uint32_t tick_ms, MatrixLED *matrixLEDs, uint8_t ledlen, const char *string);
+struct Scroller {
+  Max7219 max7219;
+  MatrixLED *matrixLEDs;
+  uint8_t ledlen;
+  const char *string;
+  int16_t offset;
+  bool isEnd;
 
 /**
- * @brief Function for scrolling jis string.
+ * @brief Constractor for scrolling ascii string.
  * @param max7219 [in] Reference of Max7219.
- * @param tick_ms [in] Interval time[ms]. When this gets bigger, then scroll will be slower.
  * @param matrixLEDs [in] Reference of MatrixLED-Array.
  * @param ledlen [in] Length of MatrixLED-Array.
+*/
+  Scroller(Max7219 &max7219, MatrixLED *matrixLEDs, uint8_t ledlen) {
+    this->max7219 = max7219;
+    this->matrixLEDs = matrixLEDs;
+    this->ledlen = ledlen;
+    this->reset();
+  }
+
+/**
  * @param string [in] Char-Array to write.
 */
-void scrollJIS(Max7219 &max7219, uint32_t tick_ms, MatrixLED *matrixLEDs, uint8_t ledlen, const char *string);
+  void setString(const char *string) {
+    this->string = string;
+    this->reset();
+  }
+
+  void reset();
+
+  void step();
+};
 
 #endif  /* _SCROLL_H_ */

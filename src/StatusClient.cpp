@@ -7,22 +7,22 @@ StatusClientOption postStatusToBoard(String name)
   const char *endpoint = "/api/heartbeat";
   const char *api_password = /* "api_password_here" */;
 
-  static time_t last_time = INT16_MIN;
-  const time_t current_time = time(NULL);
-  if (current_time < INT16_MIN)  // Using local time
-    return StatusClientOption {
-      "NTP not synchronized",
-      StatusClientResult::FAILURE_NTP_NOT_SYNC
-    };
+  // static time_t last_time = INT16_MIN;
+  // const time_t current_time = time(NULL);
+  // if (current_time < INT16_MIN)  // Using local time
+  //   return StatusClientOption {
+  //     "NTP not synchronized",
+  //     StatusClientResult::FAILURE_NTP_NOT_SYNC
+  //   };
 
-  const struct tm *current_tm = localtime(&current_time);
+  //const struct tm *current_tm = localtime(&current_time);
   // Suppress from 0 AM to 6 AM.
-  if (current_tm->tm_hour < 6 || current_time - last_time < INTERVAL_S)
-    return StatusClientOption {
-      String("Skipped (next is ") + String(INTERVAL_S - current_time + last_time) + "s later)",
-      StatusClientResult::SKIP
-    };
-  last_time = current_time;
+  //if (current_tm->tm_hour < 6 || current_time - last_time < INTERVAL_S)
+    // return StatusClientOption {
+    //   String("Skipped (next is ") + String(INTERVAL_S - current_time + last_time) + "s later)",
+    //   StatusClientResult::SKIP
+    // };
+  // last_time = current_time;
 
   WiFiClient client;
   if (!client.connect(String(host), 80))

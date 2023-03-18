@@ -1,0 +1,5 @@
+<map id="writeAsciisToMatrixLEDs" name="writeAsciisToMatrixLEDs">
+<area shape="rect" id="node1" title="Write ascii string to multiple matrixLED." alt="" coords="5,5,175,32"/>
+<area shape="rect" id="node2" href="$_ascii_matrix_8cpp.html#a4598e5b3895b4be343396debc2274830" title="Write single ascii char to single matrixLED." alt="" coords="223,5,377,32"/>
+<area shape="rect" id="node3" href="$_ascii_matrix_8h.html#a06f843b4761da24462a2a7a34d1fcf83" title="Get a row of indicated ascii char." alt="" coords="425,5,528,32"/>
+</map>

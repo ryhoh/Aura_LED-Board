@@ -5,7 +5,7 @@ StatusClientOption postStatusToBoard(String name)
   const char *host = "aurastatusboard.herokuapp.com";
   // const char *host = "machine-hub.rycery.tk";
   const char *endpoint = "/api/heartbeat";
-  const char *api_password = /* "api_password_here" */;
+  const char *api_password = "sample";
 
   static time_t last_time = INT16_MIN;
   const time_t current_time = time(NULL);

@@ -1,0 +1,125 @@
+\hypertarget{_ascii_matrix_8h}{}\doxysection{/\+Users/tetsuya/\+Dropbox/data/git/shirosha2\+\_\+\+Dot\+Matrix-\/\+LED/src/\+Ascii\+Matrix.h File Reference}
+\label{_ascii_matrix_8h}\index{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/AsciiMatrix.h@{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/AsciiMatrix.h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Matrix\+LED.\+h\char`\"{}}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static uint8\+\_\+t \mbox{\hyperlink{_ascii_matrix_8h_a06f843b4761da24462a2a7a34d1fcf83}{get\+ASCIIRow}} (char c, uint8\+\_\+t row)
+\begin{DoxyCompactList}\small\item\em Get a row of indicated ascii char. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_ascii_matrix_8h_a4598e5b3895b4be343396debc2274830}{write\+Ascii\+To\+Matrix\+LED}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&matrix\+LED, char c, int8\+\_\+t offset\+\_\+from\+\_\+left)
+\begin{DoxyCompactList}\small\item\em Write single ascii char to single matrix\+LED. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_ascii_matrix_8h_aa0f80ec7ff8bfe2ce7f6baadad4f1382}{write\+Asciis\+To\+Matrix\+LEDs}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$matrix\+LEDs, uint8\+\_\+t ledlen, const char $\ast$string, uint8\+\_\+t offset\+\_\+from\+\_\+left)
+\begin{DoxyCompactList}\small\item\em Write ascii string to multiple matrix\+LED. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static const int \mbox{\hyperlink{_ascii_matrix_8h_a6478db676eb453d8d0a978d976d56292}{\+\_\+\+ASCII\+\_\+\+OFFSET}} = 0x20
+\item 
+static const uint8\+\_\+t \mbox{\hyperlink{_ascii_matrix_8h_a7291c777882df2c8df0b4523c0072699}{\+\_\+\+ASCII\+\_\+\+FONTS}} \mbox{[}95\mbox{]}\mbox{[}7\mbox{]}
+\item 
+static const uint8\+\_\+t \mbox{\hyperlink{_ascii_matrix_8h_a6307008da69205eee0c4a12c12d00498}{\+\_\+\+NA\+\_\+\+CHAR}} \mbox{[}7\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_ascii_matrix_8h_a06f843b4761da24462a2a7a34d1fcf83}\label{_ascii_matrix_8h_a06f843b4761da24462a2a7a34d1fcf83}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!getASCIIRow@{getASCIIRow}}
+\index{getASCIIRow@{getASCIIRow}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{getASCIIRow()}{getASCIIRow()}}
+{\footnotesize\ttfamily static uint8\+\_\+t get\+ASCIIRow (\begin{DoxyParamCaption}\item[{char}]{c,  }\item[{uint8\+\_\+t}]{row }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Get a row of indicated ascii char. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \mbox{[}in\mbox{]} Char to get row. \\
+\hline
+{\em row} & \mbox{[}in\mbox{]} Row number between \mbox{[}0, 6\mbox{]}. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em uint8\+\_\+t} & Row data on success. \\
+\hline
+{\em uint8\+\_\+t} & N/A row data on illegal c. \\
+\hline
+{\em 0} & on illegal row. \\
+\hline
+\end{DoxyRetVals}
+\mbox{\Hypertarget{_ascii_matrix_8h_aa0f80ec7ff8bfe2ce7f6baadad4f1382}\label{_ascii_matrix_8h_aa0f80ec7ff8bfe2ce7f6baadad4f1382}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!writeAsciisToMatrixLEDs@{writeAsciisToMatrixLEDs}}
+\index{writeAsciisToMatrixLEDs@{writeAsciisToMatrixLEDs}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{writeAsciisToMatrixLEDs()}{writeAsciisToMatrixLEDs()}}
+{\footnotesize\ttfamily void write\+Asciis\+To\+Matrix\+LEDs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$}]{matrix\+LEDs,  }\item[{uint8\+\_\+t}]{ledlen,  }\item[{const char $\ast$}]{string,  }\item[{uint8\+\_\+t}]{offset\+\_\+from\+\_\+left }\end{DoxyParamCaption})}
+
+
+
+Write ascii string to multiple matrix\+LED. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LEDs} & \mbox{[}in\mbox{]} Reference of Matrix\+LED-\/\+Array. \\
+\hline
+{\em ledlen} & \mbox{[}in\mbox{]} Length of Matrix\+LED-\/\+Array. \\
+\hline
+{\em string} & \mbox{[}in\mbox{]} Char-\/\+Array to write. \\
+\hline
+{\em offset\+\_\+from\+\_\+left} & \mbox{[}in\mbox{]} Offset size from left end. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{_ascii_matrix_8h_a4598e5b3895b4be343396debc2274830}\label{_ascii_matrix_8h_a4598e5b3895b4be343396debc2274830}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!writeAsciiToMatrixLED@{writeAsciiToMatrixLED}}
+\index{writeAsciiToMatrixLED@{writeAsciiToMatrixLED}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{writeAsciiToMatrixLED()}{writeAsciiToMatrixLED()}}
+{\footnotesize\ttfamily void write\+Ascii\+To\+Matrix\+LED (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&}]{matrix\+LED,  }\item[{char}]{c,  }\item[{int8\+\_\+t}]{offset\+\_\+from\+\_\+left }\end{DoxyParamCaption})}
+
+
+
+Write single ascii char to single matrix\+LED. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LED} & \mbox{[}in\mbox{]} Pointer of \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. \\
+\hline
+{\em c} & \mbox{[}in\mbox{]} Char to write. \\
+\hline
+{\em offset\+\_\+from\+\_\+left} & \mbox{[}in\mbox{]} Offset size from left end. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{_ascii_matrix_8h_a7291c777882df2c8df0b4523c0072699}\label{_ascii_matrix_8h_a7291c777882df2c8df0b4523c0072699}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!\_ASCII\_FONTS@{\_ASCII\_FONTS}}
+\index{\_ASCII\_FONTS@{\_ASCII\_FONTS}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{\_ASCII\_FONTS}{\_ASCII\_FONTS}}
+{\footnotesize\ttfamily const uint8\+\_\+t \+\_\+\+ASCII\+\_\+\+FONTS\mbox{[}95\mbox{]}\mbox{[}7\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{_ascii_matrix_8h_a6478db676eb453d8d0a978d976d56292}\label{_ascii_matrix_8h_a6478db676eb453d8d0a978d976d56292}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!\_ASCII\_OFFSET@{\_ASCII\_OFFSET}}
+\index{\_ASCII\_OFFSET@{\_ASCII\_OFFSET}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{\_ASCII\_OFFSET}{\_ASCII\_OFFSET}}
+{\footnotesize\ttfamily const int \+\_\+\+ASCII\+\_\+\+OFFSET = 0x20\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{_ascii_matrix_8h_a6307008da69205eee0c4a12c12d00498}\label{_ascii_matrix_8h_a6307008da69205eee0c4a12c12d00498}} 
+\index{AsciiMatrix.h@{AsciiMatrix.h}!\_NA\_CHAR@{\_NA\_CHAR}}
+\index{\_NA\_CHAR@{\_NA\_CHAR}!AsciiMatrix.h@{AsciiMatrix.h}}
+\doxysubsubsection{\texorpdfstring{\_NA\_CHAR}{\_NA\_CHAR}}
+{\footnotesize\ttfamily const uint8\+\_\+t \+\_\+\+NA\+\_\+\+CHAR\mbox{[}7\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{  0b00011001,}
+\DoxyCodeLine{  0b00010101,}
+\DoxyCodeLine{  0b00010011,}
+\DoxyCodeLine{  0b00000000,}
+\DoxyCodeLine{  0b00000100,}
+\DoxyCodeLine{  0b00001110,}
+\DoxyCodeLine{  0b00010001,}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}

@@ -1,0 +1,167 @@
+\hypertarget{struct_max7219}{}\doxysection{Max7219 Struct Reference}
+\label{struct_max7219}\index{Max7219@{Max7219}}
+
+
+Controller for \mbox{\hyperlink{struct_max7219}{Max7219}}.  
+
+
+
+
+{\ttfamily \#include $<$LEDControllers.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_max7219_a4c38616a9dd224aa682bb81f1b3ef822}{Max7219}} (uint8\+\_\+t \mbox{\hyperlink{struct_max7219_ad67d5e099e0065069cf817db6f45caf0}{dat}}, uint8\+\_\+t \mbox{\hyperlink{struct_max7219_ad91219e0588d815044dba57975c9ed24}{lat}}, uint8\+\_\+t \mbox{\hyperlink{struct_max7219_a5ee113cd2abb1ee07244abf6edfded0b}{clk}}, uint8\+\_\+t brightness)
+\begin{DoxyCompactList}\small\item\em Initialize \mbox{\hyperlink{struct_max7219}{Max7219}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_max7219_a47402da87a159c0fbe04b3a9cb5668f1}{$\sim$\+Max7219}} ()
+\begin{DoxyCompactList}\small\item\em Destroy \mbox{\hyperlink{struct_max7219}{Max7219}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_max7219_ac1353ea74bef1c8aeb80729c657db60b}{test\+Run}} ()
+\begin{DoxyCompactList}\small\item\em Do test run. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_max7219_a29e9e8a0cfb0d548225a340f96e6c99a}{flush\+Matrix\+LED}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&matrix\+LED)
+\begin{DoxyCompactList}\small\item\em Flush data from single \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} to \mbox{\hyperlink{struct_max7219}{Max7219}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_max7219_a71771d8278ff5c90c561d565465c6f96}{flush\+Matrix\+LEDs}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$matrix\+LEDs, uint8\+\_\+t length)
+\begin{DoxyCompactList}\small\item\em Flush data from multiple Matrix\+LEDs to \mbox{\hyperlink{struct_max7219}{Max7219}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_max7219_ada815fbc29082470f7ae078bf218b6fc}{shift\+Out}} (uint8\+\_\+t addr, uint8\+\_\+t data)
+\item 
+void \mbox{\hyperlink{struct_max7219_abc46f863ef4a375059e4790dfd8dc5b0}{send}} (uint8\+\_\+t addr, uint8\+\_\+t data)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_max7219_ad67d5e099e0065069cf817db6f45caf0}{dat}}
+\begin{DoxyCompactList}\small\item\em Pin number connecting dat. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_max7219_ad91219e0588d815044dba57975c9ed24}{lat}}
+\begin{DoxyCompactList}\small\item\em Pin number connecting lat (or cs) \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_max7219_a5ee113cd2abb1ee07244abf6edfded0b}{clk}}
+\begin{DoxyCompactList}\small\item\em Pin number connecting clk. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Controller for \mbox{\hyperlink{struct_max7219}{Max7219}}. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{struct_max7219_a4c38616a9dd224aa682bb81f1b3ef822}\label{struct_max7219_a4c38616a9dd224aa682bb81f1b3ef822}} 
+\index{Max7219@{Max7219}!Max7219@{Max7219}}
+\index{Max7219@{Max7219}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{Max7219()}{Max7219()}}
+{\footnotesize\ttfamily Max7219\+::\+Max7219 (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{dat,  }\item[{uint8\+\_\+t}]{lat,  }\item[{uint8\+\_\+t}]{clk,  }\item[{uint8\+\_\+t}]{brightness }\end{DoxyParamCaption})}
+
+
+
+Initialize \mbox{\hyperlink{struct_max7219}{Max7219}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dat} & \mbox{[}in\mbox{]} dat pin. \\
+\hline
+{\em lat} & \mbox{[}in\mbox{]} lat pin. \\
+\hline
+{\em clk} & \mbox{[}in\mbox{]} clk pin. \\
+\hline
+{\em brightness} & \mbox{[}in\mbox{]} Integer between \mbox{[}0, 9\mbox{]}. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{struct_max7219_a47402da87a159c0fbe04b3a9cb5668f1}\label{struct_max7219_a47402da87a159c0fbe04b3a9cb5668f1}} 
+\index{Max7219@{Max7219}!````~Max7219@{$\sim$Max7219}}
+\index{````~Max7219@{$\sim$Max7219}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{$\sim$Max7219()}{~Max7219()}}
+{\footnotesize\ttfamily Max7219\+::$\sim$\+Max7219 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Destroy \mbox{\hyperlink{struct_max7219}{Max7219}}. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_max7219_a29e9e8a0cfb0d548225a340f96e6c99a}\label{struct_max7219_a29e9e8a0cfb0d548225a340f96e6c99a}} 
+\index{Max7219@{Max7219}!flushMatrixLED@{flushMatrixLED}}
+\index{flushMatrixLED@{flushMatrixLED}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{flushMatrixLED()}{flushMatrixLED()}}
+{\footnotesize\ttfamily void Max7219\+::flush\+Matrix\+LED (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&}]{matrix\+LED }\end{DoxyParamCaption})}
+
+
+
+Flush data from single \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} to \mbox{\hyperlink{struct_max7219}{Max7219}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LED} & \mbox{[}in\mbox{]} Reference of \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} to read. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{struct_max7219_a71771d8278ff5c90c561d565465c6f96}\label{struct_max7219_a71771d8278ff5c90c561d565465c6f96}} 
+\index{Max7219@{Max7219}!flushMatrixLEDs@{flushMatrixLEDs}}
+\index{flushMatrixLEDs@{flushMatrixLEDs}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{flushMatrixLEDs()}{flushMatrixLEDs()}}
+{\footnotesize\ttfamily void Max7219\+::flush\+Matrix\+LEDs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$}]{matrix\+LEDs,  }\item[{uint8\+\_\+t}]{length }\end{DoxyParamCaption})}
+
+
+
+Flush data from multiple Matrix\+LEDs to \mbox{\hyperlink{struct_max7219}{Max7219}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LEDs} & \mbox{[}in\mbox{]} Pointer of Matrix\+LED-\/\+Array to read. \\
+\hline
+{\em length} & \mbox{[}in\mbox{]} Length of Matrix\+LED-\/\+Array. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+When length is 1, same to flush\+Matrix\+LEDBy\+Max7219. 
+\end{DoxyNote}
+\mbox{\Hypertarget{struct_max7219_abc46f863ef4a375059e4790dfd8dc5b0}\label{struct_max7219_abc46f863ef4a375059e4790dfd8dc5b0}} 
+\index{Max7219@{Max7219}!send@{send}}
+\index{send@{send}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}}
+{\footnotesize\ttfamily void Max7219\+::send (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{addr,  }\item[{uint8\+\_\+t}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{struct_max7219_ada815fbc29082470f7ae078bf218b6fc}\label{struct_max7219_ada815fbc29082470f7ae078bf218b6fc}} 
+\index{Max7219@{Max7219}!shiftOut@{shiftOut}}
+\index{shiftOut@{shiftOut}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{shiftOut()}{shiftOut()}}
+{\footnotesize\ttfamily void Max7219\+::shift\+Out (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{addr,  }\item[{uint8\+\_\+t}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{struct_max7219_ac1353ea74bef1c8aeb80729c657db60b}\label{struct_max7219_ac1353ea74bef1c8aeb80729c657db60b}} 
+\index{Max7219@{Max7219}!testRun@{testRun}}
+\index{testRun@{testRun}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{testRun()}{testRun()}}
+{\footnotesize\ttfamily void Max7219\+::test\+Run (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Do test run. 
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{struct_max7219_a5ee113cd2abb1ee07244abf6edfded0b}\label{struct_max7219_a5ee113cd2abb1ee07244abf6edfded0b}} 
+\index{Max7219@{Max7219}!clk@{clk}}
+\index{clk@{clk}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{clk}{clk}}
+{\footnotesize\ttfamily uint8\+\_\+t Max7219\+::clk}
+
+
+
+Pin number connecting clk. 
+
+\mbox{\Hypertarget{struct_max7219_ad67d5e099e0065069cf817db6f45caf0}\label{struct_max7219_ad67d5e099e0065069cf817db6f45caf0}} 
+\index{Max7219@{Max7219}!dat@{dat}}
+\index{dat@{dat}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{dat}{dat}}
+{\footnotesize\ttfamily uint8\+\_\+t Max7219\+::dat}
+
+
+
+Pin number connecting dat. 
+
+\mbox{\Hypertarget{struct_max7219_ad91219e0588d815044dba57975c9ed24}\label{struct_max7219_ad91219e0588d815044dba57975c9ed24}} 
+\index{Max7219@{Max7219}!lat@{lat}}
+\index{lat@{lat}!Max7219@{Max7219}}
+\doxysubsubsection{\texorpdfstring{lat}{lat}}
+{\footnotesize\ttfamily uint8\+\_\+t Max7219\+::lat}
+
+
+
+Pin number connecting lat (or cs) 
+

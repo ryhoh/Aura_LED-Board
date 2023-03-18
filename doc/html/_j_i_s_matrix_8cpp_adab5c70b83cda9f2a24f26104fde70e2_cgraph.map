@@ -1,0 +1,7 @@
+<map id="writeJISsToMatrixLEDs" name="writeJISsToMatrixLEDs">
+<area shape="rect" id="node1" title="Write JIS string to multiple matrixLED." alt="" coords="5,31,165,57"/>
+<area shape="rect" id="node2" href="$_j_i_s_matrix_8cpp.html#a04975570738784502198371fc51417f0" title="Write single JIS char to single matrixLED." alt="" coords="213,31,360,57"/>
+<area shape="rect" id="node3" href="$_j_i_s_matrix_8h.html#aa1ad757a0a9b3b7142f7d41cc5b989a1" title="Get a row of indicated JIS char." alt="" coords="408,31,495,57"/>
+<area shape="rect" id="node4" href="$_j_i_s_matrix_8h.html#a0f584b26fc6abb27c74249fb2f770441" title=" " alt="" coords="543,5,723,32"/>
+<area shape="rect" id="node5" href="$_ascii_matrix_8h.html#a06f843b4761da24462a2a7a34d1fcf83" title="Get a row of indicated ascii char." alt="" coords="581,56,684,83"/>
+</map>

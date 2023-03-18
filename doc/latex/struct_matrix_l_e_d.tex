@@ -1,0 +1,177 @@
+\hypertarget{struct_matrix_l_e_d}{}\doxysection{Matrix\+LED Struct Reference}
+\label{struct_matrix_l_e_d}\index{MatrixLED@{MatrixLED}}
+
+
+Buffer for matrix LED panel.  
+
+
+
+
+{\ttfamily \#include $<$Matrix\+LED.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_matrix_l_e_d_a3c03eef8700a413dcc6faeec1cc87597}{Matrix\+LED}} ()
+\begin{DoxyCompactList}\small\item\em Initialize \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_matrix_l_e_d_ac699272de36cc4a9be9cf0de473cf282}{Matrix\+LED}} (uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_ab5d291a63ac8d9371126b532784b104e}{width}}, uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_aad908f0bd001f38923951ceae23ae2aa}{height}})
+\begin{DoxyCompactList}\small\item\em Initialize \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_matrix_l_e_d_a734127cef5c8b890cdf8e6f8928bc656}{$\sim$\+Matrix\+LED}} ()
+\begin{DoxyCompactList}\small\item\em Destroy \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_matrix_l_e_d_a1aa90dc3906cfc53a88c5342f82b3ea3}{flip}} ()
+\begin{DoxyCompactList}\small\item\em Invert all LEDs\textquotesingle{} state (on or off). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{struct_matrix_l_e_d_ace1d21b7be7ec98db875b7040a56d137}{fill}} (bool value)
+\begin{DoxyCompactList}\small\item\em Fill all LEDs with 0 or 1. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_a79180085fb51f3a6c9562f883b41a1ca}{left\+Shift}} (uint8\+\_\+t padding)
+\begin{DoxyCompactList}\small\item\em Shift all LEDs to left by one bit. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_ab5d291a63ac8d9371126b532784b104e}{width}}
+\begin{DoxyCompactList}\small\item\em width $<$= 8 \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_aad908f0bd001f38923951ceae23ae2aa}{height}}
+\begin{DoxyCompactList}\small\item\em height $<$= 8 \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_matrix_l_e_d_a57c225466e5fad48ef410a6f1f8927d0}{buffer}} \mbox{[}8\mbox{]}
+\begin{DoxyCompactList}\small\item\em 8$\ast$8 bit = 64 bit = 8 byte \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Buffer for matrix LED panel. 
+
+\begin{DoxyNote}{Note}
+Supports mono-\/color, binary and up to 8x8 size panel. 
+\end{DoxyNote}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{struct_matrix_l_e_d_a3c03eef8700a413dcc6faeec1cc87597}\label{struct_matrix_l_e_d_a3c03eef8700a413dcc6faeec1cc87597}} 
+\index{MatrixLED@{MatrixLED}!MatrixLED@{MatrixLED}}
+\index{MatrixLED@{MatrixLED}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{MatrixLED()}{MatrixLED()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Matrix\+LED\+::\+Matrix\+LED (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Initialize \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LED} & \mbox{[}in\mbox{]} Pointer of \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} to initialize. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The width and height is 0. 
+\end{DoxyNote}
+\mbox{\Hypertarget{struct_matrix_l_e_d_ac699272de36cc4a9be9cf0de473cf282}\label{struct_matrix_l_e_d_ac699272de36cc4a9be9cf0de473cf282}} 
+\index{MatrixLED@{MatrixLED}!MatrixLED@{MatrixLED}}
+\index{MatrixLED@{MatrixLED}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{MatrixLED()}{MatrixLED()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Matrix\+LED\+::\+Matrix\+LED (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{width,  }\item[{uint8\+\_\+t}]{height }\end{DoxyParamCaption})}
+
+
+
+Initialize \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LED} & \mbox{[}in\mbox{]} Pointer of \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} to initialize. \\
+\hline
+{\em width} & \mbox{[}in\mbox{]} Number of LED on the panel (horizontal). \\
+\hline
+{\em height} & \mbox{[}in\mbox{]} Number of LED on the panel (vertical). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+It fails when the panel is larger than 8x8 and set 0 to width and height. 
+\end{DoxyNote}
+\mbox{\Hypertarget{struct_matrix_l_e_d_a734127cef5c8b890cdf8e6f8928bc656}\label{struct_matrix_l_e_d_a734127cef5c8b890cdf8e6f8928bc656}} 
+\index{MatrixLED@{MatrixLED}!````~MatrixLED@{$\sim$MatrixLED}}
+\index{````~MatrixLED@{$\sim$MatrixLED}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{$\sim$MatrixLED()}{~MatrixLED()}}
+{\footnotesize\ttfamily Matrix\+LED\+::$\sim$\+Matrix\+LED (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Destroy \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_matrix_l_e_d_ace1d21b7be7ec98db875b7040a56d137}\label{struct_matrix_l_e_d_ace1d21b7be7ec98db875b7040a56d137}} 
+\index{MatrixLED@{MatrixLED}!fill@{fill}}
+\index{fill@{fill}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{fill()}{fill()}}
+{\footnotesize\ttfamily void Matrix\+LED\+::fill (\begin{DoxyParamCaption}\item[{bool}]{value }\end{DoxyParamCaption})}
+
+
+
+Fill all LEDs with 0 or 1. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \mbox{[}in\mbox{]} Value for filling (0 or 1). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{struct_matrix_l_e_d_a1aa90dc3906cfc53a88c5342f82b3ea3}\label{struct_matrix_l_e_d_a1aa90dc3906cfc53a88c5342f82b3ea3}} 
+\index{MatrixLED@{MatrixLED}!flip@{flip}}
+\index{flip@{flip}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{flip()}{flip()}}
+{\footnotesize\ttfamily void Matrix\+LED\+::flip (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Invert all LEDs\textquotesingle{} state (on or off). 
+
+\mbox{\Hypertarget{struct_matrix_l_e_d_a79180085fb51f3a6c9562f883b41a1ca}\label{struct_matrix_l_e_d_a79180085fb51f3a6c9562f883b41a1ca}} 
+\index{MatrixLED@{MatrixLED}!leftShift@{leftShift}}
+\index{leftShift@{leftShift}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{leftShift()}{leftShift()}}
+{\footnotesize\ttfamily uint8\+\_\+t Matrix\+LED\+::left\+Shift (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{padding }\end{DoxyParamCaption})}
+
+
+
+Shift all LEDs to left by one bit. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em padding} & \mbox{[}in\mbox{]} Bits for inserting right end. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em uint8\+\_\+t} & Pack of overflowed bits \\
+\hline
+\end{DoxyRetVals}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{struct_matrix_l_e_d_a57c225466e5fad48ef410a6f1f8927d0}\label{struct_matrix_l_e_d_a57c225466e5fad48ef410a6f1f8927d0}} 
+\index{MatrixLED@{MatrixLED}!buffer@{buffer}}
+\index{buffer@{buffer}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{buffer}{buffer}}
+{\footnotesize\ttfamily uint8\+\_\+t Matrix\+LED\+::buffer\mbox{[}8\mbox{]}}
+
+
+
+8$\ast$8 bit = 64 bit = 8 byte 
+
+\mbox{\Hypertarget{struct_matrix_l_e_d_aad908f0bd001f38923951ceae23ae2aa}\label{struct_matrix_l_e_d_aad908f0bd001f38923951ceae23ae2aa}} 
+\index{MatrixLED@{MatrixLED}!height@{height}}
+\index{height@{height}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{height}{height}}
+{\footnotesize\ttfamily uint8\+\_\+t Matrix\+LED\+::height}
+
+
+
+height $<$= 8 
+
+\mbox{\Hypertarget{struct_matrix_l_e_d_ab5d291a63ac8d9371126b532784b104e}\label{struct_matrix_l_e_d_ab5d291a63ac8d9371126b532784b104e}} 
+\index{MatrixLED@{MatrixLED}!width@{width}}
+\index{width@{width}!MatrixLED@{MatrixLED}}
+\doxysubsubsection{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily uint8\+\_\+t Matrix\+LED\+::width}
+
+
+
+width $<$= 8 
+

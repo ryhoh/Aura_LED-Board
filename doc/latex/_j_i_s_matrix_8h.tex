@@ -1,0 +1,99 @@
+\hypertarget{_j_i_s_matrix_8h}{}\doxysection{/\+Users/tetsuya/\+Dropbox/data/git/shirosha2\+\_\+\+Dot\+Matrix-\/\+LED/src/\+JISMatrix.h File Reference}
+\label{_j_i_s_matrix_8h}\index{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/JISMatrix.h@{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/JISMatrix.h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Ascii\+Matrix.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}UTF8to\+Matrix.\+h\char`\"{}}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static size\+\_\+t \mbox{\hyperlink{_j_i_s_matrix_8h_aa1ad757a0a9b3b7142f7d41cc5b989a1}{get\+JISRow}} (const char $\ast$utf8\+\_\+s, uint8\+\_\+t $\ast$out\+\_\+buf, uint8\+\_\+t row\+\_\+i)
+\begin{DoxyCompactList}\small\item\em Get a row of indicated JIS char. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{_j_i_s_matrix_8h_a04975570738784502198371fc51417f0}{write\+JISTo\+Matrix\+LED}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&matrix\+LED, const char $\ast$c, int8\+\_\+t offset\+\_\+from\+\_\+left)
+\begin{DoxyCompactList}\small\item\em Write single JIS char to single matrix\+LED. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_j_i_s_matrix_8h_adab5c70b83cda9f2a24f26104fde70e2}{write\+JISs\+To\+Matrix\+LEDs}} (\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$matrix\+LEDs, uint8\+\_\+t ledlen, const char $\ast$string, int8\+\_\+t offset\+\_\+from\+\_\+left)
+\begin{DoxyCompactList}\small\item\em Write JIS string to multiple matrix\+LED. \end{DoxyCompactList}\item 
+const uint8\+\_\+t $\ast$ \mbox{\hyperlink{_j_i_s_matrix_8h_a0f584b26fc6abb27c74249fb2f770441}{\+\_\+binary\+Search\+For\+JISMatrix}} (uint32\+\_\+t target)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_j_i_s_matrix_8h_a0f584b26fc6abb27c74249fb2f770441}\label{_j_i_s_matrix_8h_a0f584b26fc6abb27c74249fb2f770441}} 
+\index{JISMatrix.h@{JISMatrix.h}!\_binarySearchForJISMatrix@{\_binarySearchForJISMatrix}}
+\index{\_binarySearchForJISMatrix@{\_binarySearchForJISMatrix}!JISMatrix.h@{JISMatrix.h}}
+\doxysubsubsection{\texorpdfstring{\_binarySearchForJISMatrix()}{\_binarySearchForJISMatrix()}}
+{\footnotesize\ttfamily const uint8\+\_\+t$\ast$ \+\_\+binary\+Search\+For\+JISMatrix (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{target }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{_j_i_s_matrix_8h_aa1ad757a0a9b3b7142f7d41cc5b989a1}\label{_j_i_s_matrix_8h_aa1ad757a0a9b3b7142f7d41cc5b989a1}} 
+\index{JISMatrix.h@{JISMatrix.h}!getJISRow@{getJISRow}}
+\index{getJISRow@{getJISRow}!JISMatrix.h@{JISMatrix.h}}
+\doxysubsubsection{\texorpdfstring{getJISRow()}{getJISRow()}}
+{\footnotesize\ttfamily static size\+\_\+t get\+JISRow (\begin{DoxyParamCaption}\item[{const char $\ast$}]{utf8\+\_\+s,  }\item[{uint8\+\_\+t $\ast$}]{out\+\_\+buf,  }\item[{uint8\+\_\+t}]{row\+\_\+i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Get a row of indicated JIS char. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em utf8\+\_\+s} & \mbox{[}in\mbox{]} JIS char (Char-\/\+Array) to get row. \\
+\hline
+{\em out\+\_\+buf} & \mbox{[}out\mbox{]} Pointer to store row data. \\
+\hline
+{\em row\+\_\+i} & \mbox{[}in\mbox{]} Row number between \mbox{[}0, 7\mbox{]}. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em size\+\_\+t} & number of read char in utf8\+\_\+s on success. \\
+\hline
+{\em 0} & on failure. \\
+\hline
+\end{DoxyRetVals}
+\begin{DoxyNote}{Note}
+$\ast$out\+\_\+buf will not be changed when failure. 
+
+It caches most recent result. Serving for char same to previous is fast. 
+\end{DoxyNote}
+\mbox{\Hypertarget{_j_i_s_matrix_8h_adab5c70b83cda9f2a24f26104fde70e2}\label{_j_i_s_matrix_8h_adab5c70b83cda9f2a24f26104fde70e2}} 
+\index{JISMatrix.h@{JISMatrix.h}!writeJISsToMatrixLEDs@{writeJISsToMatrixLEDs}}
+\index{writeJISsToMatrixLEDs@{writeJISsToMatrixLEDs}!JISMatrix.h@{JISMatrix.h}}
+\doxysubsubsection{\texorpdfstring{writeJISsToMatrixLEDs()}{writeJISsToMatrixLEDs()}}
+{\footnotesize\ttfamily void write\+JISs\+To\+Matrix\+LEDs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} $\ast$}]{matrix\+LEDs,  }\item[{uint8\+\_\+t}]{ledlen,  }\item[{const char $\ast$}]{string,  }\item[{int8\+\_\+t}]{offset\+\_\+from\+\_\+left }\end{DoxyParamCaption})}
+
+
+
+Write JIS string to multiple matrix\+LED. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LEDs} & \mbox{[}in\mbox{]} Pointer of Matrix\+LED-\/\+Array. \\
+\hline
+{\em ledlen} & \mbox{[}in\mbox{]} Length of Matrix\+LED-\/\+Array. \\
+\hline
+{\em string} & \mbox{[}in\mbox{]} Char-\/\+Array to write. \\
+\hline
+{\em offset\+\_\+from\+\_\+left} & \mbox{[}in\mbox{]} Offset size from left end. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Ascii char has 5px width, and JIS char has 7px. If you like monospace, you should NOT use ascii chars. 
+\end{DoxyNote}
+\mbox{\Hypertarget{_j_i_s_matrix_8h_a04975570738784502198371fc51417f0}\label{_j_i_s_matrix_8h_a04975570738784502198371fc51417f0}} 
+\index{JISMatrix.h@{JISMatrix.h}!writeJISToMatrixLED@{writeJISToMatrixLED}}
+\index{writeJISToMatrixLED@{writeJISToMatrixLED}!JISMatrix.h@{JISMatrix.h}}
+\doxysubsubsection{\texorpdfstring{writeJISToMatrixLED()}{writeJISToMatrixLED()}}
+{\footnotesize\ttfamily size\+\_\+t write\+JISTo\+Matrix\+LED (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}} \&}]{matrix\+LED,  }\item[{const char $\ast$}]{c,  }\item[{int8\+\_\+t}]{offset\+\_\+from\+\_\+left }\end{DoxyParamCaption})}
+
+
+
+Write single JIS char to single matrix\+LED. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix\+LED} & \mbox{[}in\mbox{]} Reference of \mbox{\hyperlink{struct_matrix_l_e_d}{Matrix\+LED}}. \\
+\hline
+{\em c} & \mbox{[}in\mbox{]} Char to write. \\
+\hline
+{\em offset\+\_\+from\+\_\+left} & \mbox{[}in\mbox{]} Offset size from left end. \\
+\hline
+\end{DoxyParams}

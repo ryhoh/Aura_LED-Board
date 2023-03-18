@@ -1,0 +1,3 @@
+<map id="MatrixLED" name="MatrixLED">
+<area shape="rect" id="node1" title="Buffer for matrix LED panel." alt="" coords="5,5,117,185"/>
+</map>

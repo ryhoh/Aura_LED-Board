@@ -18,7 +18,7 @@
 
 char myName[31];
 
-const char *AP_PASSWORD = /* PASSWORD_HERE */;
+const char *AP_PASSWORD = "sample";
 const char *AP_SSID = "Rycery LED-Board";
 
 const char weekday[] = "日月火水木金土";

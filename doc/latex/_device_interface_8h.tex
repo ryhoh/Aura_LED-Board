@@ -1,0 +1,41 @@
+\hypertarget{_device_interface_8h}{}\doxysection{/\+Users/tetsuya/\+Dropbox/data/git/shirosha2\+\_\+\+Dot\+Matrix-\/\+LED/src/\+Device\+Interface.h File Reference}
+\label{_device_interface_8h}\index{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/DeviceInterface.h@{/Users/tetsuya/Dropbox/data/git/shirosha2\_DotMatrix-\/LED/src/DeviceInterface.h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{_device_interface_8h_a41d586074a615e91ad1a3865ff60a523}{call\+\_\+pin\+Mode}} (uint8\+\_\+t pin, uint8\+\_\+t INPUT\+\_\+or\+\_\+\+OUTPUT)
+\item 
+static void \mbox{\hyperlink{_device_interface_8h_a16c9a939927a5bf722c0cfbd7e0f5931}{call\+\_\+digital\+Write}} (uint8\+\_\+t pin, uint8\+\_\+t HIGH\+\_\+or\+\_\+\+LOW)
+\item 
+static void \mbox{\hyperlink{_device_interface_8h_a5daaa1e1556ecfe382ed579eebc741b6}{call\+\_\+sleep}} (uint32\+\_\+t ms)
+\item 
+static void \mbox{\hyperlink{_device_interface_8h_ac70c4fe0c1a2a5600af0594fd7d3fd4e}{call\+\_\+shift\+Out}} (uint8\+\_\+t data, uint8\+\_\+t dat\+\_\+pin, uint8\+\_\+t clk\+\_\+pin, uint8\+\_\+t lat\+\_\+pin)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_device_interface_8h_a16c9a939927a5bf722c0cfbd7e0f5931}\label{_device_interface_8h_a16c9a939927a5bf722c0cfbd7e0f5931}} 
+\index{DeviceInterface.h@{DeviceInterface.h}!call\_digitalWrite@{call\_digitalWrite}}
+\index{call\_digitalWrite@{call\_digitalWrite}!DeviceInterface.h@{DeviceInterface.h}}
+\doxysubsubsection{\texorpdfstring{call\_digitalWrite()}{call\_digitalWrite()}}
+{\footnotesize\ttfamily static void call\+\_\+digital\+Write (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{uint8\+\_\+t}]{HIGH\+\_\+or\+\_\+\+LOW }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\mbox{\Hypertarget{_device_interface_8h_a41d586074a615e91ad1a3865ff60a523}\label{_device_interface_8h_a41d586074a615e91ad1a3865ff60a523}} 
+\index{DeviceInterface.h@{DeviceInterface.h}!call\_pinMode@{call\_pinMode}}
+\index{call\_pinMode@{call\_pinMode}!DeviceInterface.h@{DeviceInterface.h}}
+\doxysubsubsection{\texorpdfstring{call\_pinMode()}{call\_pinMode()}}
+{\footnotesize\ttfamily static void call\+\_\+pin\+Mode (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{uint8\+\_\+t}]{INPUT\+\_\+or\+\_\+\+OUTPUT }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\mbox{\Hypertarget{_device_interface_8h_ac70c4fe0c1a2a5600af0594fd7d3fd4e}\label{_device_interface_8h_ac70c4fe0c1a2a5600af0594fd7d3fd4e}} 
+\index{DeviceInterface.h@{DeviceInterface.h}!call\_shiftOut@{call\_shiftOut}}
+\index{call\_shiftOut@{call\_shiftOut}!DeviceInterface.h@{DeviceInterface.h}}
+\doxysubsubsection{\texorpdfstring{call\_shiftOut()}{call\_shiftOut()}}
+{\footnotesize\ttfamily static void call\+\_\+shift\+Out (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{data,  }\item[{uint8\+\_\+t}]{dat\+\_\+pin,  }\item[{uint8\+\_\+t}]{clk\+\_\+pin,  }\item[{uint8\+\_\+t}]{lat\+\_\+pin }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\mbox{\Hypertarget{_device_interface_8h_a5daaa1e1556ecfe382ed579eebc741b6}\label{_device_interface_8h_a5daaa1e1556ecfe382ed579eebc741b6}} 
+\index{DeviceInterface.h@{DeviceInterface.h}!call\_sleep@{call\_sleep}}
+\index{call\_sleep@{call\_sleep}!DeviceInterface.h@{DeviceInterface.h}}
+\doxysubsubsection{\texorpdfstring{call\_sleep()}{call\_sleep()}}
+{\footnotesize\ttfamily static void call\+\_\+sleep (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{ms }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+

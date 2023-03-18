@@ -1,0 +1,5 @@
+<map id="call_sleep" name="call_sleep">
+<area shape="rect" id="node1" title=" " alt="" coords="189,31,269,57"/>
+<area shape="rect" id="node2" href="$struct_max7219.html#a4c38616a9dd224aa682bb81f1b3ef822" title="Initialize Max7219." alt="" coords="5,5,141,32"/>
+<area shape="rect" id="node3" href="$struct_max7219.html#ac1353ea74bef1c8aeb80729c657db60b" title="Do test run." alt="" coords="9,56,138,83"/>
+</map>

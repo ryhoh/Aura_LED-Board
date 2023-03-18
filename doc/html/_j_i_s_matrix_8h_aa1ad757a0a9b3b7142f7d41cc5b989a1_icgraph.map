@@ -1,0 +1,5 @@
+<map id="getJISRow" name="getJISRow">
+<area shape="rect" id="node1" title="Get a row of indicated JIS char." alt="" coords="408,5,495,32"/>
+<area shape="rect" id="node2" href="$_j_i_s_matrix_8cpp.html#a04975570738784502198371fc51417f0" title="Write single JIS char to single matrixLED." alt="" coords="213,5,360,32"/>
+<area shape="rect" id="node3" href="$_j_i_s_matrix_8cpp.html#adab5c70b83cda9f2a24f26104fde70e2" title="Write JIS string to multiple matrixLED." alt="" coords="5,5,165,32"/>
+</map>

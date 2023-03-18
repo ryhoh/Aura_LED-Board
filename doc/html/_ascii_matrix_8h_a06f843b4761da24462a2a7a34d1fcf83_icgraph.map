@@ -1,0 +1,8 @@
+<map id="getASCIIRow" name="getASCIIRow">
+<area shape="rect" id="node1" title="Get a row of indicated ascii char." alt="" coords="633,31,736,57"/>
+<area shape="rect" id="node2" href="$_j_i_s_matrix_8h.html#aa1ad757a0a9b3b7142f7d41cc5b989a1" title="Get a row of indicated JIS char." alt="" coords="465,5,551,32"/>
+<area shape="rect" id="node5" href="$_ascii_matrix_8cpp.html#a4598e5b3895b4be343396debc2274830" title="Write single ascii char to single matrixLED." alt="" coords="431,56,585,83"/>
+<area shape="rect" id="node3" href="$_j_i_s_matrix_8cpp.html#a04975570738784502198371fc51417f0" title="Write single JIS char to single matrixLED." alt="" coords="225,5,371,32"/>
+<area shape="rect" id="node4" href="$_j_i_s_matrix_8cpp.html#adab5c70b83cda9f2a24f26104fde70e2" title="Write JIS string to multiple matrixLED." alt="" coords="5,5,165,32"/>
+<area shape="rect" id="node6" href="$_ascii_matrix_8cpp.html#aa0f80ec7ff8bfe2ce7f6baadad4f1382" title="Write ascii string to multiple matrixLED." alt="" coords="213,56,383,83"/>
+</map>

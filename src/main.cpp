@@ -34,10 +34,15 @@ ESP8266WebServer server(80);
 
 Max7219 max7219;
 MatrixLED matrixLEDs[MATRIX_N];
+MatrixLED matrixLEDs_clock[MATRIX_N];
+MatrixLED matrixLEDs_date[MATRIX_N];
+MatrixLED matrixLEDs_msg[MATRIX_N];
+uint8_t msg_end = 0;
 
 StatusClientOption statusClientOption;
 String lastMessage = "Hello World!";
 
+void LED_Main_Task(void);
 void ep_root();
 void ep_submit();
 
@@ -50,18 +55,15 @@ void setup() {
   pinMode(CLK, OUTPUT);
   pinMode(MODE, INPUT_PULLDOWN_16);
 
-  for (uint8_t j = 0; j < MATRIX_N; ++j)
+  for (uint8_t j = 0; j < MATRIX_N; ++j) {
     matrixLEDs[j] = MatrixLED(8, 8);
+    matrixLEDs_clock[j] = MatrixLED(8, 8);
+    matrixLEDs_date[j] = MatrixLED(8, 8);
+    matrixLEDs_msg[j] = MatrixLED(8, 8);
+  }
 
   max7219 = Max7219(DAT, LAT, CLK, 1);
-  // max7219.testRun(0);
-  // delay(10);
-  // max7219.testRun(1);
-  // delay(10);
-  // max7219.testRun(2);
-  // delay(10);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-  // delay(100);
 
   /* Setup Mode */
   if (digitalRead(MODE) == LOW) {
@@ -69,11 +71,8 @@ void setup() {
     max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
 
     WiFi.mode(WIFI_AP);
-    // delay(100);
     WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 10), IPAddress(255, 255, 255, 0));
-    // delay(100);
     WiFi.softAP(AP_SSID, AP_PASSWORD);
-    // delay(100);
     IPAddress ip = WiFi.softAPIP();
 
     for (uint8_t j = 0; j < MATRIX_N; ++j)
@@ -120,6 +119,12 @@ void setup() {
   writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Connected!", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
   delay(5000);
+
+  noInterrupts();
+  timer0_isr_init();
+  timer0_attachInterrupt(LED_Main_Task);
+  timer0_write(ESP.getCycleCount() + 1280000L);  // 80MHz で 1,280,000サイクル == 16ms
+  interrupts();
 }
 
 void loop() {
@@ -136,62 +141,89 @@ void loop() {
   }
 
   /* Time */
-  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
-    t = time(NULL);
-    tm = localtime(&t);
+  t = time(NULL);
+  tm = localtime(&t);
 
-    now_s[0] = '0' + tm->tm_hour / 10;
-    now_s[1] = '0' + tm->tm_hour % 10;
-    // now_s[2] = (tm->tm_sec % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
-    now_s[3] = '0' + tm->tm_min / 10;
-    now_s[4] = '0' + tm->tm_min % 10;
-    now_s[6] = '0' + tm->tm_sec / 10;
-    now_s[7] = '0' + tm->tm_sec % 10;
+  now_s[0] = '0' + tm->tm_hour / 10;
+  now_s[1] = '0' + tm->tm_hour % 10;
+  // now_s[2] = (tm->tm_sec % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
+  now_s[3] = '0' + tm->tm_min / 10;
+  now_s[4] = '0' + tm->tm_min % 10;
+  now_s[6] = '0' + tm->tm_sec / 10;
+  now_s[7] = '0' + tm->tm_sec % 10;
 
-    for (uint8_t j = 0; j < MATRIX_N; ++j)
-      matrixLEDs[j].fill(false);
-
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, now_s, 9);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-    delay(1000);
+  noInterrupts();
+  for (uint8_t j = 0; j < MATRIX_N; ++j) {
+    matrixLEDs_clock[j].fill(false);
   }
-
-  for (uint8_t j = 0; j < MATRIX_N; ++j)
-    matrixLEDs[j].fill(false);
+  writeJISsToMatrixLEDs(matrixLEDs_clock, MATRIX_N, now_s, 9);
+  interrupts();
 
   /* Date */
-  for (uint8_t sec_i = 0; sec_i < 5; ++sec_i) {
-    t = time(NULL);
-    tm = localtime(&t);
-
-    date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
-    date_s[1] = '0' + ((tm->tm_mon+1) % 10);
-    date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
-    date_s[6] = '0' + (tm->tm_mday % 10);
-    date_s[11] = weekday[tm->tm_wday * 3];  // utf-8 1文字分を3byteで
-    date_s[12] = weekday[tm->tm_wday * 3 + 1];
-    date_s[13] = weekday[tm->tm_wday * 3 + 2];
-    
-    for (uint8_t j = 0; j < MATRIX_N; ++j)
-      matrixLEDs[j].fill(false);
-    
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, date_s, 1);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-    delay(1000);
+  date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
+  date_s[1] = '0' + ((tm->tm_mon+1) % 10);
+  date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
+  date_s[6] = '0' + (tm->tm_mday % 10);
+  date_s[11] = weekday[tm->tm_wday * 3];  // utf-8 1文字分を3byteで
+  date_s[12] = weekday[tm->tm_wday * 3 + 1];
+  date_s[13] = weekday[tm->tm_wday * 3 + 2];
+  
+  noInterrupts();
+  for (uint8_t j = 0; j < MATRIX_N; ++j) {
+    matrixLEDs_date[j].fill(false);
   }
+  writeJISsToMatrixLEDs(matrixLEDs_date, MATRIX_N, date_s, 1);
+  interrupts();
 
   /* Message From StatusBoard */
-  statusClientOption = postStatusToBoard(myName);
-  if (!statusClientOption.skipped()) {
-    lastMessage = statusClientOption.retval;
-    lastMessage.replace("\n", " ");
-    lastMessage.replace("\t", " ");
-    lastMessage.replace("\r", " ");
-    lastMessage.trim();
-  }
-  scrollJIS(max7219, 90, matrixLEDs, MATRIX_N, lastMessage.c_str());
+  // statusClientOption = postStatusToBoard(myName);
+  // if (!statusClientOption.skipped()) {
+  //   lastMessage = statusClientOption.retval;
+  //   lastMessage.replace("\n", " ");
+  //   lastMessage.replace("\t", " ");
+  //   lastMessage.replace("\r", " ");
+  //   lastMessage.trim();
+  // }
+  lastMessage = "Hello world!";  // @@暫定
 
-  delay(1000);
+  delay(500);  // 500ms おきにデータ更新
+}
+
+void LED_Main_Task(void) {
+  static uint32_t step = 0;
+  const uint32_t STEP_10s =  625;
+  const uint32_t STEP_20s = 1250;
+
+
+  if (step < STEP_10s) {
+    max7219.flushMatrixLEDs(matrixLEDs_clock, MATRIX_N);
+  } else if (step < STEP_20s) {
+    max7219.flushMatrixLEDs(matrixLEDs_date, MATRIX_N);
+  } else {
+    static uint32_t msg_end = 0;
+    static uint32_t scroll_step = 0;
+    static uint32_t scroll_step_inner = 0;
+    
+    msg_end = writeScrollJIS(matrixLEDs_msg, MATRIX_N, lastMessage.c_str(), scroll_step);
+    max7219.flushMatrixLEDs(matrixLEDs_msg, MATRIX_N);
+    if (msg_end == 1) {
+      // メッセージが終わったら、ステップ初期化
+      step = 0;
+      // 次回のメッセージスクロールに備える
+      msg_end = 0;
+      scroll_step = 0;
+      scroll_step_inner = 0;
+    } else {
+      // メッセージが終わっていないなら、スクロール
+      scroll_step_inner++;  // 1ステップ内のカウンタ
+      if (scroll_step_inner == 4) {
+        scroll_step++;
+        scroll_step_inner = 0;
+      }
+    }
+  }
+
+  timer0_write(ESP.getCycleCount() + 1280000L);  // 80MHz で 1,280,000サイクル == 16ms
 }
 
 void ep_root() {
@@ -235,7 +267,18 @@ void ep_submit() {
 
   for (uint8_t j = 0; j < MATRIX_N; ++j)
     matrixLEDs[j].fill(false);
-  scrollAscii(max7219, 90, matrixLEDs, MATRIX_N, (String("Registered: ") + server.arg("ssid")).c_str());
+  
+  uint32_t scrollstep = 0;
+  uint8_t scrollend = 0;
+  while (scrollend == 0) {
+    scrollend = writeScrollJIS(
+      matrixLEDs,
+      MATRIX_N,
+      (String("Registered: ") + server.arg("ssid")).c_str(),
+      scrollstep);
+    ++scrollstep;
+    delay(80);
+  }
 
   writeAsciisToMatrixLEDs(matrixLEDs, MATRIX_N, "Registered.", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);

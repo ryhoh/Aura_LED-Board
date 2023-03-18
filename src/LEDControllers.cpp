@@ -23,22 +23,27 @@ Max7219::Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness)
   if (9 < brightness)
     brightness = 9;
   this->send(0x0a, brightness);
-  call_sleep(1000);
 }
 
-void Max7219::testRun()
+void Max7219::testRun(uint8_t step)
 {
-  // ディスプレイテストモード（全点灯）
-  this->send(0x0f, 0x01);
-  call_sleep(1000);
-
-  // テストモード終了
-  this->send(0x0f, 0x00);
-  call_sleep(500);
-
-  // リセット
-  for (uint8_t addr_i = 1; addr_i < 9; ++addr_i) {
-    this->send(addr_i, 0x00);
+  switch (step) {
+  case 0:
+    // ディスプレイテストモード（全点灯）
+    this->send(0x0f, 0x01);
+    break;
+  case 1:
+    // テストモード終了
+    this->send(0x0f, 0x00);
+    break;
+  case 2:
+    // リセット
+    for (uint8_t addr_i = 1; addr_i < 9; ++addr_i) {
+      this->send(addr_i, 0x00);
+    }
+    break;
+  default:
+    break;
   }
 }
 

@@ -54,11 +54,14 @@ void setup() {
     matrixLEDs[j] = MatrixLED(8, 8);
 
   max7219 = Max7219(DAT, LAT, CLK, 1);
-  delay(10);
-  max7219.testRun();
-  delay(10);
+  // max7219.testRun(0);
+  // delay(10);
+  // max7219.testRun(1);
+  // delay(10);
+  // max7219.testRun(2);
+  // delay(10);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-  delay(100);
+  // delay(100);
 
   /* Setup Mode */
   if (digitalRead(MODE) == LOW) {
@@ -66,11 +69,11 @@ void setup() {
     max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
 
     WiFi.mode(WIFI_AP);
-    delay(100);
+    // delay(100);
     WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 10), IPAddress(255, 255, 255, 0));
-    delay(100);
+    // delay(100);
     WiFi.softAP(AP_SSID, AP_PASSWORD);
-    delay(100);
+    // delay(100);
     IPAddress ip = WiFi.softAPIP();
 
     for (uint8_t j = 0; j < MATRIX_N; ++j)
@@ -95,8 +98,6 @@ void setup() {
   /* Run Mode */
   writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Connecting...", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-
-  delay(1000);
 
   WiFi.mode(WIFI_STA);
   char WIFI_SSID[31];

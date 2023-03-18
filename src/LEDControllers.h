@@ -48,7 +48,7 @@ struct Max7219 {
   /**
    * @brief Do test run.
   */
-  void testRun();
+  void testRun(uint8_t step);
 
   /**
    * @brief Flush data from single MatrixLED to Max7219.

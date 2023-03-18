@@ -4,8 +4,12 @@
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 
+#include "ESP8266TimerInterrupt.h"
+
 #include "DotMatrixLED.h"
 #include "StatusClient.h"
+
+ESP8266Timer ITimer;
 
 /**
  * EEPROM Mapping
@@ -42,7 +46,9 @@ uint8_t msg_end = 0;
 StatusClientOption statusClientOption;
 String lastMessage = "Hello World!";
 
+void Main_Task(void);
 void LED_Main_Task(void);
+void Network_Main_Task(void);
 void ep_root();
 void ep_submit();
 
@@ -118,16 +124,73 @@ void setup() {
 
   writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Connected!", 0);
   max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-  delay(5000);
-
-  noInterrupts();
-  timer0_isr_init();
-  timer0_attachInterrupt(LED_Main_Task);
-  timer0_write(ESP.getCycleCount() + 1280000L);  // 80MHz で 1,280,000サイクル == 16ms
-  interrupts();
+  ITimer.attachInterruptInterval(16000, Main_Task);
 }
 
 void loop() {
+}
+
+void Main_Task(void) {
+  // 16msごとに呼ばれる
+  static uint32_t step = 0;
+
+  // ネットワークタスクは320msごとなので、分周で実行
+  if (step % 20 == 0) {
+    Network_Main_Task();
+  }
+
+  // LEDタスクは毎回実行
+  LED_Main_Task();
+
+  // step を進める
+  step++;
+  if (step >= 20) {
+    step = 0;
+  }
+}
+
+void LED_Main_Task(void) {
+  static uint32_t step = 0;
+  const uint32_t STEP_10s =  625;
+  const uint32_t STEP_20s = 1250;
+  uint8_t step_end = false;
+
+
+  if (step < STEP_10s) {
+    max7219.flushMatrixLEDs(matrixLEDs_clock, MATRIX_N);
+  } else if (step < STEP_20s) {
+    max7219.flushMatrixLEDs(matrixLEDs_date, MATRIX_N);
+  } else {
+    static uint32_t msg_end = 0;
+    static uint32_t scroll_step = 0;
+    static uint32_t scroll_step_inner = 0;
+    
+    msg_end = writeScrollJIS(matrixLEDs_msg, MATRIX_N, lastMessage.c_str(), scroll_step);
+    max7219.flushMatrixLEDs(matrixLEDs_msg, MATRIX_N);
+    if (msg_end == 1) {
+      // メッセージが終わったら、ステップ初期化
+      step_end = true;
+      // 次回のメッセージスクロールに備える
+      msg_end = 0;
+      scroll_step = 0;
+      scroll_step_inner = 0;
+    } else {
+      // メッセージが終わっていないなら、スクロール
+      scroll_step_inner++;  // 1ステップ内のカウンタ
+      if (scroll_step_inner == 4) {
+        scroll_step++;
+        scroll_step_inner = 0;
+      }
+    }
+  }
+
+  step++;
+  if (step_end == true) {
+    step = 0;
+  }
+}
+
+void Network_Main_Task(void) {
   static time_t t;
   static struct tm *tm;
   static char date_s[] = "11月11日(火)";
@@ -152,12 +215,10 @@ void loop() {
   now_s[6] = '0' + tm->tm_sec / 10;
   now_s[7] = '0' + tm->tm_sec % 10;
 
-  noInterrupts();
   for (uint8_t j = 0; j < MATRIX_N; ++j) {
     matrixLEDs_clock[j].fill(false);
   }
   writeJISsToMatrixLEDs(matrixLEDs_clock, MATRIX_N, now_s, 9);
-  interrupts();
 
   /* Date */
   date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
@@ -168,12 +229,10 @@ void loop() {
   date_s[12] = weekday[tm->tm_wday * 3 + 1];
   date_s[13] = weekday[tm->tm_wday * 3 + 2];
   
-  noInterrupts();
   for (uint8_t j = 0; j < MATRIX_N; ++j) {
     matrixLEDs_date[j].fill(false);
   }
   writeJISsToMatrixLEDs(matrixLEDs_date, MATRIX_N, date_s, 1);
-  interrupts();
 
   /* Message From StatusBoard */
   // statusClientOption = postStatusToBoard(myName);
@@ -185,45 +244,6 @@ void loop() {
   //   lastMessage.trim();
   // }
   lastMessage = "Hello world!";  // @@暫定
-
-  delay(500);  // 500ms おきにデータ更新
-}
-
-void LED_Main_Task(void) {
-  static uint32_t step = 0;
-  const uint32_t STEP_10s =  625;
-  const uint32_t STEP_20s = 1250;
-
-
-  if (step < STEP_10s) {
-    max7219.flushMatrixLEDs(matrixLEDs_clock, MATRIX_N);
-  } else if (step < STEP_20s) {
-    max7219.flushMatrixLEDs(matrixLEDs_date, MATRIX_N);
-  } else {
-    static uint32_t msg_end = 0;
-    static uint32_t scroll_step = 0;
-    static uint32_t scroll_step_inner = 0;
-    
-    msg_end = writeScrollJIS(matrixLEDs_msg, MATRIX_N, lastMessage.c_str(), scroll_step);
-    max7219.flushMatrixLEDs(matrixLEDs_msg, MATRIX_N);
-    if (msg_end == 1) {
-      // メッセージが終わったら、ステップ初期化
-      step = 0;
-      // 次回のメッセージスクロールに備える
-      msg_end = 0;
-      scroll_step = 0;
-      scroll_step_inner = 0;
-    } else {
-      // メッセージが終わっていないなら、スクロール
-      scroll_step_inner++;  // 1ステップ内のカウンタ
-      if (scroll_step_inner == 4) {
-        scroll_step++;
-        scroll_step_inner = 0;
-      }
-    }
-  }
-
-  timer0_write(ESP.getCycleCount() + 1280000L);  // 80MHz で 1,280,000サイクル == 16ms
 }
 
 void ep_root() {

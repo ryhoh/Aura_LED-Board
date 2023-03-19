@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "DeviceInterface.h"
+#include "../Driver/DeviceInterface.h"
 #include "MatrixLED.h"
 
 /*
@@ -66,21 +66,11 @@ struct Max7219 {
 
   // params: レジスタアドレス, データ
   // ラッチ操作を行わないバージョン
-  inline void shiftOut(uint8_t addr, uint8_t data)
-  {
-    call_shiftOut(this->dat, this->clk, MSBFIRST, addr);
-    call_shiftOut(this->dat, this->clk, MSBFIRST, data);
-  }
+  inline void shiftOut(uint8_t addr, uint8_t data);
 
   // params: レジスタアドレス, データ
   // ラッチ操作を行う（1件だけ送る）バージョン
-  inline void send(uint8_t addr, uint8_t data)
-  {
-    call_digitalWrite(this->lat, LOW);
-    this->shiftOut(addr, data);
-    call_digitalWrite(this->lat, HIGH);
-    call_digitalWrite(this->lat, LOW);
-  }
+  inline void send(uint8_t addr, uint8_t data);
 };
 
 #endif  /* _LED_CONTROLLERS_H_ */

@@ -1,11 +1,10 @@
 #ifndef _SCROLL_H_
 #define _SCROLL_H_
 
-#include "LEDControllers.h"
-#include "MatrixLED.h"
+#include "MW/MW_pub.h"
 #include "AsciiMatrix.h"
 #include "JISMatrix.h"
-#include "DeviceInterface.h"
+#include "Driver/DeviceInterface.h"
 
 
 /**

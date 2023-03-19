@@ -69,3 +69,17 @@ void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
     call_digitalWrite(this->lat, LOW);
   }
 }
+
+inline void Max7219::shiftOut(uint8_t addr, uint8_t data)
+{
+  call_shiftOut(this->dat, this->clk, MSBFIRST, addr);
+  call_shiftOut(this->dat, this->clk, MSBFIRST, data);
+}
+
+inline void Max7219::send(uint8_t addr, uint8_t data)
+{
+  call_digitalWrite(this->lat, LOW);
+  this->shiftOut(addr, data);
+  call_digitalWrite(this->lat, HIGH);
+  call_digitalWrite(this->lat, LOW);
+}

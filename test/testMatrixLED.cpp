@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include <MatrixLED.h>
+#include "MW/MW_pub.h"
 
 TEST(MatrixLEDTest, init) {
   MatrixLED matLED(8, 8);

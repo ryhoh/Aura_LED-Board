@@ -7,7 +7,7 @@
 #include "ESP8266TimerInterrupt.h"
 
 #include "DotMatrixLED.h"
-#include "StatusClient.h"
+#include "App/StatusClient.h"
 
 ESP8266Timer ITimer;
 

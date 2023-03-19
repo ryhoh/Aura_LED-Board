@@ -2,8 +2,8 @@
 #include <iostream>
 #include <cstdio>
 
-#include <JISMatrix.h>
-#include <MatrixLED.h>
+#include "MW/MW_pub.h"
+#include "App/JISMatrix.h"
 
 TEST(UTF8andJISTest, writeJISToMatrixLED_ascii) {
   MatrixLED matLED(8, 8);

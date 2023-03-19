@@ -7,7 +7,7 @@
 #include <avr/pgmspace.h>
 #endif
 
-#include "MatrixLED.h"
+#include "MW/MW_pub.h"
 
 // access as "_fonts['a' - _ASCII_OFFSET]"
 static const int _ASCII_OFFSET = 0x20;

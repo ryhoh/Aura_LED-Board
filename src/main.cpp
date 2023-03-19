@@ -25,8 +25,6 @@ char myName[31];
 const char *AP_PASSWORD = "sample";
 const char *AP_SSID = "Rycery LED-Board";
 
-const char weekday[] = "日月火水木金土";
-
 const uint32_t MY_LED = 13;
 const uint32_t DAT = 5;
 const uint32_t LAT = 4;
@@ -130,85 +128,6 @@ void setup() {
 }
 
 void loop() {
-}
-
-void Main_Task(void) {
-  // 16msごとに呼ばれる
-  static uint32_t step = 0;
-
-  // ネットワークタスクは320msごとなので、分周で実行
-  if (step % 20 == 0) {
-    Network_Main_Task();
-  }
-
-  // LEDタスクは毎回実行
-  LED_Main_Task();
-
-  // step を進める
-  step++;
-  if (step >= 20) {
-    step = 0;
-  }
-}
-
-void Network_Main_Task(void) {
-  static time_t t;
-  static struct tm *tm;
-  static char date_s[] = "11月11日(火)";
-  static char now_s[] = "12:34:56";
-  static int32_t last_mday = -1;
-
-  if (network_setupstate == 0) {
-    /* Check Date,Time */
-    if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
-      // Routines which run only one time each day
-      configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
-    }
-
-    /* Time */
-    t = time(NULL);
-    tm = localtime(&t);
-
-    now_s[0] = '0' + tm->tm_hour / 10;
-    now_s[1] = '0' + tm->tm_hour % 10;
-    // now_s[2] = (tm->tm_sec % 2 != 0) ? ':' : ' ';  // 1秒おきにコロンを点滅
-    now_s[3] = '0' + tm->tm_min / 10;
-    now_s[4] = '0' + tm->tm_min % 10;
-    now_s[6] = '0' + tm->tm_sec / 10;
-    now_s[7] = '0' + tm->tm_sec % 10;
-
-    for (uint8_t j = 0; j < MATRIX_N; ++j) {
-      matrixLEDs_clock[j].fill(false);
-    }
-    writeJISsToMatrixLEDs(matrixLEDs_clock, MATRIX_N, now_s, 9);
-
-    /* Date */
-    date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
-    date_s[1] = '0' + ((tm->tm_mon+1) % 10);
-    date_s[5] = (tm->tm_mday / 10 == 0) ? ' ' : '0' + (tm->tm_mday / 10);
-    date_s[6] = '0' + (tm->tm_mday % 10);
-    date_s[11] = weekday[tm->tm_wday * 3];  // utf-8 1文字分を3byteで
-    date_s[12] = weekday[tm->tm_wday * 3 + 1];
-    date_s[13] = weekday[tm->tm_wday * 3 + 2];
-    
-    for (uint8_t j = 0; j < MATRIX_N; ++j) {
-      matrixLEDs_date[j].fill(false);
-    }
-    writeJISsToMatrixLEDs(matrixLEDs_date, MATRIX_N, date_s, 1);
-
-    /* Message From StatusBoard */
-    // statusClientOption = postStatusToBoard(myName);
-    // if (!statusClientOption.skipped()) {
-    //   lastMessage = statusClientOption.retval;
-    //   lastMessage.replace("\n", " ");
-    //   lastMessage.replace("\t", " ");
-    //   lastMessage.replace("\r", " ");
-    //   lastMessage.trim();
-    // }
-    lastMessage = "Hello world!";  // @@暫定
-
-    setupstate = 0;
-  }
 }
 
 void ep_root() {

@@ -18,6 +18,12 @@
 #include "App/variant/Variant.h"
 #include "App/variant/Profile.h"
 
+// 構造体定義
+typedef struct _DisplayInfo {
+    uint32_t u32_offset_from_left;
+    String str_to_display;
+} DisplayInfo_t;
+
 // マクロ定義
 #define m_LED_TASK_CALL_ITVL (16)  // [ms,1]
 #define m_LED_TASK_10s (10000)  // [ms,1]
@@ -26,11 +32,19 @@
 #define m_LED_TASK_CONNECTING_MSG ("Connecting to ")
 
 // プロトタイプ宣言
-void LED_Main_Task(void);
+void LED_Task_Main(void);
+static void LED_Task_FirstTimeToRunningState(void);
 static void LED_Task_InSetupState(void);
 static void LED_Task_RunningState(void);
-MatrixLED *LED_Task_GetMatrixLEDs_clock(void);
-MatrixLED *LED_Task_GetMatrixLEDs_date(void);
-MatrixLED *LED_Task_GetMatrixLEDs_msg(void);
+static void LED_Task_SubTaskClock(void);
+static void LED_Task_SubTaskDate(void);
+static uint8_t LED_Task_SubTaskMsg(uint8_t u8_is_first);
+static uint8_t LED_Task_SubTaskMsg_SubRoutine(uint32_t u32_msg_ended, uint32_t su32_scroll_step);
+DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void);
+DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void);
+DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void);
+// MatrixLED *LED_Task_GetMatrixLEDs_clock(void);
+// MatrixLED *LED_Task_GetMatrixLEDs_date(void);
+// MatrixLED *LED_Task_GetMatrixLEDs_msg(void);
 
 #endif  /* _LEDTASK_H_ */

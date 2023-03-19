@@ -151,69 +151,6 @@ void Main_Task(void) {
   }
 }
 
-void LED_Main_Task(void) {
-  static uint32_t step = 0;
-  const uint32_t STEP_10s =  625;
-  const uint32_t STEP_20s = 1250;
-  uint8_t step_end = false;
-
-  if (setupstate == 1) {
-    static uint32_t msg_end = 0;
-    static uint32_t scroll_step = 0;
-    static uint32_t scroll_step_inner = 0;
-    String msg = "Connecting..." + String(WIFI_SSID);
-    
-    msg_end = writeScrollJIS(matrixLEDs_msg, MATRIX_N, "Connecting...", scroll_step);
-    max7219.flushMatrixLEDs(matrixLEDs_msg, MATRIX_N);
-    if (msg_end == 1) {
-      // 次回のメッセージスクロールに備える
-      msg_end = 0;
-      scroll_step = 0;
-      scroll_step_inner = 0;
-    } else {
-      // メッセージが終わっていないなら、スクロール
-      scroll_step_inner++;  // 1ステップ内のカウンタ
-      if (scroll_step_inner == 4) {
-        scroll_step++;
-        scroll_step_inner = 0;
-      }
-    }
-  } else {
-    if (step < STEP_10s) {
-      max7219.flushMatrixLEDs(matrixLEDs_clock, MATRIX_N);
-    } else if (step < STEP_20s) {
-      max7219.flushMatrixLEDs(matrixLEDs_date, MATRIX_N);
-    } else {
-      static uint32_t msg_end = 0;
-      static uint32_t scroll_step = 0;
-      static uint32_t scroll_step_inner = 0;
-      
-      msg_end = writeScrollJIS(matrixLEDs_msg, MATRIX_N, lastMessage.c_str(), scroll_step);
-      max7219.flushMatrixLEDs(matrixLEDs_msg, MATRIX_N);
-      if (msg_end == 1) {
-        // メッセージが終わったら、ステップ初期化
-        step_end = true;
-        // 次回のメッセージスクロールに備える
-        msg_end = 0;
-        scroll_step = 0;
-        scroll_step_inner = 0;
-      } else {
-        // メッセージが終わっていないなら、スクロール
-        scroll_step_inner++;  // 1ステップ内のカウンタ
-        if (scroll_step_inner == 4) {
-          scroll_step++;
-          scroll_step_inner = 0;
-        }
-      }
-    }
-
-    step++;
-    if (step_end == true) {
-      step = 0;
-    }
-  }
-}
-
 void Network_Main_Task(void) {
   static time_t t;
   static struct tm *tm;

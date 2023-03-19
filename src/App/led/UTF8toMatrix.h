@@ -1,11 +1,11 @@
 #ifndef _UTF8TOMATRIX_H_
 #define _UTF8TOMATRIX_H_
 
-#include <cstdint>
-
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #endif
+
+#include "App/Common.h"
 
 // static const size_t _UTF_CODES_LEN = 3490;
 #define _UTF_CODES_LEN 3490

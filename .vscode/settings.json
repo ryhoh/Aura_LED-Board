@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "ledtask.h": "c",
+        "mw_pub.h": "c",
+        "system.h": "c",
+        "common.h": "c",
+        "systemcontrol.h": "c",
+        "asciimatrix.h": "c"
     }
 }

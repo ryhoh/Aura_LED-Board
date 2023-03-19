@@ -1,10 +1,11 @@
 #ifndef _SCROLL_H_
 #define _SCROLL_H_
 
+#include "Driver/DeviceInterface.h"
 #include "MW/MW_pub.h"
+#include "App/Common.h"
 #include "AsciiMatrix.h"
 #include "JISMatrix.h"
-#include "Driver/DeviceInterface.h"
 
 
 /**

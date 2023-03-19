@@ -1,13 +1,12 @@
 #ifndef _ASCIIMATRIX_H_
 #define _ASCIIMATRIX_H_
 
-#include <cstdint>
-
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #endif
 
 #include "MW/MW_pub.h"
+#include "App/Common.h"
 
 // access as "_fonts['a' - _ASCII_OFFSET]"
 static const int _ASCII_OFFSET = 0x20;

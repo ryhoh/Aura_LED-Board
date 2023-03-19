@@ -1,12 +1,11 @@
 #ifndef _JISMATRIX_H_
 #define _JISMATRIX_H_
 
-#include <cstdint>
-
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #endif
 
+#include "App/Common.h"
 #include "AsciiMatrix.h"
 #include "UTF8toMatrix.h"
 

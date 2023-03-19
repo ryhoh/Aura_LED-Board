@@ -6,7 +6,8 @@
 
 #include "ESP8266TimerInterrupt.h"
 
-#include "DotMatrixLED.h"
+#include "MW/MW_pub.h"
+#include "App/App_pub.h"
 
 ESP8266Timer ITimer;
 

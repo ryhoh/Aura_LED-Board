@@ -2,7 +2,8 @@
 #include <cstdint>
 #include <unistd.h>
 
-#include "DotMatrixLED.h"
+#include "MW/MW_pub.h"
+#include "App/App_pub.h"
 
 const uint8_t matrix_length = 8;
 const uint8_t height = 8;

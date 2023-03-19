@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "MW/MW_pub.h"
-#include "App/AsciiMatrix.h"
+#include "App/App_pub.h"
 
 TEST(AsciiMatrixTest, writeAsciiToMatrixLED) {
   MatrixLED matLED(8, 8);

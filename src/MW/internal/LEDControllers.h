@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "../Driver/DeviceInterface.h"
+#include "../../Driver/DeviceInterface.h"
 #include "MatrixLED.h"
 
 /*

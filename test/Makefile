@@ -8,7 +8,9 @@ INCLUDES      = -I../src
 OUTPUT_OPTION = -o $@
 
 TESTLINK = -pthread -lgtest_main -lgtest
-VPATH    = ../src:../src/MW:../src/App
+VPATH    = ../src
+VPATH   +=:../src/MW:../src/MW/internal
+VPATH   +=:../src/App:../src/App/led:../src/App/network
 
 TARGETS = MatrixLED AsciiMatrix JISMatrix
 OBJECTS = MatrixLED AsciiMatrix JISMatrix

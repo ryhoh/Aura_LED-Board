@@ -9,6 +9,8 @@ MACRO         = -DSIMULATOR
 OUTPUT_OPTION = -o $@
 
 VPATH    = ../src
+VPATH   +=:../src/MW:../src/MW/internal
+VPATH   +=:../src/App:../src/App/led:../src/App/network
 
 OBJECTS = MatrixLED AsciiMatrix JISMatrix
 OBJECTS.o       = $(addsuffix .o  , $(OBJECTS))

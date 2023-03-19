@@ -1,21 +1,10 @@
 #ifndef _DOTMATRIXLED_H_
 #define _DOTMATRIXLED_H_
 
-/* Buffers */
-#include "MW/MatrixLED.h"
+/* MW */
+#include "MW/MW_pub.h"
 
-/* Support functions for buffer */
-#include "App/AsciiMatrix.h"
-#include "App/JISMatrix.h"
-
-/* Devices */
-#ifndef SIMULATOR  // Can't use for simulation on terminal.
-#include "MW/LEDControllers.h"
-
-/* Wrapper functions */
-#include "App/Scroll.h"
-
-#endif  /* SIMULATOR */
-
+/* App */
+#include "App/App_pub.h"
 
 #endif  /* _DOTMATRIXLED_H_ */

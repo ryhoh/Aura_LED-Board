@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include "MW/MW_pub.h"
-#include "App/JISMatrix.h"
+#include "App/App_pub.h"
 
 TEST(UTF8andJISTest, writeJISToMatrixLED_ascii) {
   MatrixLED matLED(8, 8);

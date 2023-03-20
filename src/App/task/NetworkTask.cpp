@@ -6,18 +6,25 @@
  */
 
 // インクルード
-#include "NetworkTask.h"
+#include "App/task/NetworkTask.h"
 
 // 変数宣言
 // static uint8_t u8_network_setupstate = true;
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
 static String gsstr_wifi_ssid = "";
+static String gsstr_wifi_passwd = "";
+static String gsstr_wifi_device_name = "";
 // static String gsstr_time = "";
 // static String gsstr_date = "";
 // static String gsstr_lastMessage = "";
 
-// 関数定義
+// プロトタイプ宣言
+static void Network_Task_Make_Connection(void);
+static void Network_Task_SubTaskClock(const struct tm *tm);
+static void Network_Task_SubTaskDate(const struct tm *tm);
+static void Network_Task_SubTaskMsg(void);
 
+// 関数定義
 /**
  * @brief ネットワークタスク初期化関数
  * @note 起動時に1回だけ実行される
@@ -26,6 +33,16 @@ static String gsstr_wifi_ssid = "";
 void Network_Task_Init(void) {
   // wip
   // ssid はNVMから読み込む
+  char u8_buffer[31] = { 0 }; 
+  EEPROM.get(0x00, u8_buffer);
+  gsstr_wifi_ssid = String(u8_buffer);
+  EEPROM.get(0x20, u8_buffer);
+  gsstr_wifi_passwd = String(u8_buffer);
+  EEPROM.get(0x40, u8_buffer);
+  gsstr_wifi_device_name = String(u8_buffer);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(gsstr_wifi_ssid, gsstr_wifi_passwd);
 }
 
 /**
@@ -38,6 +55,8 @@ void Network_Task_Main(void) {
   static struct tm *tm;
   static int32_t last_mday = -1;
   uint8_t *pu8_is_network_setup_state = Get_SYSCTL_NetworkSetupState();
+
+  Network_Task_Make_Connection();
 
   if (*pu8_is_network_setup_state == 0) {
     /* Check Date,Time */
@@ -58,7 +77,13 @@ void Network_Task_Main(void) {
     /* Message From StatusBoard */
     Network_Task_SubTaskMsg();
 
-    *pu8_is_network_setup_state = m_OFF;  // ネットワークセットアップ完了
+    *Get_SYSCTL_SetupState() = m_OFF;  // システムセットアップ完了
+  }
+}
+
+static void Network_Task_Make_Connection(void) {
+  if (WiFi.status() == WL_CONNECTED) {
+    *Get_SYSCTL_NetworkSetupState() = false;
   }
 }
 
@@ -68,7 +93,7 @@ void Network_Task_Main(void) {
  * 
  * @param tm 時刻構造体
  */
-static void Network_Task_SubTaskClock(const tm *tm) {
+static void Network_Task_SubTaskClock(const struct tm *tm) {
   char now_s[m_NETWORK_TASK_TIME_STR_SIZE] = "12:34:56";
   DisplayInfo_t *pst_matrixLEDs_clock = GET_LED_Task_DisplayInfoClock();
 
@@ -90,7 +115,7 @@ static void Network_Task_SubTaskClock(const tm *tm) {
  * 
  * @param tm 時刻構造体
  */
-static void Network_Task_SubTaskDate(const tm *tm) {
+static void Network_Task_SubTaskDate(const struct tm *tm) {
   static char date_s[m_NETWORK_TASK_DATE_STR_SIZE] = "11月11日(火)";
   DisplayInfo_t *pst_matrixLEDs_date = GET_LED_Task_DisplayInfoDate();
 

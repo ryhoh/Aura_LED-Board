@@ -26,6 +26,8 @@ void Main_Task(void) {
   if (step % cu32_network_substep == 0) {
     Network_Task_Main();
   }
+  // gsu8_is_setup_state = 0;
+  // GET_LED_Task_DisplayInfoMsg()->str_to_display = "Hello";
 
   // LEDタスクは毎回実行
   LED_Task_Main();

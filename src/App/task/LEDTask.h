@@ -40,13 +40,6 @@ typedef struct _DisplayInfo {
 // プロトタイプ宣言
 void LED_Task_Init(void);
 void LED_Task_Main(void);
-static void LED_Task_FirstTimeToRunningState(void);
-static void LED_Task_InSetupState(void);
-static void LED_Task_RunningState(void);
-static void LED_Task_SubTaskClock(void);
-static void LED_Task_SubTaskDate(void);
-static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
-static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t u32_msg_ended, uint32_t su32_scroll_step);
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void);

@@ -23,9 +23,8 @@ typedef struct _Variant {
 } Variant_t;
 
 // プロトタイプ宣言
-const char *Get_VARIANT_TypeName(void);
-const char *Get_VARIANT_MachineName(void);
+// const char *Get_VARIANT_TypeName(void);
+// const char *Get_VARIANT_MachineName(void);
 uint32_t Get_VARIANT_MatrixNum(void);
-static uint32_t VARIANT_GetVariantIndex();
 
 #endif  /* _VARIANT_H_ */

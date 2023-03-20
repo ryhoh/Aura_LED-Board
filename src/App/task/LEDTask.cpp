@@ -6,7 +6,7 @@
  */
 
 // インクルード
-#include "LEDTask.h"
+#include "App/task/LEDTask.h"
 
 // 変数宣言
 static DisplayInfo_t gsst_displayInfo_clock = DisplayInfo_t {
@@ -24,7 +24,16 @@ static DisplayInfo_t gsst_displayInfo_msg = DisplayInfo_t {
 static MatrixLED matrixLEDs_clock[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 時計表示用
 static MatrixLED matrixLEDs_date[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 日付表示用
 static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセージ表示用
-static Max7219 gsst_max7219 = Max7219();
+static Max7219 gsst_max7219;
+
+// プロトタイプ宣言
+static void LED_Task_FirstTimeToRunningState(void);
+static void LED_Task_InSetupState(void);
+static void LED_Task_RunningState(void);
+static void LED_Task_SubTaskClock(void);
+static void LED_Task_SubTaskDate(void);
+static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
+static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step);
 
 // 関数定義
 /**
@@ -35,17 +44,23 @@ static Max7219 gsst_max7219 = Max7219();
 void LED_Task_Init(void) {
   // マトリクスLED初期化
   for (uint8_t u8_i = 0; u8_i < m_PROFILE_MAX_DESIGNED_PANEL_NUM; u8_i++) {
-    matrixLEDs_clock[u8_i] = MatrixLED(8, 8);
-    matrixLEDs_date[u8_i] = MatrixLED(8, 8);
-    matrixLEDs_msg[u8_i] = MatrixLED(8, 8);
+    matrixLEDs_clock[u8_i].height = 8;
+    matrixLEDs_clock[u8_i].width = 8;
+    matrixLEDs_clock[u8_i].fill(0);
+    matrixLEDs_date[u8_i].height = 8;
+    matrixLEDs_date[u8_i].width = 8;
+    matrixLEDs_date[u8_i].fill(0);
+    matrixLEDs_msg[u8_i].height = 8;
+    matrixLEDs_msg[u8_i].width = 8;
+    matrixLEDs_msg[u8_i].fill(0);
   }
 
   // MAX7219初期化
   gsst_max7219 = Max7219(m_LED_TASK_SPI_PIN_DAT, m_LED_TASK_SPI_PIN_LAT, m_LED_TASK_SPI_PIN_CLK, m_LED_TASK_BRIGHTNESS_MIN);
 
   // ディスプレイ表示初期化
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
-  gsst_max7219.flushMatrixLEDs(matrixLEDs_clock, cu8_matrix_num);
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
+  gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
 }
 
 
@@ -129,7 +144,7 @@ static void LED_Task_RunningState(void) {
  * 
  */
 static void LED_Task_SubTaskClock(void) {
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
     matrixLEDs_clock[j].fill(false);
@@ -149,7 +164,7 @@ static void LED_Task_SubTaskClock(void) {
  * 
  */
 static void LED_Task_SubTaskDate(void) {
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
     matrixLEDs_date[j].fill(false);
@@ -179,7 +194,8 @@ static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_requir
     u32_msg_ended = false;
     su32_scroll_step = 0;
   } else {
-    u32_msg_ended = LED_Task_SubTaskMsg_SubRoutine(str_msg, u32_msg_ended, su32_scroll_step);
+    u32_msg_ended = LED_Task_SubTaskMsg_SubRoutine(str_msg, su32_scroll_step);
+    su32_scroll_step++;
   }
 
   return u32_msg_ended;
@@ -193,23 +209,12 @@ static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_requir
  * @note 16ms周期で呼び出し
  * @return uint8_t スクロール完了時にtrueを返す
  */
-static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t u32_msg_ended, uint32_t su32_scroll_step) {
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
-  uint8_t u8_step_ended = false;
+static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step) {
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
+  uint8_t u8_step_ended;
 
-  u32_msg_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
+  u8_step_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
   gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
-  if (u32_msg_ended == true) {
-    // メッセージが終わったら、ステップ初期化
-    u8_step_ended = true;
-    // 次回のメッセージスクロールに備える
-    u32_msg_ended = false;
-    su32_scroll_step = 0;
-  } else {
-    // メッセージが終わっていないなら、スクロール
-    su32_scroll_step++;
-  }
-
   return u8_step_ended;
 }
 

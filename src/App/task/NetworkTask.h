@@ -23,9 +23,10 @@
 #define m_NETWORK_TASK_DATE_LEFT_OFFSET (1)
 
 // プロトタイプ宣言
+void Network_Task_Init(void);
 void Network_Task_Main(void);
-static void Network_Task_SubTaskClock(void);
-static void Network_Task_SubTaskDate(void);
+static void Network_Task_SubTaskClock(const tm *tm);
+static void Network_Task_SubTaskDate(const tm *tm);
 static void Network_Task_SubTaskMsg(void);
 // uint8_t GET_NetWork_Task_NetworkSetupState(void);
 String GET_Network_WiFi_SSID(void);

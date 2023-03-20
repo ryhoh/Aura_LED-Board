@@ -9,6 +9,11 @@
 #define _APP_PUB_H_
 
 // includes
+#ifndef ARDUINO
+#include <string>
+typedef std::string String;
+#endif  /* ARDUINO */
+
 #include "App/led/AsciiMatrix.h"
 #include "App/led/JISMatrix.h"
 #include "App/led/Scroll.h"

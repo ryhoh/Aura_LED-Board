@@ -90,6 +90,10 @@ static void LED_Task_InSetupState(void) {
   static uint8_t su8_msg_end = true;
   const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
   su8_msg_end = LED_Task_SubTaskMsg(str_msg, false);
+  if (su8_msg_end == true) {
+    LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
+    su8_msg_end = false;
+  }
 }
 
 /**

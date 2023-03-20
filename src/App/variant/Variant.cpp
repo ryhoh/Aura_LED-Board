@@ -29,9 +29,9 @@ const char *Get_VARIANT_MachineName(void) {
 
 uint32_t Get_VARIANT_MatrixNum(void) {
   const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  const uint32_t gscu32_matrix_num = gscst_variant_tbl[cu32_selected_variant_idx].u32_matrix_num;
-  M_CLIP_MAX(gscu32_matrix_num, m_PROFILE_MAX_DESIGNED_PANEL_NUM);
-  return gscu32_matrix_num;
+  uint32_t u32_matrix_num = gscst_variant_tbl[cu32_selected_variant_idx].u32_matrix_num;
+  M_CLIP_MAX(u32_matrix_num, m_PROFILE_MAX_DESIGNED_PANEL_NUM);
+  return u32_matrix_num;
 }
 
 static uint32_t VARIANT_GetVariantIndex() {

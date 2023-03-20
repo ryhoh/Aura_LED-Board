@@ -50,13 +50,13 @@ void Network_Task_Main(void) {
     tm = localtime(&t);
 
     /* Clock */
-    Network_Task_Clock(tm);
+    Network_Task_SubTaskClock(tm);
 
     /* Date */
-    Network_Task_Date(tm);
+    Network_Task_SubTaskDate(tm);
     
     /* Message From StatusBoard */
-    Network_Task_Message();
+    Network_Task_SubTaskMsg();
 
     *pu8_is_network_setup_state = m_OFF;  // ネットワークセットアップ完了
   }
@@ -68,9 +68,8 @@ void Network_Task_Main(void) {
  * 
  * @param tm 時刻構造体
  */
-void Network_Task_Clock(const tm *tm) {
+static void Network_Task_SubTaskClock(const tm *tm) {
   char now_s[m_NETWORK_TASK_TIME_STR_SIZE] = "12:34:56";
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
   DisplayInfo_t *pst_matrixLEDs_clock = GET_LED_Task_DisplayInfoClock();
 
   now_s[0] = '0' + tm->tm_hour / 10;
@@ -91,9 +90,8 @@ void Network_Task_Clock(const tm *tm) {
  * 
  * @param tm 時刻構造体
  */
-void Network_Task_Date(const tm *tm) {
+static void Network_Task_SubTaskDate(const tm *tm) {
   static char date_s[m_NETWORK_TASK_DATE_STR_SIZE] = "11月11日(火)";
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
   DisplayInfo_t *pst_matrixLEDs_date = GET_LED_Task_DisplayInfoDate();
 
   date_s[0] = ((tm->tm_mon+1) / 10 == 0) ? ' ' : '1';
@@ -113,7 +111,7 @@ void Network_Task_Date(const tm *tm) {
  * @note 320ms周期で実行される
  * 
  */
-void Network_Task_Message(void) {
+static void Network_Task_SubTaskMsg(void) {
   DisplayInfo_t *pst_matrixLEDs_msg = GET_LED_Task_DisplayInfoMsg();
   // statusClientOption = postStatusToBoard(myName);
   // if (!statusClientOption.skipped()) {

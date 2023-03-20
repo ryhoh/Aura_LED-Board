@@ -19,7 +19,7 @@ static const int _ASCII_OFFSET = 0x20;
  * @retval uint8_t N/A row data on illegal c.
  * @retval 0 on illegal row.
 */
-static inline uint8_t getASCIIRow(char c, uint8_t row);
+static uint8_t getASCIIRow(char c, uint8_t row);
 
 /**
  * @brief Write single ascii char to single matrixLED.
@@ -200,7 +200,7 @@ static const uint8_t _EOS[7]
   0b00000110,
 };
 
-static inline uint8_t getASCIIRow(char c, uint8_t row)
+static uint8_t getASCIIRow(char c, uint8_t row)
 {
   if (c == '\t')
     return *(_HT + row);

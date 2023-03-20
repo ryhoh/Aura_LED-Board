@@ -28,6 +28,28 @@ static Max7219 gsst_max7219 = Max7219();
 
 // 関数定義
 /**
+ * @brief LED初期化
+ * @note 起動時に1度だけ呼び出し
+ * 
+ */
+void LED_Task_Init(void) {
+  // マトリクスLED初期化
+  for (uint8_t u8_i = 0; u8_i < m_PROFILE_MAX_DESIGNED_PANEL_NUM; u8_i++) {
+    matrixLEDs_clock[u8_i] = MatrixLED(8, 8);
+    matrixLEDs_date[u8_i] = MatrixLED(8, 8);
+    matrixLEDs_msg[u8_i] = MatrixLED(8, 8);
+  }
+
+  // MAX7219初期化
+  gsst_max7219 = Max7219(m_LED_TASK_SPI_PIN_DAT, m_LED_TASK_SPI_PIN_LAT, m_LED_TASK_SPI_PIN_CLK, m_LED_TASK_BRIGHTNESS_MIN);
+
+  // ディスプレイ表示初期化
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() && 0x000000FF);
+  gsst_max7219.flushMatrixLEDs(matrixLEDs_clock, cu8_matrix_num);
+}
+
+
+/**
  * @brief LED制御タスク
  * @note 16ms周期で呼び出し
  * 

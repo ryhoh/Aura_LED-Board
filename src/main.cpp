@@ -34,15 +34,6 @@ constexpr uint16_t MATRIX_N = 8;
 
 ESP8266WebServer server(80);
 
-Max7219 max7219;
-MatrixLED matrixLEDs[MATRIX_N];
-MatrixLED matrixLEDs_clock[MATRIX_N];
-MatrixLED matrixLEDs_date[MATRIX_N];
-MatrixLED matrixLEDs_msg[MATRIX_N];
-uint8_t network_setupstate = 1;  // ネットワーク接続まで 1 にしておく
-uint8_t setupstate = 1;  // 初回のマトリクス設定まで 1 にしておく
-uint8_t msg_end = 0;
-
 char WIFI_SSID[31];
 char WIFI_PASSWORD[31];
 
@@ -64,30 +55,20 @@ void setup() {
   pinMode(CLK, OUTPUT);
   pinMode(MODE, INPUT_PULLDOWN_16);
 
-  for (uint8_t j = 0; j < MATRIX_N; ++j) {
-    matrixLEDs[j] = MatrixLED(8, 8);
-    matrixLEDs_clock[j] = MatrixLED(8, 8);
-    matrixLEDs_date[j] = MatrixLED(8, 8);
-    matrixLEDs_msg[j] = MatrixLED(8, 8);
-  }
-
-  max7219 = Max7219(DAT, LAT, CLK, 1);
-  max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
-
   /* Setup Mode */
   if (digitalRead(MODE) == LOW) {
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Setup Mode", 0);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+    // writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Setup Mode", 0);
+    // max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
 
-    WiFi.mode(WIFI_AP);
-    WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 10), IPAddress(255, 255, 255, 0));
-    WiFi.softAP(AP_SSID, AP_PASSWORD);
-    IPAddress ip = WiFi.softAPIP();
+    // WiFi.mode(WIFI_AP);
+    // WiFi.softAPConfig(IPAddress(192, 168, 1, 1), IPAddress(192, 168, 1, 10), IPAddress(255, 255, 255, 0));
+    // WiFi.softAP(AP_SSID, AP_PASSWORD);
+    // IPAddress ip = WiFi.softAPIP();
 
-    for (uint8_t j = 0; j < MATRIX_N; ++j)
-      matrixLEDs[j].fill(false);
-    writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, (String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3])).c_str(), 0);
-    max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+    // for (uint8_t j = 0; j < MATRIX_N; ++j)
+    //   matrixLEDs[j].fill(false);
+    // writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, (String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3])).c_str(), 0);
+    // max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
 
     server.on("/", HTTP_GET, ep_root);
     server.on("/submit", HTTP_POST, ep_submit);
@@ -104,6 +85,7 @@ void setup() {
   }
 
   /* Run Mode */
+  LED_Task_Init();
   EEPROM.get(0x00, WIFI_SSID);
   EEPROM.get(0x20, WIFI_PASSWORD);
   EEPROM.get(0x40, myName);
@@ -118,13 +100,7 @@ void setup() {
     digitalWrite(MY_LED, LOW);
     delay(200);
   }
-  network_setupstate = 0;
-
-  for (uint8_t j = 0; j < MATRIX_N; ++j)
-    matrixLEDs[j].fill(false);
-
-  writeJISsToMatrixLEDs(matrixLEDs, MATRIX_N, "Connected!", 0);
-  max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+  *Get_SYSCTL_NetworkSetupState() = false;
 }
 
 void loop() {
@@ -169,21 +145,21 @@ void ep_submit() {
 
   server.send(200, "text/html", "<html><body>Registered!<br>Please set run-mode and reboot.</body></html>");
 
-  for (uint8_t j = 0; j < MATRIX_N; ++j)
-    matrixLEDs[j].fill(false);
+  // for (uint8_t j = 0; j < MATRIX_N; ++j)
+  //   matrixLEDs[j].fill(false);
   
-  uint32_t scrollstep = 0;
-  uint8_t scrollend = 0;
-  while (scrollend == 0) {
-    scrollend = writeScrollJIS(
-      matrixLEDs,
-      MATRIX_N,
-      (String("Registered: ") + server.arg("ssid")).c_str(),
-      scrollstep);
-    ++scrollstep;
-    delay(80);
-  }
+  // uint32_t scrollstep = 0;
+  // uint8_t scrollend = 0;
+  // while (scrollend == 0) {
+  //   scrollend = writeScrollJIS(
+  //     matrixLEDs,
+  //     MATRIX_N,
+  //     (String("Registered: ") + server.arg("ssid")).c_str(),
+  //     scrollstep);
+  //   ++scrollstep;
+  //   delay(80);
+  // }
 
-  writeAsciisToMatrixLEDs(matrixLEDs, MATRIX_N, "Registered.", 0);
-  max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
+  // writeAsciisToMatrixLEDs(matrixLEDs, MATRIX_N, "Registered.", 0);
+  // max7219.flushMatrixLEDs(matrixLEDs, MATRIX_N);
 }

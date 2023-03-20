@@ -13,5 +13,6 @@
 #include "App/led/JISMatrix.h"
 #include "App/led/Scroll.h"
 #include "App/network/StatusClient.h"
+#include "App/task/SystemControl.h"
 
 #endif  /* _APP_PUB_H_ */

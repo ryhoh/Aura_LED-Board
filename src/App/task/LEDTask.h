@@ -31,7 +31,14 @@ typedef struct _DisplayInfo {
 #define m_LED_TASK_SCROLL_CLOCK (m_LED_TASK_SCROLL_ITVL / m_LED_TASK_CALL_ITVL)  // [1/step,1]
 #define m_LED_TASK_CONNECTING_MSG ("Connecting to ")
 
+#define m_LED_TASK_SPI_PIN_DAT (5)
+#define m_LED_TASK_SPI_PIN_LAT (4)
+#define m_LED_TASK_SPI_PIN_CLK (14)
+#define m_LED_TASK_BRIGHTNESS_MAX (9)
+#define m_LED_TASK_BRIGHTNESS_MIN (1)
+
 // プロトタイプ宣言
+void LED_Task_Init(void);
 void LED_Task_Main(void);
 static void LED_Task_FirstTimeToRunningState(void);
 static void LED_Task_InSetupState(void);

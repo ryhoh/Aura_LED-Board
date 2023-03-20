@@ -27,7 +27,7 @@ void Network_Task_Main(void);
 static void Network_Task_SubTaskClock(void);
 static void Network_Task_SubTaskDate(void);
 static void Network_Task_SubTaskMsg(void);
-uint8_t GET_NetWork_Task_NetworkSetupState(void);
+// uint8_t GET_NetWork_Task_NetworkSetupState(void);
 String GET_Network_WiFi_SSID(void);
 // String GET_Network_Task_LastMessage(void);
 

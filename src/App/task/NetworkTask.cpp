@@ -9,7 +9,7 @@
 #include "NetworkTask.h"
 
 // 変数宣言
-static uint8_t u8_network_setupstate = true;
+// static uint8_t u8_network_setupstate = true;
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
 static String gsstr_wifi_ssid = "";
 // static String gsstr_time = "";
@@ -39,7 +39,7 @@ void Network_Task_Main(void) {
   static int32_t last_mday = -1;
   uint8_t *pu8_is_network_setup_state = Get_SYSCTL_NetworkSetupState();
 
-  if (u8_network_setupstate == 0) {
+  if (*pu8_is_network_setup_state == 0) {
     /* Check Date,Time */
     if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
       // Routines which run only one time each day
@@ -126,9 +126,9 @@ void Network_Task_Message(void) {
   pst_matrixLEDs_msg->str_to_display = "Hello world!";  // @@暫定
 }
 
-uint8_t GET_NetWork_Task_NetworkSetupState(void) {
-  return u8_network_setupstate;
-}
+// uint8_t GET_NetWork_Task_NetworkSetupState(void) {
+//   return u8_network_setupstate;
+// }
 
 String GET_Network_WiFi_SSID(void) {
   return gsstr_wifi_ssid;

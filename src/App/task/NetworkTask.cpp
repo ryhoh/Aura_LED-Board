@@ -55,11 +55,13 @@ void Network_Task_Main(void) {
   static time_t t;
   static struct tm *tm;
   static int32_t last_mday = -1;
-  uint8_t *pu8_is_network_setup_state = Get_SYSCTL_NetworkSetupState();
+  // uint8_t *pu8_is_network_setup_state = Get_SYSCTL_NetworkSetupState();
+  uint8_t u8_system_State = Get_SYSCTL_SystemState();
 
   Network_Task_Make_Connection();
 
-  if (*pu8_is_network_setup_state == 0) {
+  if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
+    || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
     /* Check Date,Time */
     if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
       // Routines which run only one time each day
@@ -78,13 +80,14 @@ void Network_Task_Main(void) {
     /* Message From StatusBoard */
     Network_Task_SubTaskMsg();
 
-    *Get_SYSCTL_SetupState() = m_OFF;  // システムセットアップ完了
+    // *Get_SYSCTL_SetupState() = m_OFF;  // システムセットアップ完了
   }
 }
 
 static void Network_Task_Make_Connection(void) {
   if (WiFi.status() == WL_CONNECTED) {
-    *Get_SYSCTL_NetworkSetupState() = false;
+    // *Get_SYSCTL_NetworkSetupState() = false;
+    Set_SYSCTL_NetworkSetupState(m_ON);
   }
 }
 

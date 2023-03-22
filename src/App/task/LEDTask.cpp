@@ -29,7 +29,6 @@ static MatrixLED *matrixLEDs_output = matrixLEDs_msg;  // 出力用
 static Max7219 gsst_max7219;
 
 // プロトタイプ宣言
-static void LED_Task_FirstTimeToRunningState(void);
 static void LED_Task_ConfigureDisplayData(void);
 static void LED_Task_ScrollLoop(const String str_msg);
 static void LED_Task_RunningState(void);
@@ -65,8 +64,19 @@ void LED_Task_Init(void) {
   // ディスプレイ表示初期化
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
   gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
+
+  // LEDセットアップ完了を報告
+  Set_SYSCTL_LEDSetupState(m_ON);
 }
 
+/**
+ * @brief LED制御タスクの駆動モード移行処理
+ * @note 状態遷移時1度だけ呼び出し
+ * 
+ */
+void LED_Task_FirstTimeToRunningState(void) {
+  LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
+}
 
 /**
  * @brief LED制御タスク
@@ -76,13 +86,13 @@ void LED_Task_Init(void) {
 void LED_Task_Main(void) {
   // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_LED);
 
-  const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
-  static uint8_t cu8_is_setup_state_old = m_ON;
+  // const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
+  // static uint8_t cu8_is_setup_state_old = m_ON;
 
-  if (cu8_is_setup_state != cu8_is_setup_state_old) {
+  // if (cu8_is_setup_state != cu8_is_setup_state_old) {
     // 駆動モードに入った最初のタイミング
-    LED_Task_FirstTimeToRunningState();
-  }
+    // LED_Task_FirstTimeToRunningState();
+  // }
 
    // 出力データセット処理など
   LED_Task_ConfigureDisplayData();
@@ -90,16 +100,7 @@ void LED_Task_Main(void) {
   // 出力処理
   LED_Task_OutputMain();
 
-  cu8_is_setup_state_old = cu8_is_setup_state;
-}
-
-/**
- * @brief LED制御タスクの駆動モード移行処理
- * @note 16ms周期で呼び出し
- * 
- */
-static void LED_Task_FirstTimeToRunningState(void) {
-  LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
+  // cu8_is_setup_state_old = cu8_is_setup_state;
 }
 
 /**
@@ -108,12 +109,15 @@ static void LED_Task_FirstTimeToRunningState(void) {
  * 
  */
 static void LED_Task_ConfigureDisplayData(void) {
-  const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
+  // const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
+  const uint8_t cu8_system_state = Get_SYSCTL_SystemState();
 
-  if (cu8_is_setup_state == m_ON) {
+  // LEDは使えるがネットワークが準備中なら
+  if (cu8_system_state == m_SYSCTL_STATE_LED_READY) {
     const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
     LED_Task_ScrollLoop(str_msg);
-  } else {
+  } else if ((cu8_system_state == m_SYSCTL_STATE_NETWORK_READY)
+           || (cu8_system_state == m_SYSCTL_STATE_DRIVE)) {
     LED_Task_RunningState();
   }
 }

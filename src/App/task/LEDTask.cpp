@@ -70,6 +70,8 @@ void LED_Task_Init(void) {
  * 
  */
 void LED_Task_Main(void) {
+  // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_LED);
+
   const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
   static uint8_t cu8_is_setup_state_old = m_ON;
 

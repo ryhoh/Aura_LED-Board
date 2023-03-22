@@ -28,6 +28,7 @@
 void Network_Task_Init(void);
 void Network_Task_Main(void);
 // uint8_t GET_NetWork_Task_NetworkSetupState(void);
+uint8_t GET_Network_Task_Blocking(void);
 String GET_Network_WiFi_SSID(void);
 // String GET_Network_Task_LastMessage(void);
 

@@ -9,7 +9,6 @@
 #include "App/task/NetworkTask.h"
 
 // 変数宣言
-// static uint8_t u8_network_setupstate = true;
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
 static String gsstr_wifi_ssid = "";
 static String gsstr_wifi_passwd = "";
@@ -51,6 +50,8 @@ void Network_Task_Init(void) {
  * 
  */
 void Network_Task_Main(void) {
+  // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_NETWORK);
+
   static time_t t;
   static struct tm *tm;
   static int32_t last_mday = -1;
@@ -105,8 +106,12 @@ static void Network_Task_SubTaskClock(const struct tm *tm) {
   now_s[6] = '0' + tm->tm_sec / 10;
   now_s[7] = '0' + tm->tm_sec % 10;
 
+  // Set_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
+  noInterrupts();
   pst_matrixLEDs_clock->str_to_display = String(now_s);
   pst_matrixLEDs_clock->u32_offset_from_left = m_NETWORK_TASK_TIME_LEFT_OFFSET;
+  interrupts();
+  // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
 /**
@@ -127,8 +132,12 @@ static void Network_Task_SubTaskDate(const struct tm *tm) {
   date_s[12] = gscc_weekday[tm->tm_wday * 3 + 1];
   date_s[13] = gscc_weekday[tm->tm_wday * 3 + 2];
 
+  // Set_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
+  noInterrupts();
   pst_matrixLEDs_date->str_to_display = String(date_s);
   pst_matrixLEDs_date->u32_offset_from_left = m_NETWORK_TASK_DATE_LEFT_OFFSET;
+  interrupts();
+  // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
 /**
@@ -146,12 +155,13 @@ static void Network_Task_SubTaskMsg(void) {
   //   lastMessage.replace("\r", " ");
   //   lastMessage.trim();
   // }
+  // Set_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
+  noInterrupts();
   pst_matrixLEDs_msg->str_to_display = "Hello world!";  // @@暫定
+  interrupts();
+  // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
-// uint8_t GET_NetWork_Task_NetworkSetupState(void) {
-//   return u8_network_setupstate;
-// }
 
 String GET_Network_WiFi_SSID(void) {
   return gsstr_wifi_ssid;

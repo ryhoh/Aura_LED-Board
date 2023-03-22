@@ -87,26 +87,12 @@ void setup() {
   /* Run Mode */
   Network_Task_Init();
   LED_Task_Init();
-  // EEPROM.get(0x00, WIFI_SSID);
-  // EEPROM.get(0x20, WIFI_PASSWORD);
-  // EEPROM.get(0x40, myName);
-  
   ITimer.attachInterruptInterval(16000, Main_Task);
-
-  // WiFi.mode(WIFI_STA);
-  // WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  // while(WiFi.status() != WL_CONNECTED) {
-  //   digitalWrite(MY_LED, HIGH);
-  //   delay(200);
-  //   digitalWrite(MY_LED, LOW);
-  //   delay(200);
-  // }
-  // *Get_SYSCTL_NetworkSetupState() = false;
 }
 
 void loop() {
-  // Network_Task_Main();
-  // delay(320);
+  Network_Task_Main();
+  delay(320);
 }
 
 void ep_root() {

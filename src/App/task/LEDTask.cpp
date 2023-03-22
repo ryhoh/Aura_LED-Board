@@ -21,17 +21,21 @@ static DisplayInfo_t gsst_displayInfo_msg = DisplayInfo_t {
   .u32_offset_from_left = 0,
   .str_to_display = String(""),
 };
+
 static MatrixLED matrixLEDs_clock[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 時計表示用
 static MatrixLED matrixLEDs_date[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 日付表示用
 static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセージ表示用
+static MatrixLED *matrixLEDs_output = matrixLEDs_msg;  // 出力用
 static Max7219 gsst_max7219;
 
 // プロトタイプ宣言
 static void LED_Task_FirstTimeToRunningState(void);
-static void LED_Task_InSetupState(void);
+static void LED_Task_ConfigureDisplayData(void);
+static void LED_Task_ScrollLoop(const String str_msg);
 static void LED_Task_RunningState(void);
 static void LED_Task_SubTaskClock(void);
 static void LED_Task_SubTaskDate(void);
+static void LED_Task_OutputMain(void);
 static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
 static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step);
 
@@ -80,11 +84,11 @@ void LED_Task_Main(void) {
     LED_Task_FirstTimeToRunningState();
   }
 
-  if (cu8_is_setup_state == m_ON) {
-    LED_Task_InSetupState();
-  } else {
-    LED_Task_RunningState();
-  }
+   // 出力データセット処理など
+  LED_Task_ConfigureDisplayData();
+
+  // 出力処理
+  LED_Task_OutputMain();
 
   cu8_is_setup_state_old = cu8_is_setup_state;
 }
@@ -99,14 +103,40 @@ static void LED_Task_FirstTimeToRunningState(void) {
 }
 
 /**
- * @brief LED制御タスクのセットアップモード処理
+ * @brief LED制御タスクにおける表示データのセット処理
  * @note 16ms周期で呼び出し
  * 
  */
-static void LED_Task_InSetupState(void) {
+static void LED_Task_ConfigureDisplayData(void) {
+  const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
+
+  if (cu8_is_setup_state == m_ON) {
+    const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
+    LED_Task_ScrollLoop(str_msg);
+  } else {
+    LED_Task_RunningState();
+  }
+}
+
+/**
+ * @brief スクロールをループ表示する
+ * @note 16ms周期で呼び出し
+ * 
+ */
+static void LED_Task_ScrollLoop(const String str_msg) {
   static uint8_t su8_msg_end = true;
-  const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
+  static String sstr_msg_old = String("");
+  
+  // 表示内容が変わったらリセット
+  if (sstr_msg_old != str_msg) {
+    su8_msg_end = LED_Task_SubTaskMsg("", true);
+  }
+  sstr_msg_old = str_msg;
+
+  // スクロール処理
   su8_msg_end = LED_Task_SubTaskMsg(str_msg, false);
+
+  // スクロール終了時にリセット
   if (su8_msg_end == true) {
     LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
     su8_msg_end = false;
@@ -157,7 +187,8 @@ static void LED_Task_SubTaskClock(void) {
     gsst_displayInfo_clock.str_to_display.c_str(),
     gsst_displayInfo_clock.u32_offset_from_left
   );
-  gsst_max7219.flushMatrixLEDs(matrixLEDs_clock, cu8_matrix_num);
+  matrixLEDs_output = matrixLEDs_clock;
+  // gsst_max7219.flushMatrixLEDs(matrixLEDs_clock, cu8_matrix_num);
 }
 
 /**
@@ -177,7 +208,8 @@ static void LED_Task_SubTaskDate(void) {
     gsst_displayInfo_date.str_to_display.c_str(),
     gsst_displayInfo_date.u32_offset_from_left
   );
-  gsst_max7219.flushMatrixLEDs(matrixLEDs_date, cu8_matrix_num);
+  matrixLEDs_output = matrixLEDs_date;
+  // gsst_max7219.flushMatrixLEDs(matrixLEDs_date, cu8_matrix_num);
 }
 
 /**
@@ -215,9 +247,18 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
   uint8_t u8_step_ended;
 
-  u8_step_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
-  gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
+  u8_step_ended = writeScrollJIS(matrixLEDs_output, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
+  // gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
   return u8_step_ended;
+}
+
+/**
+ * @brief LEDの出力処理メイン
+ * 
+ */
+static void LED_Task_OutputMain(void) {
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
+  gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
 }
 
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void) {
@@ -231,15 +272,3 @@ DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void) {
 DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void) {
   return &gsst_displayInfo_msg;
 }
-
-// MatrixLED *LED_Task_GetMatrixLEDs_clock(void) {
-//   return matrixLEDs_clock;
-// }
-
-// MatrixLED *LED_Task_GetMatrixLEDs_date(void) {
-//   return matrixLEDs_date;
-// }
-
-// MatrixLED *LED_Task_GetMatrixLEDs_msg(void) {
-//   return matrixLEDs_msg;
-// }

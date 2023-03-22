@@ -37,14 +37,14 @@ typedef struct _DisplayInfo {
 #define m_LED_TASK_BRIGHTNESS_MAX (9)
 #define m_LED_TASK_BRIGHTNESS_MIN (1)
 
+// #define m_LED_TASK_DISPLAY_MODE_FIXED (0)
+// #define m_LED_TASK_DISPLAY_MODE_SCROLL (1)
+
 // プロトタイプ宣言
 void LED_Task_Init(void);
 void LED_Task_Main(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void);
-// MatrixLED *LED_Task_GetMatrixLEDs_clock(void);
-// MatrixLED *LED_Task_GetMatrixLEDs_date(void);
-// MatrixLED *LED_Task_GetMatrixLEDs_msg(void);
 
 #endif  /* _LEDTASK_H_ */

@@ -18,6 +18,7 @@
 #define m_ON (1)
 #define m_OFF (0)
 #define M_CLIP_MAX(x, max) ((x) > (max) ? (max) : (x))
+#define M_CLIP_MIN(x, min) ((x) < (min) ? (min) : (x))
 
 // 構造体定義
 typedef struct _TransitionTable {

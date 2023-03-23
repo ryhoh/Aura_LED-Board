@@ -18,10 +18,11 @@ static uint8_t gsu8_SYSCTL_Blocking_Flags[m_SYSCTL_BLOCKING_LEVEL_NUM] = { 0 }; 
 
 // プロトタイプ宣言
 static void SYSCTL_SystemControl_Task_Main(void);
-static void SYSCTL_Judge_Configure(void);
-static void SYSCTL_Entry_Configure(void);
+static void SYSCTL_Exit_PowerOn(void);
 static void SYSCTL_Judge_LED_Ready(void);
 static void SYSCTL_Entry_LED_Ready(void);
+static void SYSCTL_Judge_Configure(void);
+static void SYSCTL_Entry_Configure(void);
 static void SYSCTL_Judge_Network_Ready(void);
 static void SYSCTL_Entry_Network_Ready(void);
 static void SYSCTL_Judge_Drive(void);
@@ -29,11 +30,11 @@ static void SYSCTL_Entry_Drive(void);
 
 // 状態遷移テーブル
 static TransitionTable_t gsst_SYSCTL_StateTransision_Tbl[m_SYSCTL_STATE_TRANSITION_NUM] = {
-  { NULL,                        NULL,                        &SYSCTL_Do_PowerOn, NULL },  // (PowerOn)
-  { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     NULL,               NULL },  // PowerOn      -> Configure
-  { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL,               NULL },  // PowerOn      -> LEDReady
-  { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL,               NULL },  // LEDReady     -> NetworkReady
-  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         NULL,               NULL },  // NetworkReady -> Drive
+  { NULL,                        NULL,                        NULL, &SYSCTL_Exit_PowerOn },  // (PowerOn)
+  { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL, NULL                 },  // PowerOn      -> LEDReady
+  { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     NULL, NULL                 },  // LEDReady     -> Configure
+  { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL, NULL                 },  // LEDReady     -> NetworkReady
+  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         NULL, NULL                 },  // NetworkReady -> Drive
 };
 
 // 関数定義
@@ -111,7 +112,14 @@ static void SYSCTL_State_Control(void) {
   }
 }
 
-static void SYSCTL_Do_PowerOn(void) {
+static void SYSCTL_Exit_PowerOn(void) {
+  // ピンモード設定
+  call_pinMode(Get_VARIANT_LampPin(), OUTPUT);
+  call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);
+  call_pinMode(Get_VARIANT_SPICSPin(), OUTPUT);
+  call_pinMode(Get_VARIANT_SPIClockPin(), OUTPUT);
+  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN_16);
+
   // LED のセットアップを行う
   LED_Task_Init();
 
@@ -119,26 +127,34 @@ static void SYSCTL_Do_PowerOn(void) {
   Network_Task_Init();
 }
 
-static void SYSCTL_Judge_Configure(void) {
-  // wip
-  // セットアップピンがHIGHであることと、ネットワーク準備完了くらい？
-}
-
-static void SYSCTL_Entry_Configure(void) {
-  // wip
-}
-
 static void SYSCTL_Judge_LED_Ready(void) {
-  // 遷移条件は、(現在PowerOn状態 && LEDのセットアップが完了していること)
-  // あとで、セットアップピンの条件も追加する
+  // 遷移条件は、(現在PowerOn状態 && LEDタスクがセットアップ完了 && モードピン=HIGHであること)
+  const uint8_t cu8_mode_pin = Get_VARIANT_ModePin();
+  const uint8_t cu8_mode = (uint8_t)(call_digitalRead(cu8_mode_pin) & 0xFF);
   if ((gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_POWER_ON)
-    && (gsu8_is_LED_setup_done == m_ON)) {
+    && (gsu8_is_LED_setup_done == m_ON)
+    && (cu8_mode == HIGH)) {
     // 遷移先状態を設定
     gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_LED_READY;
   }
 }
 
 static void SYSCTL_Entry_LED_Ready(void) {
+  // wip
+}
+
+static void SYSCTL_Judge_Configure(void) {
+  // 遷移条件は、LED準備完了状態 && モードピン=LOWであること
+  const uint8_t cu8_mode_pin = Get_VARIANT_ModePin();
+  const uint8_t cu8_mode = (uint8_t)(call_digitalRead(cu8_mode_pin) & 0xFF);
+  if ((gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_LED_READY)
+    && (cu8_mode == LOW)) {
+    // 遷移先状態を設定
+    gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_CONFIGURE;
+  }
+}
+
+static void SYSCTL_Entry_Configure(void) {
   // wip
 }
 

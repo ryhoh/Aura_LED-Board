@@ -20,4 +20,7 @@ typedef std::string String;
 #include "App/network/StatusClient.h"
 #include "App/task/SystemControl.h"
 
+// functions
+void Main_Task(void);
+
 #endif  /* _APP_PUB_H_ */

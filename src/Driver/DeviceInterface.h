@@ -12,6 +12,7 @@
 
 /* -- Definition -- */
 static inline void call_pinMode(uint8_t pin, uint8_t INPUT_or_OUTPUT);
+static inline int32_t call_digitalRead(uint8_t pin);
 static inline void call_digitalWrite(uint8_t pin, uint8_t HIGH_or_LOW);
 static inline void call_sleep(uint32_t ms);
 static inline void call_usleep(uint32_t us);
@@ -23,6 +24,10 @@ static inline char *call_eeprom_read(int32_t addr, char buf[]);
 
 static void call_pinMode(uint8_t pin, uint8_t INPUT_or_OUTPUT) {
   pinMode(pin, INPUT_or_OUTPUT);
+}
+
+static inline int32_t call_digitalRead(uint8_t pin) {
+  return digitalRead(pin);
 }
 
 static inline void call_digitalWrite(uint8_t pin, uint8_t HIGH_or_LOW) {

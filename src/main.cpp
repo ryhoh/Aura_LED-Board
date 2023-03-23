@@ -40,20 +40,17 @@ char WIFI_PASSWORD[31];
 StatusClientOption statusClientOption;
 String lastMessage = "Hello World!";
 
-void Main_Task(void);
-void LED_Main_Task(void);
-void Network_Main_Task(void);
 void ep_root();
 void ep_submit();
 
 void setup() {
   EEPROM.begin(0x60);
 
-  pinMode(MY_LED, OUTPUT);
-  pinMode(DAT, OUTPUT);
-  pinMode(LAT, OUTPUT);
-  pinMode(CLK, OUTPUT);
-  pinMode(MODE, INPUT_PULLDOWN_16);
+  // pinMode(MY_LED, OUTPUT);
+  // pinMode(DAT, OUTPUT);
+  // pinMode(LAT, OUTPUT);
+  // pinMode(CLK, OUTPUT);
+  // pinMode(MODE, INPUT_PULLDOWN_16);
 
   /* Setup Mode */
   if (digitalRead(MODE) == LOW) {
@@ -85,8 +82,8 @@ void setup() {
   }
 
   /* Run Mode */
-  Network_Task_Init();
-  LED_Task_Init();
+  // Network_Task_Init();
+  // LED_Task_Init();
   ITimer.attachInterruptInterval(16000, Main_Task);
 }
 

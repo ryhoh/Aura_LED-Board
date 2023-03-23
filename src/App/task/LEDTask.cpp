@@ -173,6 +173,7 @@ static void LED_Task_RunningState(void) {
 
   if (u8_step_ended == true) {
     step = 0;
+    u8_step_ended = LED_Task_SubTaskMsg("", true);
   } else {
     step++;
   }

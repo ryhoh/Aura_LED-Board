@@ -32,6 +32,7 @@
 #define m_SYSCTL_STATE_TRANSITION_NUM (5)  // 状態遷移数
 
 // プロトタイプ宣言
+void SYSCTL_Init(void);
 void Main_Task(void);
 void SYSCTL_WaitForBlockingLevel(uint8_t u8_level);
 void Set_SYSCTL_Blocking_Level(uint8_t u8_level);

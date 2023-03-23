@@ -84,6 +84,8 @@ void setup() {
   /* Run Mode */
   // Network_Task_Init();
   // LED_Task_Init();
+  // Serial.begin(115200);
+  SYSCTL_Init();
   ITimer.attachInterruptInterval(16000, Main_Task);
 }
 

@@ -11,7 +11,7 @@
 
 // 変数宣言
 static const Variant_t gscst_variant_tbl[m_VARIANT_TABLE_SIZE] = {
-  /* Type Name                                       , Machine Name  , dummy   , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, lamp Pin, Brightness                  */
+  /* Type Name                                       , Machine Name  , dummy   , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, Lamp Pin, Brightness                  */
   { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-01A1", { 0, 0 },          4,        5,      4,        14,       16,       13, m_VARIANT_LED_BRIGHTNESS_MIN },
   { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-02A1", { 0, 0 },          8,        5,      4,        14,       16,       13, m_VARIANT_LED_BRIGHTNESS_MIN },
   { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-03A1", { 0, 0 },         12,        5,      4,        14,       16,       13, m_VARIANT_LED_BRIGHTNESS_MIN },

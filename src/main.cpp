@@ -25,12 +25,12 @@ char myName[31];
 const char *AP_PASSWORD = "sample";
 const char *AP_SSID = "Rycery LED-Board";
 
-const uint32_t MY_LED = 13;
-const uint32_t DAT = 5;
-const uint32_t LAT = 4;
-const uint32_t CLK = 14;
-const uint32_t MODE = 16;
-constexpr uint16_t MATRIX_N = 8;
+// const uint32_t MY_LED = 13;
+// const uint32_t DAT = 5;
+// const uint32_t LAT = 4;
+// const uint32_t CLK = 14;
+// const uint32_t MODE = 16;
+// constexpr uint16_t MATRIX_N = 8;
 
 ESP8266WebServer server(80);
 
@@ -44,13 +44,10 @@ void ep_root();
 void ep_submit();
 
 void setup() {
-  EEPROM.begin(0x60);
+  SYSCTL_Init();
+  ITimer.attachInterruptInterval(16000, Main_Task);
 
-  // pinMode(MY_LED, OUTPUT);
-  // pinMode(DAT, OUTPUT);
-  // pinMode(LAT, OUTPUT);
-  // pinMode(CLK, OUTPUT);
-  // pinMode(MODE, INPUT_PULLDOWN_16);
+  const uint32_t MODE = Get_VARIANT_ModePin();
 
   /* Setup Mode */
   if (digitalRead(MODE) == LOW) {
@@ -85,8 +82,6 @@ void setup() {
   // Network_Task_Init();
   // LED_Task_Init();
   // Serial.begin(115200);
-  SYSCTL_Init();
-  ITimer.attachInterruptInterval(16000, Main_Task);
 }
 
 void loop() {

@@ -30,7 +30,6 @@ static void Network_Task_SubTaskMsg(void);
  * 
  */
 void Network_Task_Init(void) {
-  // wip
   // ssid はNVMから読み込む
   char u8_buffer[31] = { 0 }; 
   EEPROM.get(0x00, u8_buffer);

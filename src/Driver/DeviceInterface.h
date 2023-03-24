@@ -17,7 +17,9 @@ static inline void call_digitalWrite(uint8_t pin, uint8_t HIGH_or_LOW);
 static inline void call_sleep(uint32_t ms);
 static inline void call_usleep(uint32_t us);
 static inline void call_shiftOut(uint8_t data, uint8_t dat_pin, uint8_t clk_pin, uint8_t lat_pin);
-static inline char *call_eeprom_read(int32_t addr, char buf[]);
+static inline char *call_nvm_init(uint32_t size);
+static inline void call_nvm_read(int32_t begin_addr, char buf[], uint32_t size);
+static inline char *call_nvm_write(int32_t begin_addr, const char buf[], uint32_t size);
 /* -------------------- */
 
 #ifdef ARDUINO
@@ -46,8 +48,33 @@ static inline void call_shiftOut(uint8_t data, uint8_t dat_pin, uint8_t clk_pin,
   shiftOut(data, dat_pin, clk_pin, lat_pin);
 }
 
-static inline char *call_eeprom_read(int32_t addr, char buf[]) {
-  return EEPROM.get(addr, buf);
+static inline char *call_nvm_init(uint32_t size) {
+  EEPROM.begin(size);
+}
+
+#define EEPROM_RW_MAX_SIZE 32
+static inline void call_nvm_read(int32_t begin_addr, char buf[], uint32_t size) {
+  // Clip by EEPROM_RW_MAX_SIZE
+  int32_t end_addr = begin_addr + size;
+  if (end_addr > EEPROM_RW_MAX_SIZE + begin_addr) {
+    end_addr = EEPROM_RW_MAX_SIZE + begin_addr;
+  }
+
+  for (int32_t addr = begin_addr; addr < end_addr; addr++) {
+    buf[addr - begin_addr] = EEPROM.read(addr);
+  }
+}
+
+static inline char *call_nvm_write(int32_t begin_addr, const char buf[], uint32_t size) {
+  // Clip by EEPROM_RW_MAX_SIZE
+  int32_t end_addr = begin_addr + size;
+  if (end_addr > EEPROM_RW_MAX_SIZE + begin_addr) {
+    end_addr = EEPROM_RW_MAX_SIZE + begin_addr;
+  }
+
+  for (int32_t addr = begin_addr; addr < end_addr; addr++) {
+    EEPROM.write(addr, buf[addr - begin_addr]);
+  }
 }
 
 #endif  /* ARDUINO */

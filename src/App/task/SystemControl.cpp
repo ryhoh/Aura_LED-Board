@@ -43,6 +43,9 @@ static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITI
  * 
  */
 void SYSCTL_Init(void) {
+  // NVMの初期化
+  NVM_Init();
+
   // ピンモード設定
   call_pinMode(Get_VARIANT_LampPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);

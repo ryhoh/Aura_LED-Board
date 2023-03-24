@@ -20,6 +20,8 @@ static inline void call_shiftOut(uint8_t data, uint8_t dat_pin, uint8_t clk_pin,
 static inline void call_nvm_init(uint32_t size);
 static inline void call_nvm_read(int32_t begin_addr, char buf[], uint32_t size);
 static inline void call_nvm_write(int32_t begin_addr, const char buf[], uint32_t size);
+static inline void call_nvm_commit();
+static inline int32_t call_randint(int32_t max);
 /* -------------------- */
 
 #ifdef ARDUINO
@@ -76,6 +78,14 @@ static inline void call_nvm_write(int32_t begin_addr, const char buf[], uint32_t
   for (int32_t addr = begin_addr; addr < end_addr; addr++) {
     EEPROM.write(addr, buf[addr - begin_addr]);
   }
+}
+
+static inline void call_nvm_commit() {
+  EEPROM.commit();
+}
+
+static inline int32_t call_randint(int32_t max) {
+  return random(0, max);
 }
 
 #endif  /* ARDUINO */

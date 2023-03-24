@@ -22,9 +22,6 @@ void NVM_Init(void) {
   // EEPROMの初期化
   call_nvm_init(m_NVM_SIZE);
 
-	char c[1] = {1};
-	call_nvm_write(m_NVM_ADDR_VARIANT_IDX, &c[0], 1);  // @@暫定
-
 	// EEPROMのデータをRAMに展開
 	char u8_buffer[m_NVM_BUFFER_SIZE] = { 0 }; 
 	call_nvm_read(m_NVM_ADDR_SSID, u8_buffer, m_NVM_BUFFER_SIZE);

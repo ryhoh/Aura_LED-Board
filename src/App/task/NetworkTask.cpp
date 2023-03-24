@@ -19,6 +19,7 @@ static String gsstr_wifi_device_name = "";
 
 // プロトタイプ宣言
 static void Network_Task_Make_Connection(void);
+static void Network_Task_Select_NTP_Server_Randomly(void);
 static void Network_Task_SubTaskClock(const struct tm *tm);
 static void Network_Task_SubTaskDate(const struct tm *tm);
 static void Network_Task_SubTaskMsg(void);
@@ -64,7 +65,8 @@ void Network_Task_Main(void) {
     /* Check Date,Time */
     if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
       // Routines which run only one time each day
-      configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+      // configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+      Network_Task_Select_NTP_Server_Randomly();
     }
 
     t = time(NULL);
@@ -87,6 +89,23 @@ static void Network_Task_Make_Connection(void) {
   if (WiFi.status() == WL_CONNECTED) {
     // *Get_SYSCTL_NetworkSetupState() = false;
     Set_SYSCTL_NetworkSetupState(m_ON);
+  }
+}
+
+static void Network_Task_Select_NTP_Server_Randomly(void) {
+  uint8_t u8_random = call_randint(3);
+  switch (u8_random) {
+    case 0:
+      configTime("JST-9", "time.cloudflare.com");
+      break;
+    case 1:
+      configTime("JST-9", "ntp.nict.jp");
+      break;
+    case 2:
+      configTime("JST-9", "ntp.jst.mfeed.ad.jp");
+      break;
+    default:
+      break;
   }
 }
 

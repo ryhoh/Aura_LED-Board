@@ -21,7 +21,6 @@
 
 // 関数宣言
 void NVM_Init(void);
-static void NVM_WriteString(uint8_t u8_addr, String str);
 String Get_NVM_SSID();
 void Set_NVM_SSID(String str_SSID);
 String Get_NVM_PASSWD();

@@ -10,7 +10,6 @@
 
 
 // インクルード
-#include <ESP8266WiFi.h>
 #include "Driver/DeviceInterface.h"
 #include "App/Common.h"
 #include "App/variant/Variant.h"

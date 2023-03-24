@@ -14,6 +14,9 @@ static String gsstr_NVM_PASSWD;  // PASSWD
 static String gsstr_NVM_hostname;  // ネットワーク上での名前
 static uint8_t gsu8_NVM_variant_idx;  // バリアントインデックス
 
+// prototypes
+static void NVM_WriteString(uint8_t u8_addr, String str);
+
 // functions
 void NVM_Init(void) {
   // EEPROMの初期化

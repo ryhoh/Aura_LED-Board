@@ -1,0 +1,19 @@
+const String cstr_html = R"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Luminous LED-Board Setup</title>
+  </head>
+  <body>
+    <h1>Luminous LED-Board Setup</h1>
+    <p>Please Register ssid and password.</p>
+    <form method="POST" action="/submit">
+      SSID: <input type="text" name="ssid" maxlength="30"><br>
+      Password: <input type="password" name="password" maxlength="30"><br>
+      Device Name: <input type="text" name="dev_name" maxlength="30"><br>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
+";

@@ -26,6 +26,7 @@ static inline int32_t call_randint(int32_t max);
 
 #ifdef ARDUINO
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 
 static void call_pinMode(uint8_t pin, uint8_t INPUT_or_OUTPUT) {
   pinMode(pin, INPUT_or_OUTPUT);

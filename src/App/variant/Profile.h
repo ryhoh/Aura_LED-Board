@@ -13,6 +13,5 @@
 
 // マクロ定義
 #define m_PROFILE_MAX_DESIGNED_PANEL_NUM (12)  // 設計上の限界パネル数
-// #define m_PROFILE_VARIANT_IDX (1)  // バリアントインデックス
 
 #endif  /* _APP_PROFILE_H_ */

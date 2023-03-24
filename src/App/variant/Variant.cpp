@@ -26,10 +26,10 @@ static uint32_t VARIANT_GetVariantIndex();
 //   return gscst_variant_tbl[cu32_selected_variant_idx].i8_type_name;
 // }
 
-// const char *Get_VARIANT_MachineName(void) {
-//   const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-//   return gscst_variant_tbl[cu32_selected_variant_idx].i8_machine_name;
-// }
+const char *Get_VARIANT_MachineName(void) {
+  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
+  return gscst_variant_tbl[cu32_selected_variant_idx].i8_machine_name;
+}
 
 uint32_t Get_VARIANT_MatrixNum(void) {
   const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();

@@ -38,6 +38,7 @@ static void NVM_WriteString(uint8_t u8_addr, String str) {
 	char u8_buffer[m_NVM_BUFFER_SIZE] = { 0 };
 	str.toCharArray(u8_buffer, m_NVM_BUFFER_SIZE);
 	call_nvm_write(u8_addr, u8_buffer, m_NVM_BUFFER_SIZE);
+	call_nvm_commit();
 }
 
 String Get_NVM_SSID() {

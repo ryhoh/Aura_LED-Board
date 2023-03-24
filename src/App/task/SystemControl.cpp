@@ -68,8 +68,6 @@ void SYSCTL_Init(void) {
 void Main_Task(void) {
   static uint32_t step = 0;
   const uint32_t cu32_network_substep = m_SYSCTL_CALL_ITVL_NETWORK / m_SYSCTL_CALL_ITVL;
-  // Serial.println(gsu8_SYSCTL_SystemState);
-  // Serial.flush();
 
   // システム制御タスク
   SYSCTL_SystemControl_Task_Main();
@@ -164,7 +162,7 @@ static void SYSCTL_Judge_Configure(void) {
 }
 
 static void SYSCTL_Entry_Configure(void) {
-  // wip
+  Network_Task_Init_APMode();
 }
 
 static void SYSCTL_Judge_Network_Ready(void) {
@@ -252,18 +250,6 @@ void Set_SYSCTL_NetworkSetupState(uint8_t u8_done) {
     gsu8_is_network_setup_done = u8_done;
 }
 
-// uint8_t *Get_SYSCTL_SetupState(void) {
-//     return &gsu8_is_setup_state;
-// }
-
 uint8_t Get_SYSCTL_SystemState(void) {
     return gsu8_SYSCTL_SystemState;
 }
-
-// uint8_t *Get_SYSCTL_NetworkSetupState(void) {
-//   if (gsu8_is_network_setup_done == m_ON) {
-//     return m_OFF;
-//   } else {
-//     return m_ON;
-//   }
-// }

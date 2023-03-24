@@ -22,21 +22,21 @@
 
 // 構造体定義
 typedef struct _Variant {
-    /*  0- 4 */  char i8_type_name[m_VARIANT_TYPE_NAME_SIZE];
-    /*  5-19 */  char i8_machine_name[m_VARIANT_MACHINE_NAME_SIZE];
-    /* 20-23 */  uint32_t u32_matrix_num;
-    /* 24-24 */  uint8_t u8_spi_data_pin;
-    /* 25-25 */  uint8_t u8_spi_cs_pin;
-    /* 26-26 */  uint8_t u8_spi_clock_pin;
-    /* 27-27 */  uint8_t u8_mode_pin;
-    /* 28-28 */  uint8_t u8_lamp_pin;
-    /* 29-29 */  uint8_t u8_brightness;
-    /* 30-31 */  uint8_t u8_dummy[2];
+  /*  0- 4 */  char i8_type_name[m_VARIANT_TYPE_NAME_SIZE];
+  /*  5-19 */  char i8_machine_name[m_VARIANT_MACHINE_NAME_SIZE];
+  /* 20-23 */  uint32_t u32_matrix_num;
+  /* 24-24 */  uint8_t u8_spi_data_pin;
+  /* 25-25 */  uint8_t u8_spi_cs_pin;
+  /* 26-26 */  uint8_t u8_spi_clock_pin;
+  /* 27-27 */  uint8_t u8_mode_pin;
+  /* 28-28 */  uint8_t u8_lamp_pin;
+  /* 29-29 */  uint8_t u8_brightness;
+  /* 30-31 */  uint8_t u8_dummy[2];
 } Variant_t;
 
 // プロトタイプ宣言
 // const char *Get_VARIANT_TypeName(void);
-// const char *Get_VARIANT_MachineName(void);
+const char *Get_VARIANT_MachineName(void);
 uint8_t Get_VARIANT_SPIDataPin(void);
 uint8_t Get_VARIANT_SPICSPin(void);
 uint8_t Get_VARIANT_SPIClockPin(void);

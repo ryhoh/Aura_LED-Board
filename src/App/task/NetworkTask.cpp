@@ -116,8 +116,6 @@ static void Network_Task_AP_EntryPoint_submit(void) {
  * 
  */
 void Network_Task_Main(void) {
-  // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_NETWORK);
-
   static time_t t;
   static struct tm *tm;
   static int32_t last_mday = -1;
@@ -151,6 +149,10 @@ void Network_Task_Main(void) {
 
     last_mday = tm->tm_mday;
   }
+}
+
+void Network_Task_Exit(void) {
+  WiFi.disconnect();
 }
 
 static void Network_Task_Make_Connection(void) {

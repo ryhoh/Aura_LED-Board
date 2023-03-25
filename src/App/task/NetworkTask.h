@@ -32,7 +32,6 @@
 void Network_Task_Init(void);
 void Network_Task_Init_APMode(void);
 void Network_Task_Main(void);
-void Network_Task_Exit(void);
 uint8_t GET_Network_Task_Blocking(void);
 String GET_Network_WiFi_SSID(void);
 

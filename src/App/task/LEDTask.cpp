@@ -88,23 +88,11 @@ void LED_Task_FirstTimeToRunningState(void) {
  * 
  */
 void LED_Task_Main(void) {
-  // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_LED);
-
-  // const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
-  // static uint8_t cu8_is_setup_state_old = m_ON;
-
-  // if (cu8_is_setup_state != cu8_is_setup_state_old) {
-    // 駆動モードに入った最初のタイミング
-    // LED_Task_FirstTimeToRunningState();
-  // }
-
-   // 出力データセット処理など
+  // 出力データセット処理など
   LED_Task_ConfigureDisplayData();
 
   // 出力処理
   LED_Task_OutputMain();
-
-  // cu8_is_setup_state_old = cu8_is_setup_state;
 }
 
 /**
@@ -113,12 +101,15 @@ void LED_Task_Main(void) {
  * 
  */
 static void LED_Task_ConfigureDisplayData(void) {
-  // const uint8_t cu8_is_setup_state = *Get_SYSCTL_SetupState();
   const uint8_t cu8_system_state = Get_SYSCTL_SystemState();
 
-  // LEDは使えるがネットワークが準備中なら
   if (cu8_system_state == m_SYSCTL_STATE_LED_READY) {
+    // LEDは使えるがネットワークが準備中なら
     const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
+    LED_Task_ScrollLoop(str_msg);
+  } else if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
+    // APモードで設定中なら
+    const String str_msg = gsst_displayInfo_msg.str_to_display;
     LED_Task_ScrollLoop(str_msg);
   } else if ((cu8_system_state == m_SYSCTL_STATE_NETWORK_READY)
            || (cu8_system_state == m_SYSCTL_STATE_DRIVE)) {
@@ -197,7 +188,6 @@ static void LED_Task_SubTaskClock(void) {
     gsst_displayInfo_clock.u32_offset_from_left
   );
   matrixLEDs_output = matrixLEDs_clock;
-  // gsst_max7219.flushMatrixLEDs(matrixLEDs_clock, cu8_matrix_num);
 }
 
 /**
@@ -218,7 +208,6 @@ static void LED_Task_SubTaskDate(void) {
     gsst_displayInfo_date.u32_offset_from_left
   );
   matrixLEDs_output = matrixLEDs_date;
-  // gsst_max7219.flushMatrixLEDs(matrixLEDs_date, cu8_matrix_num);
 }
 
 /**
@@ -257,7 +246,6 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
   uint8_t u8_step_ended;
 
   u8_step_ended = writeScrollJIS(matrixLEDs_output, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
-  // gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
   return u8_step_ended;
 }
 

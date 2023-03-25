@@ -73,37 +73,41 @@ void Network_Task_Init_APMode(void) {
 }
 
 static void Network_Task_AP_EntryPoint_root(void) {
-  #include "App/task/root.html";
-  gsst_webserver.send(200, "text/html", );
+  #include "App/task/root.html"
+  gsst_webserver.send(200, "text/html", cstr_html);
 }
 
 static void Network_Task_AP_EntryPoint_submit(void) {
-  if (!(gsst_webserver.hasArg("ssid") && gsst_webserver.hasArg("password") && gsst_webserver.hasArg("dev_name"))) {
-      gsst_webserver.send(400, "text/html", "<html><body>Please fill forms</body></html>");
-      return;
-  }
+  uint8_t u8_updated = m_OFF;
 
   // 受け取ったパラメータをNVMに書き込む
   if ((gsst_webserver.hasArg("ssid"))
    && (gsst_webserver.arg("ssid").length() > 0)) {
     Set_NVM_SSID(gsst_webserver.arg("ssid"));
+    u8_updated = m_ON;
   }
 
   if ((gsst_webserver.hasArg("password"))
    && (gsst_webserver.arg("password").length() > 0)) {
     Set_NVM_PASSWD(gsst_webserver.arg("password"));
+    u8_updated = m_ON;
   }
 
-  if ((gsst_webserver.hasArg("dev_name"))
-   && (gsst_webserver.arg("dev_name").length() > 0)) {
-    Set_NVM_HostName(gsst_webserver.arg("dev_name"));
+  // if ((gsst_webserver.hasArg("dev_name"))
+  //  && (gsst_webserver.arg("dev_name").length() > 0)) {
+  //   Set_NVM_HostName(gsst_webserver.arg("dev_name"));
+  //   u8_updated = m_ON;
+  // }
+
+  if (u8_updated == m_OFF) {
+    gsst_webserver.send(400, "text/html", "<html><body>Please fill forms</body></html>");
+  } else {
+    // ブラウザに結果を表示
+    gsst_webserver.send(200, "text/html", "<html><body>Registered!<br>Please set run-mode and reboot.</body></html>");
+
+    // マトリクスLEDに結果を表示
+    GET_LED_Task_DisplayInfoMsg()->str_to_display = String("Registered: ") + gsst_webserver.arg("ssid");
   }
-
-  // ブラウザに結果を表示
-  gsst_webserver.send(200, "text/html", "<html><body>Registered!<br>Please set run-mode and reboot.</body></html>");
-
-  // マトリクスLEDに結果を表示
-  GET_LED_Task_DisplayInfoMsg()->str_to_display = String("Registered: ") + gsst_webserver.arg("ssid");
 }
 
 /**
@@ -119,16 +123,17 @@ void Network_Task_Main(void) {
   static int32_t last_mday = -1;
   uint8_t u8_system_State = Get_SYSCTL_SystemState();
 
-  Network_Task_Make_Connection();
+  if (u8_system_State != m_SYSCTL_STATE_CONFIGURE) {
+    Network_Task_Make_Connection();
+  }
 
   if (u8_system_State == m_SYSCTL_STATE_CONFIGURE) {
     Network_Task_RunAPMode();
   } else if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
           || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
     /* Check Date,Time */
-    if (last_mday == -1 || last_mday == tm->tm_mday) {  // Date changed
+    if (last_mday == -1 || last_mday != tm->tm_mday) {  // Date changed
       // Routines which run only one time each day
-      // configTzTime("JST-9", "time.cloudflare.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
       Network_Task_Select_NTP_Server_Randomly();
     }
 
@@ -144,7 +149,7 @@ void Network_Task_Main(void) {
     /* Message From StatusBoard */
     Network_Task_SubTaskMsg();
 
-    // *Get_SYSCTL_SetupState() = m_OFF;  // システムセットアップ完了
+    last_mday = tm->tm_mday;
   }
 }
 

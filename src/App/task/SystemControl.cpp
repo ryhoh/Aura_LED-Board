@@ -27,6 +27,7 @@ static void SYSCTL_Judge_Network_Ready(void);
 static void SYSCTL_Entry_Network_Ready(void);
 static void SYSCTL_Judge_Drive(void);
 static void SYSCTL_Entry_Drive(void);
+static void SYSCTL_Do_Drive(void);
 
 // 状態遷移テーブル
 static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITION_NUM] = {
@@ -35,7 +36,7 @@ static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITI
   { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL,                 NULL },  // PowerOn      -> LEDReady
   { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     &SYSCTL_Do_Configure, NULL },  // LEDReady     -> Configure
   { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL,                 NULL },  // LEDReady     -> NetworkReady
-  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         NULL,                 NULL },  // NetworkReady -> Drive
+  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         &SYSCTL_Do_Drive,     NULL },  // NetworkReady -> Drive
 };
 
 // 関数定義
@@ -185,6 +186,15 @@ static void SYSCTL_Judge_Drive(void) {
 static void SYSCTL_Entry_Drive(void) {
   // wip
   LED_Task_FirstTimeToRunningState();
+}
+
+static void SYSCTL_Do_Drive(void) {
+  static uint8_t u8_cnt = 0;
+  ++u8_cnt;
+  M_CLIP_MAX(u8_cnt, UINT8_MAX-1);
+  if (u8_cnt > 100) {
+    WiFi.disconnect();
+  }
 }
 
 /**

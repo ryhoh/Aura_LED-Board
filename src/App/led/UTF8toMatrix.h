@@ -1,8 +1,10 @@
 #ifndef _UTF8TOMATRIX_H_
 #define _UTF8TOMATRIX_H_
 
-#ifdef ARDUINO
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#elif defined(ESP8266) || defined(ESP32)
+#include <pgmspace.h>
 #endif
 
 #include "App/Common.h"

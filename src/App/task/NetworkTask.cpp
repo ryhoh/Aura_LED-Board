@@ -9,7 +9,8 @@
 #include "App/task/NetworkTask.h"
 
 // 変数宣言
-static ESP8266WebServer gsst_webserver(80); 
+// static ESP8266WebServer gsst_webserver(80); 
+static WebServer gsst_webserver(80);
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
 static String gsstr_wifi_ssid = "";
 static String gsstr_wifi_passwd = "";
@@ -42,7 +43,7 @@ void Network_Task_Init(void) {
   gsstr_wifi_device_name = String(u8_buffer);
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(gsstr_wifi_ssid, gsstr_wifi_passwd);
+  WiFi.begin(gsstr_wifi_ssid.c_str(), gsstr_wifi_passwd.c_str());
 }
 
 /**
@@ -173,13 +174,13 @@ static void Network_Task_Select_NTP_Server_Randomly(void) {
   uint8_t u8_random = call_randint(3);
   switch (u8_random) {
     case 0:
-      configTime("JST-9", "time.cloudflare.com");
+      configTime(9 * 3600L, 0, "JST-9", "time.cloudflare.com");
       break;
     case 1:
-      configTime("JST-9", "ntp.nict.jp");
+      configTime(9 * 3600L, 0, "JST-9", "ntp.nict.jp");
       break;
     case 2:
-      configTime("JST-9", "ntp.jst.mfeed.ad.jp");
+      configTime(9 * 3600L, 0, "JST-9", "ntp.jst.mfeed.ad.jp");
       break;
     default:
       break;

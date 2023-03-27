@@ -52,7 +52,7 @@ void SYSCTL_Init(void) {
   call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPICSPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIClockPin(), OUTPUT);
-  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN_16);
+  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN);
 
   // LED のセットアップを行う
   LED_Task_Init();

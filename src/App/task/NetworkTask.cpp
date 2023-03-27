@@ -14,6 +14,9 @@ static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水�
 static String gsstr_wifi_ssid = "";
 static String gsstr_wifi_passwd = "";
 static String gsstr_wifi_device_name = "";
+static uint8_t gsu8_network_connection_need = m_ON;  // ネットワーク接続が必要かどうか
+                                                     // ON時は接続して通信する。通信終了後OFFにして、一定時間後に切断する
+static uint8_t gsu8_network_disconnect_cnt = 0;  // ネットワーク切断までのカウンタ
 
 // プロトタイプ宣言
 static void Network_Task_AP_EntryPoint_root(void);
@@ -24,6 +27,7 @@ static void Network_Task_Select_NTP_Server_Randomly(void);
 static void Network_Task_SubTaskClock(const struct tm *tm);
 static void Network_Task_SubTaskDate(const struct tm *tm);
 static void Network_Task_SubTaskMsg(void);
+static void Network_Task_DiscoonectWiFi(void);
 
 // 関数定義
 /**
@@ -132,9 +136,15 @@ void Network_Task_Main(void) {
   } else if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
           || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
     /* Check Date,Time */
-    if (last_mday == -1 || last_mday != tm->tm_mday) {  // Date changed
+    if (last_mday == -1 || last_mday != tm->tm_mday) {  // Date changed ※2つ目の条件は機能していなさそう
       // Routines which run only one time each day
-      Network_Task_Select_NTP_Server_Randomly();
+      if (WiFi.status() == WL_CONNECTED) {
+        Network_Task_Select_NTP_Server_Randomly();
+        gsu8_network_connection_need = m_OFF;
+      } else {
+        WiFi.begin(gsstr_wifi_ssid, gsstr_wifi_passwd);
+        gsu8_network_connection_need = m_ON;
+      }
     }
 
     t = time(NULL);
@@ -148,6 +158,9 @@ void Network_Task_Main(void) {
     
     /* Message From StatusBoard */
     Network_Task_SubTaskMsg();
+
+    /* Dissconnect WiFI if not needed */
+    Network_Task_DiscoonectWiFi();
 
     last_mday = tm->tm_mday;
   }
@@ -256,6 +269,16 @@ static void Network_Task_SubTaskMsg(void) {
   // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
+static void Network_Task_DiscoonectWiFi(void) {
+  // 一定時間接続がない場合は、WiFiを切断する
+  ++gsu8_network_disconnect_cnt;
+  M_CLIP_MAX(gsu8_network_disconnect_cnt, UINT8_MAX-1);
+  if ((gsu8_network_disconnect_cnt > 100)
+    && (WiFi.status() == WL_CONNECTED)) {
+    WiFi.disconnect();
+    gsu8_network_disconnect_cnt = 0;
+  }
+}
 
 String GET_Network_WiFi_SSID(void) {
   return gsstr_wifi_ssid;

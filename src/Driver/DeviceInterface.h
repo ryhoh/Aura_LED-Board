@@ -6,8 +6,17 @@
 #ifdef ARDUINO
 #include <Arduino.h>
 #include <EEPROM.h>
+#endif
+
+#ifdef EPS8266
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#endif
+
+#ifdef ESP32
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
 #endif
 
 /* デバイスの差異を吸収する共通の関数群 */

@@ -8,6 +8,8 @@
 // includes
 #include "NVM.h"
 
+#define NVM_DEBUG (1)
+
 // variables
 static String gsstr_NVM_SSID;  // SSID
 static String gsstr_NVM_PASSWD;  // PASSWD
@@ -22,6 +24,15 @@ static String NVM_ReadString(uint32_t begin_addr, uint32_t end_addr);
 void NVM_Init(void) {
   // EEPROMの初期化
   call_nvm_init(m_NVM_SIZE);
+
+  #if NVM_DEBUG
+  Set_NVM_SSID("");
+  Set_NVM_PASSWD("");
+  Set_NVM_HostName("");
+  const char ci8_variant_idx = 0;
+  call_nvm_write(m_NVM_ADDR_VARIANT_IDX, (char*)(&ci8_variant_idx), 1);
+  #endif  /* NVM_DEBUG */
+
 
   // EEPROMのデータをRAMに展開
   gsstr_NVM_SSID = NVM_ReadString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+31);

@@ -1,41 +1,46 @@
-#ifndef _STATUS_CLIENT_H_
-#define _STATUS_CLIENT_H_
+// #ifndef _STATUS_CLIENT_H_
+// #define _STATUS_CLIENT_H_
 
-#ifdef ESP8266
+// #if defined ESP8266 || defined ESP32
 
-#include <Arduino.h>
-#include <stdint.h>
-#include <ESP8266WiFi.h>
+// #include <Arduino.h>
+// #include <stdint.h>
 
-const int32_t INTERVAL_S = 30;
+// #ifdef ESP8266
+// #include <ESP8266WiFi.h>
+// #elif defined ESP32
+// #include <WiFi.h>
+// #endif
 
-enum StatusClientResult {
-  SUCCESS,
-  SKIP,
-  FAILURE_CONNECTION,
-  FAILURE_NTP_NOT_SYNC
-};
+// const int32_t INTERVAL_S = 30;
 
-struct StatusClientOption {
-  String retval;  ///< A value what we want to obtain with the function.
-  StatusClientResult result;  ///< SUCCESS or FAILURE
+// enum StatusClientResult {
+//   SUCCESS,
+//   SKIP,
+//   FAILURE_CONNECTION,
+//   FAILURE_NTP_NOT_SYNC
+// };
 
-  bool ok() {
-    return (result == StatusClientResult::SUCCESS || result == StatusClientResult::SKIP);
-  }
+// struct StatusClientOption {
+//   String retval;  ///< A value what we want to obtain with the function.
+//   StatusClientResult result;  ///< SUCCESS or FAILURE
 
-  bool skipped() {
-    return result == StatusClientResult::SKIP;
-  }
-};
+//   bool ok() {
+//     return (result == StatusClientResult::SUCCESS || result == StatusClientResult::SKIP);
+//   }
 
-/**
- * @brief 自身の生存を Status-Board に伝える
- * @param name [in] 自身を表すデバイス名
- * @retval STATUS_CLIENT_STATUS_CODE 成功したかどうか
- * @note ある程度時刻合わせをしてから呼び出すこと（NTPなどで）
-*/
-StatusClientOption postStatusToBoard(String name);
+//   bool skipped() {
+//     return result == StatusClientResult::SKIP;
+//   }
+// };
 
-#endif  /* ESP8266 */
-#endif  /* _STATUS_CLIENT_H_ */
+// /**
+//  * @brief 自身の生存を Status-Board に伝える
+//  * @param name [in] 自身を表すデバイス名
+//  * @retval STATUS_CLIENT_STATUS_CODE 成功したかどうか
+//  * @note ある程度時刻合わせをしてから呼び出すこと（NTPなどで）
+// */
+// StatusClientOption postStatusToBoard(String name);
+
+// #endif  /* ESP8266 */
+// #endif  /* _STATUS_CLIENT_H_ */

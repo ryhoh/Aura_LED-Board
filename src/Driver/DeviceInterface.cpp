@@ -63,11 +63,7 @@ void call_nvm_write(int32_t begin_addr, const char buf[], uint32_t size) {
   if (end_addr > (int32_t)drv_eeprom_max_size + 1) {
       end_addr = drv_eeprom_max_size + 1;
   }
-  Serial.begin(115200);
-  Serial.println(String(begin_addr) + String(" ") + String(end_addr));
   for (int32_t addr = begin_addr; addr < end_addr; addr++) {
-    Serial.println(String(addr) + String(" ") + String(buf[addr - begin_addr]));
-    Serial.flush();
     EEPROM.write(addr, buf[addr - begin_addr]);
   }
 }

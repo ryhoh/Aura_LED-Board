@@ -12,9 +12,9 @@
 // 変数宣言
 static const Variant_t gscst_variant_tbl[m_VARIANT_TABLE_SIZE] = {
   /* Type Name                                       , Machine Name    , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, Lamp Pin, Brightness                  , dummy    */
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-001A1 ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-002A1 ",          8,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-003A1 ",         12,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-001A1 ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-002A1 ",          8,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-003A1 ",         12,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
 };
 
 // プロトタイプ宣言

@@ -31,7 +31,7 @@ static void SYSCTL_Do_Drive(void);
 
 // 状態遷移テーブル
 static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITION_NUM] = {
-  /* Judge                       Entry                        Do                  Exit */
+  /* Judge                       Entry                        Do                    Exit */
   { NULL,                        NULL,                        NULL,                 NULL },  // (PowerOn)
   { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL,                 NULL },  // PowerOn      -> LEDReady
   { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     &SYSCTL_Do_Configure, NULL },  // LEDReady     -> Configure
@@ -68,20 +68,11 @@ void SYSCTL_Init(void) {
  * 
  */
 void Main_Task(void) {
-  static uint32_t step = 0;
-  const uint32_t cu32_network_substep = m_SYSCTL_CALL_ITVL_NETWORK / m_SYSCTL_CALL_ITVL;
-
   // システム制御タスク
   SYSCTL_SystemControl_Task_Main();
   
   // LEDタスクは毎回実行
   LED_Task_Main();
-
-  // step を進める
-  step++;
-  if (step >= cu32_network_substep) {
-    step = 0;
-  }
 }
 
 /**

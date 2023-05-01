@@ -174,13 +174,13 @@ static void Network_Task_Select_NTP_Server_Randomly(void) {
   uint8_t u8_random = call_randint(3);
   switch (u8_random) {
     case 0:
-      configTime(9 * 3600L, 0, "JST-9", "time.cloudflare.com");
+      configTime(9 * 3600L, 0, "time.cloudflare.com");
       break;
     case 1:
-      configTime(9 * 3600L, 0, "JST-9", "ntp.nict.jp");
+      configTime(9 * 3600L, 0, "ntp.nict.jp");
       break;
     case 2:
-      configTime(9 * 3600L, 0, "JST-9", "ntp.jst.mfeed.ad.jp");
+      configTime(9 * 3600L, 0, "ntp.jst.mfeed.ad.jp");
       break;
     default:
       break;

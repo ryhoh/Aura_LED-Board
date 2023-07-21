@@ -22,19 +22,21 @@ static void SYSCTL_Judge_LED_Ready(void);
 static void SYSCTL_Entry_LED_Ready(void);
 static void SYSCTL_Judge_Configure(void);
 static void SYSCTL_Entry_Configure(void);
+static void SYSCTL_Do_Configure(void);
 static void SYSCTL_Judge_Network_Ready(void);
 static void SYSCTL_Entry_Network_Ready(void);
 static void SYSCTL_Judge_Drive(void);
 static void SYSCTL_Entry_Drive(void);
+static void SYSCTL_Do_Drive(void);
 
 // 状態遷移テーブル
 static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITION_NUM] = {
-  /* Judge                       Entry                        Do                  Exit */
-  { NULL,                        NULL,                        NULL, NULL },  // (PowerOn)
-  { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL, NULL },  // PowerOn      -> LEDReady
-  { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     NULL, NULL },  // LEDReady     -> Configure
-  { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL, NULL },  // LEDReady     -> NetworkReady
-  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         NULL, NULL },  // NetworkReady -> Drive
+  /* Judge                       Entry                        Do                    Exit */
+  { NULL,                        NULL,                        NULL,                 NULL },  // (PowerOn)
+  { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL,                 NULL },  // PowerOn      -> LEDReady
+  { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     &SYSCTL_Do_Configure, NULL },  // LEDReady     -> Configure
+  { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL,                 NULL },  // LEDReady     -> NetworkReady
+  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         &SYSCTL_Do_Drive,     NULL },  // NetworkReady -> Drive
 };
 
 // 関数定義
@@ -43,12 +45,15 @@ static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITI
  * 
  */
 void SYSCTL_Init(void) {
+  // NVMの初期化
+  NVM_Init();
+
   // ピンモード設定
   call_pinMode(Get_VARIANT_LampPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPICSPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIClockPin(), OUTPUT);
-  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN_16);
+  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN);
 
   // LED のセットアップを行う
   LED_Task_Init();
@@ -63,27 +68,11 @@ void SYSCTL_Init(void) {
  * 
  */
 void Main_Task(void) {
-  static uint32_t step = 0;
-  const uint32_t cu32_network_substep = m_SYSCTL_CALL_ITVL_NETWORK / m_SYSCTL_CALL_ITVL;
-  // Serial.println(gsu8_SYSCTL_SystemState);
-  // Serial.flush();
-
   // システム制御タスク
   SYSCTL_SystemControl_Task_Main();
-
-  // ネットワークタスクは320msごとなので、分周で実行
-  // if (step % cu32_network_substep == 0) {
-  //   Network_Task_Main();
-  // }
-
+  
   // LEDタスクは毎回実行
   LED_Task_Main();
-
-  // step を進める
-  step++;
-  if (step >= cu32_network_substep) {
-    step = 0;
-  }
 }
 
 /**
@@ -104,7 +93,6 @@ static void SYSCTL_SystemControl_Task_Main(void) {
  */
 static void SYSCTL_State_Control(void) {
   const uint8_t cu8_old_state = gsu8_SYSCTL_SystemState;
-
   // 状態遷移判定
   // テーブルは優先度の高い順で定義されており、チェックは低いものから順に実施する
   for (int8_t i8_i = m_SYSCTL_STATE_TRANSITION_NUM - 1; i8_i >= 0; --i8_i) {
@@ -134,12 +122,9 @@ static void SYSCTL_State_Control(void) {
 }
 
 static void SYSCTL_Judge_LED_Ready(void) {
-  // 遷移条件は、(現在PowerOn状態 && LEDタスクがセットアップ完了 && モードピン=HIGHであること)
-  const uint8_t cu8_mode_pin = Get_VARIANT_ModePin();
-  const int32_t i32_mode = call_digitalRead(cu8_mode_pin);
+  // 遷移条件は、(現在PowerOn状態 && LEDタスクがセットアップ完了であること)
   if ((gsu8_SYSCTL_SystemState == m_SYSCTL_STATE_POWER_ON)
-    && (gsu8_is_LED_setup_done == m_ON)
-    && (i32_mode == HIGH)) {
+    && (gsu8_is_LED_setup_done == m_ON)) {
     // 遷移先状態を設定
     gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_LED_READY;
   }
@@ -161,6 +146,10 @@ static void SYSCTL_Judge_Configure(void) {
 }
 
 static void SYSCTL_Entry_Configure(void) {
+  Network_Task_Init_APMode();
+}
+
+static void SYSCTL_Do_Configure(void) {
   // wip
 }
 
@@ -188,6 +177,15 @@ static void SYSCTL_Judge_Drive(void) {
 static void SYSCTL_Entry_Drive(void) {
   // wip
   LED_Task_FirstTimeToRunningState();
+}
+
+static void SYSCTL_Do_Drive(void) {
+  static uint8_t u8_cnt = 0;
+  ++u8_cnt;
+  M_CLIP_MAX(u8_cnt, UINT8_MAX-1);
+  if (u8_cnt > 100) {
+    WiFi.disconnect();
+  }
 }
 
 /**
@@ -249,18 +247,6 @@ void Set_SYSCTL_NetworkSetupState(uint8_t u8_done) {
     gsu8_is_network_setup_done = u8_done;
 }
 
-// uint8_t *Get_SYSCTL_SetupState(void) {
-//     return &gsu8_is_setup_state;
-// }
-
 uint8_t Get_SYSCTL_SystemState(void) {
     return gsu8_SYSCTL_SystemState;
 }
-
-// uint8_t *Get_SYSCTL_NetworkSetupState(void) {
-//   if (gsu8_is_network_setup_done == m_ON) {
-//     return m_OFF;
-//   } else {
-//     return m_ON;
-//   }
-// }

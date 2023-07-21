@@ -13,6 +13,7 @@
 #include "App/Common.h"
 #include "App/task/LEDTask.h"
 #include "App/task/NetworkTask.h"
+#include "App/nvm/NVM.h"
 
 // マクロ定義
 #define m_SYSCTL_CALL_ITVL (16)  // [ms,1]

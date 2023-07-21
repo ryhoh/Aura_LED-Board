@@ -10,7 +10,6 @@
 
 
 // インクルード
-#include <ESP8266WiFi.h>
 #include "Driver/DeviceInterface.h"
 #include "App/Common.h"
 #include "App/variant/Variant.h"
@@ -24,12 +23,16 @@
 #define m_NETWORK_TASK_TIME_LEFT_OFFSET (9)
 #define m_NETWORK_TASK_DATE_LEFT_OFFSET (1)
 
+#define m_NETWORK_TASK_AP_PASSWD (String("luminous-ryhoh"))
+#define m_NETWORK_TASK_AP_IP (IPAddress(192, 168, 1, 1))
+#define m_NETWORK_TASK_AP_GATEWAY (IPAddress(192, 168, 1, 10))
+#define m_NETWORK_TASK_AP_SUBNET (IPAddress(255, 255, 255, 0))
+
 // プロトタイプ宣言
 void Network_Task_Init(void);
+void Network_Task_Init_APMode(void);
 void Network_Task_Main(void);
-// uint8_t GET_NetWork_Task_NetworkSetupState(void);
 uint8_t GET_Network_Task_Blocking(void);
 String GET_Network_WiFi_SSID(void);
-// String GET_Network_Task_LastMessage(void);
 
 #endif  /* _NETWORKTASK_H_ */

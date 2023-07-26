@@ -35,6 +35,7 @@ typedef struct _DisplayInfo {
 void LED_Task_Init(void);
 void LED_Task_FirstTimeToRunningState(void);
 void LED_Task_Main(void);
+uint8_t GET_LED_Task_Setup_Done(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void);

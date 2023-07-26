@@ -9,7 +9,6 @@
 #include "SystemControl.h"
 
 // 変数宣言
-static uint8_t gsu8_is_LED_setup_done = m_OFF;  // LEDセットアップ完了フラグ
 static uint8_t gsu8_is_network_setup_done = m_OFF;  // ネットワークセットアップ完了フラグ
 static uint8_t gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_POWER_ON;  // システム制御状態
 
@@ -122,9 +121,11 @@ static void SYSCTL_State_Control(void) {
 }
 
 static void SYSCTL_Judge_LED_Ready(void) {
+  const uint8_t cu8_is_LED_setup_done = GET_LED_Task_Setup_Done();
+
   // 遷移条件は、(現在PowerOn状態 && LEDタスクがセットアップ完了であること)
   if ((gsu8_SYSCTL_SystemState == m_SYSCTL_STATE_POWER_ON)
-    && (gsu8_is_LED_setup_done == m_ON)) {
+    && (cu8_is_LED_setup_done == m_ON)) {
     // 遷移先状態を設定
     gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_LED_READY;
   }
@@ -194,54 +195,54 @@ static void SYSCTL_Do_Drive(void) {
  * 
  * @param u8_level 
  */
-void SYSCTL_WaitForBlockingLevel(uint8_t u8_level) {
-  uint8_t u8_blocked = m_ON;
+// void SYSCTL_WaitForBlockingLevel(uint8_t u8_level) {
+//   uint8_t u8_blocked = m_ON;
 
-  // レベルが範囲外の場合は何もしない
-  if (u8_level >= m_SYSCTL_BLOCKING_LEVEL_NUM) {
-    return;
-  }
+//   // レベルが範囲外の場合は何もしない
+//   if (u8_level >= m_SYSCTL_BLOCKING_LEVEL_NUM) {
+//     return;
+//   }
 
-  while (u8_blocked == m_ON) {
-    // 割り込み禁止されているか確認
-    u8_blocked = m_OFF;
-    for (uint8_t i = 0; i <= u8_level; i++) {
-      if (gsu8_SYSCTL_Blocking_Flags[i] == m_ON) {
-        u8_blocked = m_ON;
-        break;
-      }
-    }
+//   while (u8_blocked == m_ON) {
+//     // 割り込み禁止されているか確認
+//     u8_blocked = m_OFF;
+//     for (uint8_t i = 0; i <= u8_level; i++) {
+//       if (gsu8_SYSCTL_Blocking_Flags[i] == m_ON) {
+//         u8_blocked = m_ON;
+//         break;
+//       }
+//     }
 
-    // 割り込み禁止されている場合は待機
-    call_usleep(100);
-  }
-}
+//     // 割り込み禁止されている場合は待機
+//     call_usleep(100);
+//   }
+// }
 
-/**
- * @brief 割り込み禁止レベルを設定する
- * 
- * @param u8_level 禁止レベル
- */
-void Set_SYSCTL_Blocking_Level(uint8_t u8_level) {
-  if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
-    gsu8_SYSCTL_Blocking_Flags[u8_level] = m_ON;
-  }
-}
+// /**
+//  * @brief 割り込み禁止レベルを設定する
+//  * 
+//  * @param u8_level 禁止レベル
+//  */
+// void Set_SYSCTL_Blocking_Level(uint8_t u8_level) {
+//   if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
+//     gsu8_SYSCTL_Blocking_Flags[u8_level] = m_ON;
+//   }
+// }
 
-/**
- * @brief 割り込み禁止レベルを解除する
- * 
- * @param u8_level 禁止レベル
- */
-void Unset_SYSCTL_Blocking_Level(uint8_t u8_level) {
-  if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
-    gsu8_SYSCTL_Blocking_Flags[u8_level] = m_OFF;
-  }
-}
+// /**
+//  * @brief 割り込み禁止レベルを解除する
+//  * 
+//  * @param u8_level 禁止レベル
+//  */
+// void Unset_SYSCTL_Blocking_Level(uint8_t u8_level) {
+//   if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
+//     gsu8_SYSCTL_Blocking_Flags[u8_level] = m_OFF;
+//   }
+// }
 
-void Set_SYSCTL_LEDSetupState(uint8_t u8_done) {
-    gsu8_is_LED_setup_done = u8_done;
-}
+// void Set_SYSCTL_LEDSetupState(uint8_t u8_done) {
+//     gsu8_is_LED_setup_done = u8_done;
+// }
 
 void Set_SYSCTL_NetworkSetupState(uint8_t u8_done) {
     gsu8_is_network_setup_done = u8_done;

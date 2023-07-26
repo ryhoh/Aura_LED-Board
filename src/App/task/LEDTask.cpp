@@ -25,14 +25,16 @@ static DisplayInfo_t gsst_displayInfo_msg = DisplayInfo_t {
 static MatrixLED matrixLEDs_clock[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 時計表示用
 static MatrixLED matrixLEDs_date[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 日付表示用
 static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセージ表示用
-static MatrixLED *matrixLEDs_output = matrixLEDs_msg;  // 出力用
+static MatrixLED matrixLEDs_output[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 出力用
 static Max7219 gsst_max7219;
+static uint8_t gsu8_is_LED_setup_done = m_OFF;  // LEDセットアップ完了フラグ
 
 // プロトタイプ宣言
 static void LED_Task_ConfigureDisplayData(void);
 static void LED_Task_ScrollLoop(const String str_msg);
 static void LED_Task_RunningState(void);
 static void LED_Task_SubTaskClock(void);
+static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src);
 static void LED_Task_SubTaskDate(void);
 static void LED_Task_OutputMain(void);
 static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
@@ -56,6 +58,9 @@ void LED_Task_Init(void) {
     matrixLEDs_msg[u8_i].height = 8;
     matrixLEDs_msg[u8_i].width = 8;
     matrixLEDs_msg[u8_i].fill(0);
+    matrixLEDs_output[u8_i].height = 8;
+    matrixLEDs_output[u8_i].width = 8;
+    matrixLEDs_output[u8_i].fill(0);
   }
 
   // MAX7219初期化
@@ -70,7 +75,7 @@ void LED_Task_Init(void) {
   gsst_max7219.flushMatrixLEDs(matrixLEDs_msg, cu8_matrix_num);
 
   // LEDセットアップ完了を報告
-  Set_SYSCTL_LEDSetupState(m_ON);
+  gsu8_is_LED_setup_done = m_ON;
 }
 
 /**
@@ -187,7 +192,18 @@ static void LED_Task_SubTaskClock(void) {
     gsst_displayInfo_clock.str_to_display.c_str(),
     gsst_displayInfo_clock.u32_offset_from_left
   );
-  matrixLEDs_output = matrixLEDs_clock;
+  
+  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_clock);
+}
+
+/**
+ * @brief matrixLEDs バッファのコピー
+ * 
+ */
+static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src) {
+  for (uint8_t u8_i = 0; u8_i < m_PROFILE_MAX_DESIGNED_PANEL_NUM; ++u8_i) {
+    dst[u8_i] = src[u8_i];
+  }
 }
 
 /**
@@ -207,7 +223,8 @@ static void LED_Task_SubTaskDate(void) {
     gsst_displayInfo_date.str_to_display.c_str(),
     gsst_displayInfo_date.u32_offset_from_left
   );
-  matrixLEDs_output = matrixLEDs_date;
+  
+  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_date);
 }
 
 /**
@@ -245,7 +262,8 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
   uint8_t u8_step_ended;
 
-  u8_step_ended = writeScrollJIS(matrixLEDs_output, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
+  u8_step_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
+  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_msg);
   return u8_step_ended;
 }
 
@@ -256,6 +274,14 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
 static void LED_Task_OutputMain(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
   gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
+}
+
+/**
+ * インタフェース
+ * 
+ */
+uint8_t GET_LED_Task_Setup_Done(void) {
+  return gsu8_is_LED_setup_done;
 }
 
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void) {

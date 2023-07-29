@@ -23,12 +23,26 @@ graph LR;
   subgraph LEDTask
     direction LR
 
-    gsst_displayInfo_clock.u32_offset_from_left:::VAR;
-    gsst_displayInfo_clock.str_to_display:::VAR;
-    gsst_displayInfo_date.u32_offset_from_left:::VAR;
-    gsst_displayInfo_date.str_to_display:::VAR;
-    gsst_displayInfo_msg.u32_offset_from_left:::VAR;
-    gsst_displayInfo_msg.str_to_display:::VAR;
+      subgraph gsst_displayInfo_clock
+        direction TB
+
+        gsst_displayInfo_clock.u32_offset_from_left:::VAR;
+        gsst_displayInfo_clock.str_to_display:::VAR;
+      end
+
+      subgraph gsst_displayInfo_date
+        direction TB
+
+        gsst_displayInfo_date.u32_offset_from_left:::VAR;
+        gsst_displayInfo_date.str_to_display:::VAR;
+      end
+
+      subgraph gsst_displayInfo_msg
+        direction TB
+
+        gsst_displayInfo_msg.u32_offset_from_left:::VAR;
+        gsst_displayInfo_msg.str_to_display:::VAR;
+      end
 
     gsu8_is_LED_setup_done:::VAR;
   end
@@ -44,9 +58,9 @@ graph LR;
   subgraph NetworkTask
     direction LR
 
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_ssid:::VAR;
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_passwd:::VAR;
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_device_name:::VAR;
+    gsstr_wifi_ssid:::VAR;
+    gsstr_wifi_passwd:::VAR;
+    gsstr_wifi_device_name:::VAR;
   end
 
 
@@ -96,6 +110,10 @@ graph LR;
 
   subgraph NetworkTask
     direction LR
+
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_ssid:::VAR;
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_passwd:::VAR;
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_device_name:::VAR;
 
     Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
     Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsstr_NVM_SSID:::VAR;

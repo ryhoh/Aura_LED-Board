@@ -9,6 +9,7 @@
 #define _MW_PUB_H_
 
 // includes
+#include "MW/Common.h"
 #include "MW/led/MatrixLED.h"
 #include "MW/led/LEDControllers.h"
 

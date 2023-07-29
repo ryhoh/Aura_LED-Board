@@ -16,11 +16,11 @@ int main(int argc, char **argv) {
 
   uint32_t count = 0;
   while (true) {
-    if (count % 16 == 0) {
+    if (count % MW_LEDTASK_DURATION_MS == 0) {
       Main_Task();
     }
 
-    if (count % 320 == 0) {
+    if (count % MW_MAINTASK_DURATION_MS == 0) {
       Network_Task_Main();
     }
 

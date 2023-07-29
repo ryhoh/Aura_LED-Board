@@ -11,21 +11,23 @@
 
 // 変数宣言
 static const Variant_t gscst_variant_tbl[m_VARIANT_TABLE_SIZE] = {
-  /* Type Name                                       , Machine Name    , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, Lamp Pin, Brightness                  , dummy    */
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-001A1 ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-002A1 ",          8,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { { 0x4C, 0x55, 0x2D, 0x41, 0x31 } /* "LU-A1"   */ , "LU-LEDB-003A1 ",         12,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  /* Machine Name        , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, Lamp Pin, Brightness                  , dummy    */
+  { "LU-LEDB-0001A1     ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0002A1     ",          8,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0003A1     ",         12,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0102A1     ",          8,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
 };
 
 // プロトタイプ宣言
 static uint32_t VARIANT_GetVariantIndex();
 
 // 関数定義
-// const char *Get_VARIANT_TypeName(void) {
-//   const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-//   return gscst_variant_tbl[cu32_selected_variant_idx].i8_type_name;
-// }
-
 const char *Get_VARIANT_MachineName(void) {
   const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
   return gscst_variant_tbl[cu32_selected_variant_idx].i8_machine_name;

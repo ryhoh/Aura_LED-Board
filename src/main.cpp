@@ -10,10 +10,10 @@ Ticker ticker;
 
 void setup() {
   SYSCTL_Init();
-  ticker.attach_ms(16, Main_Task);
+  ticker.attach_ms(MW_LEDTASK_DURATION_MS, Main_Task);
 }
 
 void loop() {
   Network_Task_Main();
-  delay(320);
+  delay(MW_MAINTASK_DURATION_MS);
 }

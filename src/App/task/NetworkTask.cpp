@@ -34,14 +34,9 @@ static void Network_Task_SubTaskMsg(void);
  */
 void Network_Task_Init(void) {
   // ssid はNVMから読み込む
-  char u8_buffer[31] = { 0 }; 
-  EEPROM.get(0x00, u8_buffer);
-  gsstr_wifi_ssid = String(u8_buffer);
-  EEPROM.get(0x20, u8_buffer);
-  gsstr_wifi_passwd = String(u8_buffer);
-  EEPROM.get(0x40, u8_buffer);
-  gsstr_wifi_device_name = String(u8_buffer);
-
+  char u8_buffer[31] = { 0 };
+  gsstr_wifi_ssid = Get_NVM_SSID();
+  gsstr_wifi_passwd = Get_NVM_PASSWD();
   WiFi.mode(WIFI_STA);
   WiFi.begin(gsstr_wifi_ssid.c_str(), gsstr_wifi_passwd.c_str());
 }
@@ -61,8 +56,13 @@ void Network_Task_Init_APMode(void) {
   const IPAddress ip = WiFi.softAPIP();
 
   GET_LED_Task_DisplayInfoMsg()->str_to_display
+#ifdef SIMULATOR
+    = std::string("AP:") + cstr_ap_ssid
+    + std::string(" ") + (std::to_string(ip[0]) + "." + std::to_string(ip[1]) + "." + std::to_string(ip[2]) + "." + std::to_string(ip[3]));
+#else
     = String("AP:") + cstr_ap_ssid
     + String(" ") + (String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]));
+#endif
 
   gsst_webserver.on("/", HTTP_GET, Network_Task_AP_EntryPoint_root);
   gsst_webserver.on("/submit", HTTP_POST, Network_Task_AP_EntryPoint_submit);

@@ -11,6 +11,8 @@ graph LR;
     direction LR
 
     gscst_variant_tbl:::PARA;
+    gsu8_variant_idx:::VAR;
+    gsst_selected_variant:::VAR;
   end
 
   subgraph SystemControl
@@ -50,17 +52,39 @@ graph LR;
   subgraph NVM
     direction LR
 
-    gsstr_NVM_SSID:::VAR;
-    gsstr_NVM_PASSWD:::VAR;
-    gsstr_NVM_hostname:::VAR;
+    subgraph gsst_NVM_NetworkConfig
+      direction TB
+    
+      gsst_NVM_NetworkConfig.str_ssid:::VAR;
+      gsst_NVM_NetworkConfig.str_passwd:::VAR;
+      gsst_NVM_NetworkConfig.str_hostname:::VAR;
+    end
+
+    gsu8_NVM_variant_idx:::VAR;
   end
 
-  subgraph NetworkTask
+  subgraph NetworkAPControl
     direction LR
 
-    gsstr_wifi_ssid:::VAR;
-    gsstr_wifi_passwd:::VAR;
-    gsstr_wifi_device_name:::VAR;
+    subgraph gsst_NetworkAP_Network_Config
+      direction TB
+
+      gsst_NetworkAP_Network_Config.str_ssid:::VAR;
+      gsst_NetworkAP_Network_Config.str_passwd:::VAR;
+      gsst_NetworkAP_Network_Config.str_hostname:::VAR;
+    end
+  end
+
+  subgraph NetworkSTAControl
+    direction LR
+
+    subgraph gsst_Network_Config
+      direction TB
+
+      gsst_Network_Config.str_ssid:::VAR;
+      gsst_Network_Config.str_passwd:::VAR;
+      gsst_Network_Config.str_hostname:::VAR;
+    end
   end
 
 
@@ -76,7 +100,7 @@ graph LR;
     gsu8_SYSCTL_SystemState:::VAR --> SYSCTL_Entry_LED_Ready(SYSCTL_Entry_LED_Ready):::FUNC;
     SYSCTL_Entry_LED_Ready(SYSCTL_Entry_LED_Ready):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
 
-    gscst_variant_tbl:::PARA -- Get_VARIANT_ModePin --> SYSCTL_Judge_Configure(SYSCTL_Judge_Configure):::FUNC;
+    gsst_selected_variant:::VAR -- Get_VARIANT_ModePin --> SYSCTL_Judge_Configure(SYSCTL_Judge_Configure):::FUNC;
     gsu8_SYSCTL_SystemState:::VAR --> SYSCTL_Judge_Configure(SYSCTL_Judge_Configure):::FUNC;
     SYSCTL_Judge_Configure(SYSCTL_Judge_Configure):::FUNC --> gsu8_SYSCTL_SystemState:::VAR;
 
@@ -101,24 +125,38 @@ graph LR;
     matrixLEDs_msg:::VAR --> LED_Task_SubTaskMsg_SubRoutine(LED_Task_SubTaskMsg_SubRoutine):::FUNC --> matrixLEDs_output;
 
     gsu8_SYSCTL_SystemState -- Get_SYSCTL_SystemState --> LED_Task_ConfigureDisplayData(LED_Task_ConfigureDisplayData):::FUNC;
-    gsstr_wifi_ssid -- GET_Network_WiFi_SSID --> LED_Task_ConfigureDisplayData(LED_Task_ConfigureDisplayData):::FUNC;
+    gsst_Network_Config.str_ssid -- GET_Network_WiFi_SSID --> LED_Task_ConfigureDisplayData(LED_Task_ConfigureDisplayData):::FUNC;
     LED_Task_ConfigureDisplayData(LED_Task_ConfigureDisplayData):::FUNC .- LED_Task_ConfigureDisplayData.str_msg[str_msg]:::ARG .-> LED_Task_ScrollLoop(LED_Task_ScrollLoop):::FUNC;
     LED_Task_ScrollLoop(LED_Task_ScrollLoop):::FUNC .- LED_Task_ScrollLoop.str_msg[str_msg]:::ARG .-> LED_Task_SubTaskMsg(LED_Task_SubTaskMsg):::FUNC;
     LED_Task_SubTaskMsg(LED_Task_SubTaskMsg):::FUNC .- LED_Task_SubTaskMsg.str_msg[str_msg]:::ARG .-> LED_Task_SubTaskMsg_SubRoutine(LED_Task_SubTaskMsg_SubRoutine):::FUNC;
-    gscst_variant_tbl:::PARA -- Get_VARIANT_MatrixNum --> LED_Task_SubTaskMsg_SubRoutine(LED_Task_SubTaskMsg_SubRoutine):::FUNC;
+    gsst_selected_variant:::VAR -- Get_VARIANT_MatrixNum --> LED_Task_SubTaskMsg_SubRoutine(LED_Task_SubTaskMsg_SubRoutine):::FUNC;
   end
 
-  subgraph NetworkTask
+  subgraph NetworkAPControl
     direction LR
 
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_ssid:::VAR;
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_passwd:::VAR;
-    Network_Task_Init(Network_Task_Init):::FUNC --> gsstr_wifi_device_name:::VAR;
+    gsst_NVM_NetworkConfig -- Get_NVM_Network_Config --> Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC;
+    
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_ssid:::VAR;
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_passwd:::VAR;
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_hostname:::VAR;
+
+    gsst_NetworkAP_Network_Config --> Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC;
 
     Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
-    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsstr_NVM_SSID:::VAR;
-    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsstr_NVM_PASSWD:::VAR;
+    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_NVM_NetworkConfig;
     Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR
+
+  end
+
+  subgraph NetworkSTAControl
+    direction LR
+
+    gsst_NVM_NetworkConfig -- Get_NVM_Network_Config --> Network_Task_Init(Network_Task_Init):::FUNC;
+
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsst_Network_Config.str_ssid:::VAR;
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsst_Network_Config.str_passwd:::VAR;
+    Network_Task_Init(Network_Task_Init):::FUNC --> gsst_Network_Config.str_hostname:::VAR;
 
     gsu8_SYSCTL_SystemState -- Get_SYSCTL_SystemState --> Network_Task_Main(Network_Task_Main):::FUNC;
     Network_Task_Main(Network_Task_Main):::FUNC .- Network_Task_Main_a[tm]:::ARG .-> Network_Task_SubTaskClock(Network_Task_SubTaskClock):::FUNC;
@@ -131,6 +169,22 @@ graph LR;
     Network_Task_SubTaskDate(Network_Task_SubTaskDate):::FUNC --> gsst_displayInfo_date.str_to_display:::VAR;
     Network_Task_SubTaskMsg(Network_Task_SubTaskMsg):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
     
+  end
+
+  subgraph NVM
+    direction LR
+
+    NVM_Init(NVM_Init):::FUNC --> gsst_NVM_NetworkConfig.str_ssid:::VAR;
+    NVM_Init(NVM_Init):::FUNC --> gsst_NVM_NetworkConfig.str_passwd:::VAR;
+    NVM_Init(NVM_Init):::FUNC --> gsst_NVM_NetworkConfig.str_hostname:::VAR;
+    NVM_Init(NVM_Init):::FUNC --> gsu8_NVM_variant_idx:::VAR;
+  end
+
+  subgraph Variant
+    direction LR
+
+    gsu8_NVM_variant_idx:::VAR -- Get_NVM_Variant_idx --> Variant_Init(Variant_Init):::FUNC --> gsu8_variant_idx:::VAR;
+    gscst_variant_tbl:::PARA --> Variant_Init(Variant_Init):::FUNC --> gsst_selected_variant:::VAR;
   end
 
   

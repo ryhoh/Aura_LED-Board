@@ -17,11 +17,11 @@ int main(int argc, char **argv) {
   uint32_t count = 0;
   while (true) {
     if (count % MW_LEDTASK_DURATION_MS == 0) {
-      Main_Task();
+      SYSCTL_Priority_Task_Main();
     }
 
     if (count % MW_MAINTASK_DURATION_MS == 0) {
-      Network_Task_Main();
+      SYSCTL_Background_Task_Main();
     }
 
     // 画面表示

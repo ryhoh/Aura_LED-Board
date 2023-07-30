@@ -47,6 +47,9 @@ void SYSCTL_Init(void) {
   // NVMの初期化
   NVM_Init();
 
+  // バリアント設定
+  Variant_Init();
+
   // ピンモード設定
   call_pinMode(Get_VARIANT_LampPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);
@@ -66,7 +69,7 @@ void SYSCTL_Init(void) {
  * @note 16ms周期で呼び出し
  * 
  */
-void Main_Task(void) {
+void SYSCTL_Priority_Task_Main(void) {
   // システム制御タスク
   SYSCTL_SystemControl_Task_Main();
   
@@ -244,10 +247,25 @@ static void SYSCTL_Do_Drive(void) {
 //     gsu8_is_LED_setup_done = u8_done;
 // }
 
+/**
+ * @brief バックグラウンドタスク
+ * @note 320ms周期で呼び出し
+ * 
+ */
+void SYSCTL_Background_Task_Main(void) {
+  // ネットワークタスク
+  const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
+  if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
+    Network_Task_RunAPMode();
+  } else {
+    Network_Task_Main();
+  }
+}
+
 void Set_SYSCTL_NetworkSetupState(uint8_t u8_done) {
-    gsu8_is_network_setup_done = u8_done;
+  gsu8_is_network_setup_done = u8_done;
 }
 
 uint8_t Get_SYSCTL_SystemState(void) {
-    return gsu8_SYSCTL_SystemState;
+  return gsu8_SYSCTL_SystemState;
 }

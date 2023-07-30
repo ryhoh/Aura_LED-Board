@@ -24,60 +24,56 @@ static const Variant_t gscst_variant_tbl[m_VARIANT_TABLE_SIZE] = {
   { "INVALID-VARIANT    ",          4,       10,      5,         8,        9,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
 };
 
-// プロトタイプ宣言
-static uint32_t VARIANT_GetVariantIndex();
+static uint8_t gsu8_variant_idx = 0;
+static Variant_t gsst_selected_variant;
 
 // 関数定義
+void Variant_Init(void) {
+  // バリアント設定
+  uint8_t u8_variant_idx = Get_NVM_Variant_idx();
+  if (u8_variant_idx >= m_VARIANT_TABLE_SIZE) {
+    u8_variant_idx = 0;
+  }
+  gsu8_variant_idx = u8_variant_idx;
+
+  // テーブルから、選択されたバリアントのデータを展開する
+  // 動作中にバリアントを変更した場合、再起動後に反映する仕様とする
+  gsst_selected_variant = gscst_variant_tbl[gsu8_variant_idx];
+}
+
 const char *Get_VARIANT_MachineName(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].i8_machine_name;
+  return gsst_selected_variant.i8_machine_name;
 }
 
 uint32_t Get_VARIANT_MatrixNum(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  uint32_t u32_matrix_num = gscst_variant_tbl[cu32_selected_variant_idx].u32_matrix_num;
+  uint32_t u32_matrix_num = gsst_selected_variant.u32_matrix_num;
   M_CLIP_MAX(u32_matrix_num, m_PROFILE_MAX_DESIGNED_PANEL_NUM);
   return u32_matrix_num;
 }
 
 uint8_t Get_VARIANT_SPIDataPin(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].u8_spi_data_pin;
+  return gsst_selected_variant.u8_spi_data_pin;
 }
 
 uint8_t Get_VARIANT_SPICSPin(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].u8_spi_cs_pin;
+  return gsst_selected_variant.u8_spi_cs_pin;
 }
 
 uint8_t Get_VARIANT_SPIClockPin(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].u8_spi_clock_pin;
+  return gsst_selected_variant.u8_spi_clock_pin;
 }
 
 uint8_t Get_VARIANT_ModePin(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].u8_mode_pin;
+  return gsst_selected_variant.u8_mode_pin;
 }
 
 uint8_t Get_VARIANT_LampPin(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  return gscst_variant_tbl[cu32_selected_variant_idx].u8_lamp_pin;
+  return gsst_selected_variant.u8_lamp_pin;
 }
 
 uint8_t Get_VARIANT_Brightness(void) {
-  const uint32_t cu32_selected_variant_idx = VARIANT_GetVariantIndex();
-  uint8_t u8_brightness = gscst_variant_tbl[cu32_selected_variant_idx].u8_brightness;
+  uint8_t u8_brightness = gsst_selected_variant.u8_brightness;
   M_CLIP_MAX(u8_brightness, m_VARIANT_LED_BRIGHTNESS_MAX);
   M_CLIP_MIN(u8_brightness, m_VARIANT_LED_BRIGHTNESS_MIN);
   return u8_brightness;
-}
-
-static uint32_t VARIANT_GetVariantIndex() {
-  uint8_t u8_variant_idx = Get_NVM_Variant_idx();
-  if (u8_variant_idx < m_VARIANT_TABLE_SIZE) {
-    return u8_variant_idx;
-  } else {
-    return 0;
-  }
 }

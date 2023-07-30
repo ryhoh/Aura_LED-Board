@@ -34,7 +34,7 @@ typedef struct _Variant {
 } Variant_t;
 
 // プロトタイプ宣言
-// const char *Get_VARIANT_TypeName(void);
+void Variant_Init(void);
 const char *Get_VARIANT_MachineName(void);
 uint8_t Get_VARIANT_SPIDataPin(void);
 uint8_t Get_VARIANT_SPICSPin(void);

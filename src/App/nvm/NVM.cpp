@@ -11,10 +11,8 @@
 #define NVM_DEBUG (0)
 
 // variables
-static String gsstr_NVM_SSID;  // SSID
-static String gsstr_NVM_PASSWD;  // PASSWD
-static String gsstr_NVM_hostname;  // ネットワーク上での名前
-static uint8_t gsu8_NVM_variant_idx;  // バリアントインデックス
+static uint8_t gsu8_NVM_variant_idx;  // バリアントインデックス(NVM読み出し値)
+Network_Config_t gsst_NVM_NetworkConfig;
 
 // prototypes
 static void NVM_WriteString(uint32_t begin_addr, uint32_t end_addr, String str);
@@ -35,9 +33,9 @@ void NVM_Init(void) {
   #endif  /* NVM_DEBUG */
 
   // EEPROMのデータをRAMに展開
-  gsstr_NVM_SSID = NVM_ReadString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+31);
-  gsstr_NVM_PASSWD = NVM_ReadString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+31);
-  gsstr_NVM_hostname = NVM_ReadString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+31);
+  gsst_NVM_NetworkConfig.str_ssid = NVM_ReadString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+31);
+  gsst_NVM_NetworkConfig.str_passwd = NVM_ReadString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+31);
+  gsst_NVM_NetworkConfig.str_hostname = NVM_ReadString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+31);
 
   char u8_buffer[1] = { 0 }; 
   call_nvm_read(m_NVM_ADDR_VARIANT_IDX, u8_buffer, 1);
@@ -85,31 +83,15 @@ static String NVM_ReadString(uint32_t begin_addr, uint32_t end_addr) {
   return String(u8_buffer);
 }
 
-String Get_NVM_SSID() {
-	return gsstr_NVM_SSID;
+Network_Config_t Get_NVM_Network_Config() {
+  return gsst_NVM_NetworkConfig;
 }
 
-void Set_NVM_SSID(String str_SSID) {
-	gsstr_NVM_SSID = str_SSID;
-	NVM_WriteString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+0x1F, gsstr_NVM_SSID);
-}
-
-String Get_NVM_PASSWD() {
-	return gsstr_NVM_PASSWD;
-}
-
-void Set_NVM_PASSWD(String str_PASSWD) {
-	gsstr_NVM_PASSWD = str_PASSWD;
-	NVM_WriteString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+0x1F, gsstr_NVM_PASSWD);
-}
-
-String Get_NVM_HostName() {
-	return gsstr_NVM_hostname;
-}
-
-void Set_NVM_HostName(String str_hostname) {
-	gsstr_NVM_hostname = str_hostname;
-	NVM_WriteString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+0x1F, gsstr_NVM_hostname);
+void Set_NVM_Network_Config(Network_Config_t st_NVM_Network_Config) {
+  gsst_NVM_NetworkConfig = st_NVM_Network_Config;
+  NVM_WriteString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+0x1F, gsst_NVM_NetworkConfig.str_ssid);
+  NVM_WriteString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+0x1F, gsst_NVM_NetworkConfig.str_passwd);
+  NVM_WriteString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+0x1F, gsst_NVM_NetworkConfig.str_hostname);
 }
 
 uint8_t Get_NVM_Variant_idx() {

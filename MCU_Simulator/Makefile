@@ -17,7 +17,8 @@ OBJECTS  = DeviceInterface
 OBJECTS += MatrixLED LEDControllers
 OBJECTS += AsciiMatrix JISMatrix Scroll
 OBJECTS += StatusClient NVM
-OBJECTS += LEDTask NetworkTask SystemControl Variant
+OBJECTS += NetworkAPControl NetworkSTAControl
+OBJECTS += LEDTask SystemControl Variant
 OBJECTS += NetworkMock NVMMock Max7219Mock
 OBJECTS.o       = $(addsuffix .o  , $(OBJECTS))
 

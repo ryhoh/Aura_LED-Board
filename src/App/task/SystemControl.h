@@ -12,7 +12,8 @@
 #include "Driver/DeviceInterface.h"
 #include "App/Common.h"
 #include "App/task/LEDTask.h"
-#include "App/task/NetworkTask.h"
+#include "App/network/NetworkAPControl.h"
+#include "App/network/NetworkSTAControl.h"
 #include "App/nvm/NVM.h"
 
 // マクロ定義
@@ -34,12 +35,13 @@
 
 // プロトタイプ宣言
 void SYSCTL_Init(void);
-void Main_Task(void);
+void SYSCTL_Priority_Task_Main(void);
 void SYSCTL_WaitForBlockingLevel(uint8_t u8_level);
 void Set_SYSCTL_Blocking_Level(uint8_t u8_level);
 void Unset_SYSCTL_Blocking_Level(uint8_t u8_level);
 void Set_SYSCTL_LEDSetupState(uint8_t u8_done);
 void Set_SYSCTL_NetworkSetupState(uint8_t u8_done);
+void SYSCTL_Background_Task_Main(void);
 uint8_t Get_SYSCTL_SystemState(void);
 // uint8_t *Get_SYSCTL_SetupState(void);
 // uint8_t *Get_SYSCTL_NetworkSetupState(void);

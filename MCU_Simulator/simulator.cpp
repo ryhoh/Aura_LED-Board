@@ -16,11 +16,11 @@ int main(int argc, char **argv) {
 
   uint32_t count = 0;
   while (true) {
-    if (count % MW_LEDTASK_DURATION_MS == 0) {
+    if (count % m_SYSCTL_CALL_ITVL_PRIORITY == 0) {
       SYSCTL_Priority_Task_Main();
     }
 
-    if (count % MW_MAINTASK_DURATION_MS == 0) {
+    if (count % m_SYSCTL_CALL_ITVL_BACKGROUND == 0) {
       SYSCTL_Background_Task_Main();
     }
 

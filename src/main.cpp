@@ -10,10 +10,10 @@ Ticker ticker;
 
 void setup() {
   SYSCTL_Init();
-  ticker.attach_ms(MW_LEDTASK_DURATION_MS, SYSCTL_Priority_Task_Main);
+  ticker.attach_ms(m_SYSCTL_CALL_ITVL_PRIORITY, SYSCTL_Priority_Task_Main);
 }
 
 void loop() {
   SYSCTL_Background_Task_Main();
-  delay(MW_MAINTASK_DURATION_MS);
+  call_sleep(m_SYSCTL_CALL_ITVL_BACKGROUND);
 }

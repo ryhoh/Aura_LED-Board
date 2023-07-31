@@ -42,7 +42,7 @@ void Network_Task_Init(void) {
 
 /**
  * @brief ネットワークタスクメイン関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  */
 void Network_Task_Main(void) {
@@ -104,7 +104,7 @@ static void Network_Task_Select_NTP_Server_Randomly(void) {
 
 /**
  * @brief 時刻設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  * @param tm 時刻構造体
  */
@@ -128,7 +128,7 @@ static void Network_Task_SubTaskClock(const struct tm *tm) {
 
 /**
  * @brief 日付設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  * @param tm 時刻構造体
  */
@@ -152,7 +152,7 @@ static void Network_Task_SubTaskDate(const struct tm *tm) {
 
 /**
  * @brief メッセージ設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  */
 static void Network_Task_SubTaskMsg(void) {

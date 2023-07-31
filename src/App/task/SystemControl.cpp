@@ -249,16 +249,27 @@ static void SYSCTL_Do_Drive(void) {
 
 /**
  * @brief バックグラウンドタスク
- * @note 320ms周期で呼び出し
+ * @note 32ms周期で呼び出し
  * 
  */
 void SYSCTL_Background_Task_Main(void) {
-  // ネットワークタスク
+  static uint32_t su32_cnt = 0;
   const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
-  if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
-    Network_Task_RunAPMode();
+  
+  // ネットワークタスク
+  if (su32_cnt % m_SYSCTL_SUBTASK_INVL_NETWORK == 0) {
+    if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
+      Network_Task_RunAPMode();
+    } else {
+      Network_Task_Main();
+    }
+  }
+
+  // カウンタ更新
+  if (su32_cnt == m_SYSCTL_SUBTASK_INVL_NETWORK) {
+    su32_cnt = 0;
   } else {
-    Network_Task_Main();
+    su32_cnt += m_SYSCTL_CALL_ITVL_BACKGROUND;
   }
 }
 

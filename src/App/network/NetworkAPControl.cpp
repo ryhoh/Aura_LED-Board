@@ -95,7 +95,7 @@ static void Network_Task_AP_EntryPoint_submit(void) {
 /**
  * @brief ホストモード実行関数
  * @note SSIDなどの設定をwebブラウザ経由で提供する
- *       320ms周期で実行される
+ *       128ms周期で実行される
  * 
  */
 void Network_Task_RunAPMode(void) {

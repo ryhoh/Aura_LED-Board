@@ -17,8 +17,10 @@
 #include "App/nvm/NVM.h"
 
 // マクロ定義
-#define m_SYSCTL_CALL_ITVL (16)  // [ms,1]
-#define m_SYSCTL_CALL_ITVL_NETWORK (320)  // [ms,1]
+#define m_SYSCTL_CALL_ITVL_PRIORITY   (16)  // [ms,1]
+#define m_SYSCTL_CALL_ITVL_BACKGROUND (32)  // [ms,1]
+
+#define m_SYSCTL_SUBTASK_INVL_NETWORK (128)  // [ms,1]
 
 #define m_SYSCTL_BLOCKING_LEVEL_ALL     (0)
 #define m_SYSCTL_BLOCKING_LEVEL_LED     (1)

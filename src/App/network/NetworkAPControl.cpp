@@ -10,7 +10,8 @@
 
 // 変数宣言
 static WebServer gsst_webserver(80);
-static Network_Config_t gsst_NetworkAP_Network_Config;
+static Network_Config_t gsst_NetworkAP_Network_Config_In;
+static Network_Config_t gsst_NetworkAP_Network_Config_Out = { "", "", "" };
 
 // プロトタイプ宣言
 static void Network_Task_AP_EntryPoint_root(void);
@@ -23,7 +24,7 @@ static void Network_Task_AP_EntryPoint_submit(void);
  * 
  */
 void Network_Task_Init_APMode(void) {
-  gsst_NetworkAP_Network_Config = Get_NVM_Network_Config();
+  gsst_NetworkAP_Network_Config_In = Get_NVM_Network_Config();
   const String cstr_ap_ssid = Get_VARIANT_MachineName();
   const String cstr_ap_passwd = m_NETWORK_TASK_AP_PASSWD;
 
@@ -57,7 +58,7 @@ static void Network_Task_AP_EntryPoint_root(void) {
 
 static void Network_Task_AP_EntryPoint_submit(void) {
   uint8_t u8_updated = m_OFF;
-  Network_Config_t st_network_config = gsst_NetworkAP_Network_Config;
+  Network_Config_t st_network_config = gsst_NetworkAP_Network_Config_In;
 
   // 受け取ったパラメータをNVMに書き込む
   if ((gsst_webserver.hasArg("ssid"))
@@ -89,7 +90,7 @@ static void Network_Task_AP_EntryPoint_submit(void) {
   }
 
   // NVMに書き込み
-  Set_NVM_Network_Config(st_network_config);
+  gsst_NetworkAP_Network_Config_Out = st_network_config;
 }
 
 /**
@@ -100,4 +101,9 @@ static void Network_Task_AP_EntryPoint_submit(void) {
  */
 void Network_Task_RunAPMode(void) {
   gsst_webserver.handleClient();
+}
+
+// インタフェース関数
+Network_Config_t Get_NetworkAP_Network_Config(void) {
+  return gsst_NetworkAP_Network_Config_Out;
 }

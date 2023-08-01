@@ -59,7 +59,8 @@ static void NVM_WriteString(uint32_t begin_addr, uint32_t end_addr, String str) 
   }
 
   // 終端-開始位置-(ヌル文字)をバッファにコピー
-  const int32_t i32_written_num = sprintf(u8_buffer, "%s", str.substring(0, (u32_clipped_end_addr - begin_addr - 1)).c_str());
+  const uint32_t u32_write_string_len = u32_clipped_end_addr - begin_addr - 1;
+  const int32_t i32_written_num = snprintf(u8_buffer, u32_write_string_len, "%s", str.substring(0, u32_write_string_len).c_str());
 	call_nvm_write(begin_addr, u8_buffer, i32_written_num+1);
 	call_nvm_commit();
 }
@@ -83,15 +84,23 @@ static String NVM_ReadString(uint32_t begin_addr, uint32_t end_addr) {
   return String(u8_buffer);
 }
 
-Network_Config_t Get_NVM_Network_Config() {
-  return gsst_NVM_NetworkConfig;
+void NVM_Main(void) {
+  const Network_Config_t cst_NVM_NetworkConfig = Get_NetworkAP_Network_Config();
+
+  // NVMのデータとRAMのデータを比較して、変更があればNVMに書き込む
+  if (gsst_NVM_NetworkConfig.str_ssid != cst_NVM_NetworkConfig.str_ssid) {
+    NVM_WriteString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+0x1F, cst_NVM_NetworkConfig.str_ssid);
+  }
+  if (gsst_NVM_NetworkConfig.str_passwd != cst_NVM_NetworkConfig.str_passwd) {
+    NVM_WriteString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+0x1F, cst_NVM_NetworkConfig.str_passwd);
+  }
+  if (gsst_NVM_NetworkConfig.str_hostname != cst_NVM_NetworkConfig.str_hostname) {
+    NVM_WriteString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+0x1F, cst_NVM_NetworkConfig.str_hostname);
+  }
 }
 
-void Set_NVM_Network_Config(Network_Config_t st_NVM_Network_Config) {
-  gsst_NVM_NetworkConfig = st_NVM_Network_Config;
-  NVM_WriteString(m_NVM_ADDR_SSID, m_NVM_ADDR_SSID+0x1F, gsst_NVM_NetworkConfig.str_ssid);
-  NVM_WriteString(m_NVM_ADDR_PASSWD, m_NVM_ADDR_PASSWD+0x1F, gsst_NVM_NetworkConfig.str_passwd);
-  NVM_WriteString(m_NVM_ADDR_HOST_NAME, m_NVM_ADDR_HOST_NAME+0x1F, gsst_NVM_NetworkConfig.str_hostname);
+Network_Config_t Get_NVM_Network_Config() {
+  return gsst_NVM_NetworkConfig;
 }
 
 uint8_t Get_NVM_Variant_idx() {

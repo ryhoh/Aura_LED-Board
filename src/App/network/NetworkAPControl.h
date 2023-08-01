@@ -16,8 +16,6 @@
 #include "App/task/SystemControl.h"
 #include "App/task/LEDTask.h"
 
-// マクロ定義
-
 // これらはProfile.hかどこかに移動するべき
 #define m_NETWORK_TASK_AP_PASSWD (String("luminous-ryhoh"))
 #define m_NETWORK_TASK_AP_IP (IPAddress(192, 168, 1, 1))
@@ -27,5 +25,6 @@
 // プロトタイプ宣言
 void Network_Task_Init_APMode(void);
 void Network_Task_RunAPMode(void);
+Network_Config_t Get_NetworkAP_Network_Config(void);
 
 #endif  /* _NETWORKAPCONTROL_H_ */

@@ -255,6 +255,9 @@ static void SYSCTL_Do_Drive(void) {
 void SYSCTL_Background_Task_Main(void) {
   static uint32_t su32_cnt = 0;
   const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
+
+  // NVMタスク
+  NVM_Main();
   
   // ネットワークタスク
   if (su32_cnt % m_SYSCTL_SUBTASK_INVL_NETWORK == 0) {

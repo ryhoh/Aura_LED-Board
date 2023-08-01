@@ -21,6 +21,7 @@
 // インクルード
 #include "Driver/DeviceInterface.h"
 #include "App/Type.h"
+#include "App/network/NetworkAPControl.h"
 
 // マクロ定義
 #define m_NVM_BUFFER_SIZE (31)  // バッファサイズ
@@ -32,6 +33,7 @@
 
 // 関数宣言
 void NVM_Init(void);
+void NVM_Main(void);
 Network_Config_t Get_NVM_Network_Config();
 void Set_NVM_Network_Config(Network_Config_t st_NVM_Network_Config);
 uint8_t Get_NVM_Variant_idx();

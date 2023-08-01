@@ -66,12 +66,20 @@ graph LR;
   subgraph NetworkAPControl
     direction LR
 
-    subgraph gsst_NetworkAP_Network_Config
+    subgraph gsst_NetworkAP_Network_Config_In
       direction TB
 
-      gsst_NetworkAP_Network_Config.str_ssid:::VAR;
-      gsst_NetworkAP_Network_Config.str_passwd:::VAR;
-      gsst_NetworkAP_Network_Config.str_hostname:::VAR;
+      gsst_NetworkAP_Network_Config_In.str_ssid:::VAR;
+      gsst_NetworkAP_Network_Config_In.str_passwd:::VAR;
+      gsst_NetworkAP_Network_Config_In.str_hostname:::VAR;
+
+    end
+
+    subgraph gsst_NetworkAP_Network_Config_Out
+      direction TB
+      gsst_NetworkAP_Network_Config_Out.str_ssid:::VAR;
+      gsst_NetworkAP_Network_Config_Out.str_passwd:::VAR;
+      gsst_NetworkAP_Network_Config_Out.str_hostname:::VAR;
     end
   end
 
@@ -137,14 +145,17 @@ graph LR;
 
     gsst_NVM_NetworkConfig -- Get_NVM_Network_Config --> Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC;
     
-    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_ssid:::VAR;
-    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_passwd:::VAR;
-    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config.str_hostname:::VAR;
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config_In.str_ssid:::VAR;
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config_In.str_passwd:::VAR;
+    Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_NetworkAP_Network_Config_In.str_hostname:::VAR;
 
-    gsst_NetworkAP_Network_Config --> Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC;
+    gsst_NetworkAP_Network_Config_In --> Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC;
+
+    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_NetworkAP_Network_Config_Out.str_ssid:::VAR;
+    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_NetworkAP_Network_Config_Out.str_passwd:::VAR;
+    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_NetworkAP_Network_Config_Out.str_hostname:::VAR;
 
     Network_Task_Init_APMode(Network_Task_Init_APMode):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
-    Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_NVM_NetworkConfig;
     Network_Task_AP_EntryPoint_submit(Network_Task_AP_EntryPoint_submit):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR
 
   end
@@ -178,6 +189,8 @@ graph LR;
     NVM_Init(NVM_Init):::FUNC --> gsst_NVM_NetworkConfig.str_passwd:::VAR;
     NVM_Init(NVM_Init):::FUNC --> gsst_NVM_NetworkConfig.str_hostname:::VAR;
     NVM_Init(NVM_Init):::FUNC --> gsu8_NVM_variant_idx:::VAR;
+
+    gsst_NetworkAP_Network_Config_Out -- Get_NetworkAP_Network_Config --> NVM_Main(NVM_Main):::FUNC;
   end
 
   subgraph Variant

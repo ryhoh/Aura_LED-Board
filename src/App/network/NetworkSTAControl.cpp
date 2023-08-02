@@ -120,10 +120,14 @@ static void Network_Task_SubTaskClock(const struct tm *tm) {
   now_s[6] = '0' + tm->tm_sec / 10;
   now_s[7] = '0' + tm->tm_sec % 10;
 
-  noInterrupts();
-  pst_matrixLEDs_clock->str_to_display = String(now_s);
-  pst_matrixLEDs_clock->u32_offset_from_left = m_NETWORK_TASK_TIME_LEFT_OFFSET;
-  interrupts();
+  // 表示内容が変化した場合のみ更新
+  if (pst_matrixLEDs_clock->str_to_display != String(now_s)) {
+    noInterrupts();
+    pst_matrixLEDs_clock->str_to_display = String(now_s);
+    pst_matrixLEDs_clock->u32_offset_from_left = m_NETWORK_TASK_TIME_LEFT_OFFSET;
+    pst_matrixLEDs_clock->u8_is_updated = m_ON;
+    interrupts();
+  }
 }
 
 /**
@@ -144,10 +148,14 @@ static void Network_Task_SubTaskDate(const struct tm *tm) {
   date_s[12] = gscc_weekday[tm->tm_wday * 3 + 1];
   date_s[13] = gscc_weekday[tm->tm_wday * 3 + 2];
 
-  noInterrupts();
-  pst_matrixLEDs_date->str_to_display = String(date_s);
-  pst_matrixLEDs_date->u32_offset_from_left = m_NETWORK_TASK_DATE_LEFT_OFFSET;
-  interrupts();
+  // 表示内容が変化した場合のみ更新
+  if (pst_matrixLEDs_date->str_to_display != String(date_s)) {
+    noInterrupts();
+    pst_matrixLEDs_date->str_to_display = String(date_s);
+    pst_matrixLEDs_date->u32_offset_from_left = m_NETWORK_TASK_DATE_LEFT_OFFSET;
+    pst_matrixLEDs_date->u8_is_updated = m_ON;
+    interrupts();
+  }
 }
 
 /**
@@ -168,6 +176,7 @@ static void Network_Task_SubTaskMsg(void) {
   // Set_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
   noInterrupts();
   pst_matrixLEDs_msg->str_to_display = "Hello world!";  // @@暫定
+  pst_matrixLEDs_msg->u8_is_updated = m_ON;
   interrupts();
   // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }

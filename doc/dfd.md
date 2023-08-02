@@ -29,6 +29,7 @@ graph LR;
         direction TB
 
         gsst_displayInfo_clock.u32_offset_from_left:::VAR;
+        gsst_displayInfo_clock.u8_is_updated:::VAR;
         gsst_displayInfo_clock.str_to_display:::VAR;
       end
 
@@ -36,6 +37,7 @@ graph LR;
         direction TB
 
         gsst_displayInfo_date.u32_offset_from_left:::VAR;
+        gsst_displayInfo_date.u8_is_updated:::VAR;
         gsst_displayInfo_date.str_to_display:::VAR;
       end
 
@@ -43,6 +45,7 @@ graph LR;
         direction TB
 
         gsst_displayInfo_msg.u32_offset_from_left:::VAR;
+        gsst_displayInfo_msg.u8_is_updated:::VAR;
         gsst_displayInfo_msg.str_to_display:::VAR;
       end
 
@@ -175,10 +178,15 @@ graph LR;
     Network_Task_Make_Connection(Network_Task_Make_Connection):::FUNC --> gsu8_is_network_setup_done:::VAR;
 
     Network_Task_SubTaskClock(Network_Task_SubTaskClock):::FUNC --> gsst_displayInfo_clock.u32_offset_from_left:::VAR;
+    Network_Task_SubTaskClock(Network_Task_SubTaskClock):::FUNC --> gsst_displayInfo_clock.u8_is_updated:::VAR;
     Network_Task_SubTaskClock(Network_Task_SubTaskClock):::FUNC --> gsst_displayInfo_clock.str_to_display:::VAR;
+
     Network_Task_SubTaskDate(Network_Task_SubTaskDate):::FUNC --> gsst_displayInfo_date.u32_offset_from_left:::VAR;
+    Network_Task_SubTaskDate(Network_Task_SubTaskDate):::FUNC --> gsst_displayInfo_date.u8_is_updated:::VAR;
     Network_Task_SubTaskDate(Network_Task_SubTaskDate):::FUNC --> gsst_displayInfo_date.str_to_display:::VAR;
+
     Network_Task_SubTaskMsg(Network_Task_SubTaskMsg):::FUNC --> gsst_displayInfo_msg.str_to_display:::VAR;
+    Network_Task_SubTaskMsg(Network_Task_SubTaskMsg):::FUNC --> gsst_displayInfo_msg.u8_is_updated:::VAR;
     
   end
 

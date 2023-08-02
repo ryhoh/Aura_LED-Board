@@ -21,6 +21,8 @@
 // 構造体定義
 typedef struct _DisplayInfo {
     uint32_t u32_offset_from_left;
+    uint8_t u8_is_updated;
+    uint8_t u8_dummy[3];
     String str_to_display;
 } DisplayInfo_t;
 

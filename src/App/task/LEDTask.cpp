@@ -11,14 +11,17 @@
 // 変数宣言
 static DisplayInfo_t gsst_displayInfo_clock = DisplayInfo_t {
   .u32_offset_from_left = 0,
+  .u8_is_updated = m_OFF,
   .str_to_display = String(""),
 };
 static DisplayInfo_t gsst_displayInfo_date = DisplayInfo_t {
   .u32_offset_from_left = 0,
+  .u8_is_updated = m_OFF,
   .str_to_display = String(""),
 };
 static DisplayInfo_t gsst_displayInfo_msg = DisplayInfo_t {
   .u32_offset_from_left = 0,
+  .u8_is_updated = m_OFF,
   .str_to_display = String(""),
 };
 
@@ -28,6 +31,7 @@ static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセ
 static MatrixLED matrixLEDs_output[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 出力用
 static Max7219 gsst_max7219;
 static uint8_t gsu8_is_LED_setup_done = m_OFF;  // LEDセットアップ完了フラグ
+static uint8_t gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;  // LED表示更新要求フラグ
 
 // プロトタイプ宣言
 static void LED_Task_ConfigureDisplayData(void);
@@ -120,6 +124,9 @@ static void LED_Task_ConfigureDisplayData(void) {
            || (cu8_system_state == m_SYSCTL_STATE_DRIVE)) {
     LED_Task_RunningState();
   }
+
+  // @@暫定 スクロールではLEDの表示更新要求フラグは常にONにする
+  gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
 }
 
 /**
@@ -183,17 +190,25 @@ static void LED_Task_RunningState(void) {
 static void LED_Task_SubTaskClock(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
-  for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
-    matrixLEDs_clock[j].fill(false);
+  // 内容が更新された場合のみ再描画
+  if (gsst_displayInfo_clock.u8_is_updated == m_ON) {
+    for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
+      matrixLEDs_clock[j].fill(false);
+    }
+    writeJISsToMatrixLEDs(
+      matrixLEDs_clock,
+      cu8_matrix_num,
+      gsst_displayInfo_clock.str_to_display.c_str(),
+      gsst_displayInfo_clock.u32_offset_from_left
+    );
+    
+    LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_clock);
+
+    gsst_displayInfo_clock.u8_is_updated = m_OFF;
+    gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
+  } else {
+    gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
   }
-  writeJISsToMatrixLEDs(
-    matrixLEDs_clock,
-    cu8_matrix_num,
-    gsst_displayInfo_clock.str_to_display.c_str(),
-    gsst_displayInfo_clock.u32_offset_from_left
-  );
-  
-  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_clock);
 }
 
 /**
@@ -214,17 +229,25 @@ static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src) {
 static void LED_Task_SubTaskDate(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
-  for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
-    matrixLEDs_date[j].fill(false);
+  // 内容が更新された場合のみ再描画
+  if (gsst_displayInfo_date.u8_is_updated == m_ON) {
+    for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
+      matrixLEDs_date[j].fill(false);
+    }
+    writeJISsToMatrixLEDs(
+      matrixLEDs_date,
+      cu8_matrix_num,
+      gsst_displayInfo_date.str_to_display.c_str(),
+      gsst_displayInfo_date.u32_offset_from_left
+    );
+    
+    LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_date);
+
+    gsst_displayInfo_date.u8_is_updated = m_OFF;
+    gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
+  } else {
+    gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
   }
-  writeJISsToMatrixLEDs(
-    matrixLEDs_date,
-    cu8_matrix_num,
-    gsst_displayInfo_date.str_to_display.c_str(),
-    gsst_displayInfo_date.u32_offset_from_left
-  );
-  
-  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_date);
 }
 
 /**
@@ -273,7 +296,11 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
  */
 static void LED_Task_OutputMain(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
-  gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
+
+  // 表示要求があれば出力
+  if (gsu8_is_LED_DisplayUpdateRequiredFlg == m_ON) {
+    gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
+  }
 }
 
 /**

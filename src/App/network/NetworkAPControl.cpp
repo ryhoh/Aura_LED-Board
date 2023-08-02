@@ -27,13 +27,14 @@ void Network_Task_Init_APMode(void) {
   gsst_NetworkAP_Network_Config_In = Get_NVM_Network_Config();
   const String cstr_ap_ssid = Get_VARIANT_MachineName();
   const String cstr_ap_passwd = m_NETWORK_TASK_AP_PASSWD;
+  DisplayInfo_t *pst_display_info_msg = GET_LED_Task_DisplayInfoMsg();
 
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(m_NETWORK_TASK_AP_IP, m_NETWORK_TASK_AP_GATEWAY, m_NETWORK_TASK_AP_SUBNET);
   WiFi.softAP(cstr_ap_ssid, cstr_ap_passwd);
   const IPAddress ip = WiFi.softAPIP();
 
-  GET_LED_Task_DisplayInfoMsg()->str_to_display
+  pst_display_info_msg->str_to_display
 #ifdef SIMULATOR
     = std::string("AP:") + cstr_ap_ssid
     + std::string(" ") + (std::to_string(ip[0]) + "." + std::to_string(ip[1]) + "." + std::to_string(ip[2]) + "." + std::to_string(ip[3]));
@@ -41,6 +42,7 @@ void Network_Task_Init_APMode(void) {
     = String("AP:") + cstr_ap_ssid
     + String(" ") + (String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]));
 #endif
+  pst_display_info_msg->u8_is_updated = m_ON;
 
   gsst_webserver.on("/", HTTP_GET, Network_Task_AP_EntryPoint_root);
   gsst_webserver.on("/submit", HTTP_POST, Network_Task_AP_EntryPoint_submit);

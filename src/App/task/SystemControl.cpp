@@ -66,15 +66,26 @@ void SYSCTL_Init(void) {
 
 /**
  * @brief メインタスク
- * @note 16ms周期で呼び出し
+ * @note 1ms周期で呼び出し
  * 
  */
 void SYSCTL_Priority_Task_Main(void) {
+  static uint8_t zu8_cnt = 0;
+
   // システム制御タスク
   SYSCTL_SystemControl_Task_Main();
   
-  // LEDタスクは毎回実行
-  LED_Task_Main();
+  if (zu8_cnt == 15) {
+    // LEDタスクは16msに一度だけ実行
+    LED_Task_Main();
+  }
+
+  // カウンタ更新
+  if (zu8_cnt == 15) {
+    zu8_cnt = 0;
+  } else {
+    zu8_cnt++;
+  }
 }
 
 /**

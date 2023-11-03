@@ -20,6 +20,8 @@
 
 // インクルード
 #include "Driver/DeviceInterface.h"
+#include "App/Type.h"
+#include "App/network/NetworkAPControl.h"
 
 // マクロ定義
 #define m_NVM_BUFFER_SIZE (31)  // バッファサイズ
@@ -31,12 +33,9 @@
 
 // 関数宣言
 void NVM_Init(void);
-String Get_NVM_SSID();
-void Set_NVM_SSID(String str_SSID);
-String Get_NVM_PASSWD();
-void Set_NVM_PASSWD(String str_PASSWD);
-String Get_NVM_HostName();
-void Set_NVM_HostName(String str_hostname);
+void NVM_Main(void);
+Network_Config_t Get_NVM_Network_Config();
+void Set_NVM_Network_Config(Network_Config_t st_NVM_Network_Config);
 uint8_t Get_NVM_Variant_idx();
 
 #endif /* _NVM_H_ */

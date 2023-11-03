@@ -2,6 +2,8 @@
 
 Max7219::Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness)
 {
+#ifdef ARDUINO
+
   this->dat = dat;
   this->lat = lat;
   this->clk = clk;
@@ -23,10 +25,14 @@ Max7219::Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness)
   if (9 < brightness)
     brightness = 9;
   this->send(0x0a, brightness);
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::testRun(uint8_t step)
 {
+#ifndef SIMULATOR  // シミュレータでは設定不要
+
   switch (step) {
   case 0:
     // ディスプレイテストモード（全点灯）
@@ -45,20 +51,31 @@ void Max7219::testRun(uint8_t step)
   default:
     break;
   }
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::flushMatrixLED(MatrixLED &matrixLED)
 {
+#ifdef SIMULATOR
+  Mock_Max7219_flushMatrixLED(matrixLED);
+#else  /* SIMULATOR */
+
   call_digitalWrite(this->lat, LOW);
   for (uint8_t row_i = 0; row_i < 8; ++row_i) {
     this->shiftOut(row_i + 1, *(matrixLED.buffer + row_i));
   }
   call_digitalWrite(this->lat, HIGH);
   call_digitalWrite(this->lat, LOW);
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
 {
+#ifdef SIMULATOR
+  Mock_Max7219_flushMatrixLEDs(matrixLEDs, length);
+#else  /* SIMULATOR */
 
   for (uint8_t row_i = 0; row_i < 8; ++row_i) {
     call_digitalWrite(this->lat, LOW);
@@ -68,6 +85,8 @@ void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
     call_digitalWrite(this->lat, HIGH);
     call_digitalWrite(this->lat, LOW);
   }
+
+#endif  /* SIMULATOR */
 }
 
 inline void Max7219::shiftOut(uint8_t addr, uint8_t data)

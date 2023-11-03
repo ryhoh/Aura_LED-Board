@@ -6,21 +6,21 @@
  */
 
 // インクルード
-#include "App/task/NetworkTask.h"
+#include "App/network/NetworkSTAControl.h"
+
+// マクロ宣言
+#define m_NETWORK_TASK_WEEKDAY_STR_SIZE (22)  // 曜日文字列サイズ： 7曜日 * 3文字 + 1終端文字
+#define m_NETWORK_TASK_TIME_STR_SIZE (9)  // 時刻文字列サイズ
+#define m_NETWORK_TASK_DATE_STR_SIZE (16)  // 日付文字列サイズ
+#define m_NETWORK_TASK_TIME_LEFT_OFFSET (9)
+#define m_NETWORK_TASK_DATE_LEFT_OFFSET (1)
 
 // 変数宣言
-// static ESP8266WebServer gsst_webserver(80); 
-static WebServer gsst_webserver(80);
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
-static String gsstr_wifi_ssid = "";
-static String gsstr_wifi_passwd = "";
-static String gsstr_wifi_device_name = "";
+static Network_Config_t gsst_Network_Config;
 
 // プロトタイプ宣言
-static void Network_Task_AP_EntryPoint_root(void);
-static void Network_Task_AP_EntryPoint_submit(void);
 static void Network_Task_Make_Connection(void);
-static void Network_Task_RunAPMode(void);
 static void Network_Task_Select_NTP_Server_Randomly(void);
 static void Network_Task_SubTaskClock(const struct tm *tm);
 static void Network_Task_SubTaskDate(const struct tm *tm);
@@ -34,91 +34,18 @@ static void Network_Task_SubTaskMsg(void);
  */
 void Network_Task_Init(void) {
   // ssid はNVMから読み込む
-  char u8_buffer[31] = { 0 }; 
-  EEPROM.get(0x00, u8_buffer);
-  gsstr_wifi_ssid = String(u8_buffer);
-  EEPROM.get(0x20, u8_buffer);
-  gsstr_wifi_passwd = String(u8_buffer);
-  EEPROM.get(0x40, u8_buffer);
-  gsstr_wifi_device_name = String(u8_buffer);
-
+  char u8_buffer[31] = { 0 };
+  gsst_Network_Config = Get_NVM_Network_Config();
   WiFi.mode(WIFI_STA);
-  WiFi.begin(gsstr_wifi_ssid.c_str(), gsstr_wifi_passwd.c_str());
-}
-
-/**
- * @brief APモード初期化関数
- * @note 起動時に1回だけ実行される
- * 
- */
-void Network_Task_Init_APMode(void) {
-  const String cstr_ap_ssid = Get_VARIANT_MachineName();
-  const String cstr_ap_passwd = m_NETWORK_TASK_AP_PASSWD;
-
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(m_NETWORK_TASK_AP_IP, m_NETWORK_TASK_AP_GATEWAY, m_NETWORK_TASK_AP_SUBNET);
-  WiFi.softAP(cstr_ap_ssid, cstr_ap_passwd);
-  const IPAddress ip = WiFi.softAPIP();
-
-  GET_LED_Task_DisplayInfoMsg()->str_to_display
-    = String("AP:") + cstr_ap_ssid
-    + String(" ") + (String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." + String(ip[3]));
-
-  gsst_webserver.on("/", HTTP_GET, Network_Task_AP_EntryPoint_root);
-  gsst_webserver.on("/submit", HTTP_POST, Network_Task_AP_EntryPoint_submit);
-  gsst_webserver.onNotFound([]() {
-    gsst_webserver.send(404, "<html><body>404 Not Found</body></html>");
-  });
-
-  gsst_webserver.begin();
-}
-
-static void Network_Task_AP_EntryPoint_root(void) {
-  #include "App/task/root.html"
-  gsst_webserver.send(200, "text/html", cstr_html);
-}
-
-static void Network_Task_AP_EntryPoint_submit(void) {
-  uint8_t u8_updated = m_OFF;
-
-  // 受け取ったパラメータをNVMに書き込む
-  if ((gsst_webserver.hasArg("ssid"))
-   && (gsst_webserver.arg("ssid").length() > 0)) {
-    Set_NVM_SSID(gsst_webserver.arg("ssid"));
-    u8_updated = m_ON;
-  }
-
-  if ((gsst_webserver.hasArg("password"))
-   && (gsst_webserver.arg("password").length() > 0)) {
-    Set_NVM_PASSWD(gsst_webserver.arg("password"));
-    u8_updated = m_ON;
-  }
-
-  // if ((gsst_webserver.hasArg("dev_name"))
-  //  && (gsst_webserver.arg("dev_name").length() > 0)) {
-  //   Set_NVM_HostName(gsst_webserver.arg("dev_name"));
-  //   u8_updated = m_ON;
-  // }
-
-  if (u8_updated == m_OFF) {
-    gsst_webserver.send(400, "text/html", "<html><body>Please fill forms</body></html>");
-  } else {
-    // ブラウザに結果を表示
-    gsst_webserver.send(200, "text/html", "<html><body>Registered!<br>Please set run-mode and reboot.</body></html>");
-
-    // マトリクスLEDに結果を表示
-    GET_LED_Task_DisplayInfoMsg()->str_to_display = String("Registered: ") + gsst_webserver.arg("ssid");
-  }
+  WiFi.begin(gsst_Network_Config.str_ssid.c_str(), gsst_Network_Config.str_passwd.c_str());
 }
 
 /**
  * @brief ネットワークタスクメイン関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  */
 void Network_Task_Main(void) {
-  // SYSCTL_WaitForBlockingLevel(m_SYSCTL_BLOCKING_LEVEL_NETWORK);
-
   static time_t t;
   static struct tm *tm;
   static int32_t last_mday = -1;
@@ -128,10 +55,8 @@ void Network_Task_Main(void) {
     Network_Task_Make_Connection();
   }
 
-  if (u8_system_State == m_SYSCTL_STATE_CONFIGURE) {
-    Network_Task_RunAPMode();
-  } else if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
-          || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
+  if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
+   || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
     /* Check Date,Time */
     if (last_mday == -1 || last_mday != tm->tm_mday) {  // Date changed
       // Routines which run only one time each day
@@ -160,16 +85,6 @@ static void Network_Task_Make_Connection(void) {
   }
 }
 
-/**
- * @brief ホストモード実行関数
- * @note SSIDなどの設定をwebブラウザ経由で提供する
- *       320ms周期で実行される
- * 
- */
-static void Network_Task_RunAPMode(void) {
-  gsst_webserver.handleClient();
-}
-
 static void Network_Task_Select_NTP_Server_Randomly(void) {
   uint8_t u8_random = call_randint(3);
   switch (u8_random) {
@@ -189,7 +104,7 @@ static void Network_Task_Select_NTP_Server_Randomly(void) {
 
 /**
  * @brief 時刻設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  * @param tm 時刻構造体
  */
@@ -205,15 +120,19 @@ static void Network_Task_SubTaskClock(const struct tm *tm) {
   now_s[6] = '0' + tm->tm_sec / 10;
   now_s[7] = '0' + tm->tm_sec % 10;
 
-  noInterrupts();
-  pst_matrixLEDs_clock->str_to_display = String(now_s);
-  pst_matrixLEDs_clock->u32_offset_from_left = m_NETWORK_TASK_TIME_LEFT_OFFSET;
-  interrupts();
+  // 表示内容が変化した場合のみ更新
+  if (pst_matrixLEDs_clock->str_to_display != String(now_s)) {
+    noInterrupts();
+    pst_matrixLEDs_clock->str_to_display = String(now_s);
+    pst_matrixLEDs_clock->u32_offset_from_left = m_NETWORK_TASK_TIME_LEFT_OFFSET;
+    pst_matrixLEDs_clock->u8_is_updated = m_ON;
+    interrupts();
+  }
 }
 
 /**
  * @brief 日付設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  * @param tm 時刻構造体
  */
@@ -229,15 +148,19 @@ static void Network_Task_SubTaskDate(const struct tm *tm) {
   date_s[12] = gscc_weekday[tm->tm_wday * 3 + 1];
   date_s[13] = gscc_weekday[tm->tm_wday * 3 + 2];
 
-  noInterrupts();
-  pst_matrixLEDs_date->str_to_display = String(date_s);
-  pst_matrixLEDs_date->u32_offset_from_left = m_NETWORK_TASK_DATE_LEFT_OFFSET;
-  interrupts();
+  // 表示内容が変化した場合のみ更新
+  if (pst_matrixLEDs_date->str_to_display != String(date_s)) {
+    noInterrupts();
+    pst_matrixLEDs_date->str_to_display = String(date_s);
+    pst_matrixLEDs_date->u32_offset_from_left = m_NETWORK_TASK_DATE_LEFT_OFFSET;
+    pst_matrixLEDs_date->u8_is_updated = m_ON;
+    interrupts();
+  }
 }
 
 /**
  * @brief メッセージ設定関数
- * @note 320ms周期で実行される
+ * @note 128ms周期で実行される
  * 
  */
 static void Network_Task_SubTaskMsg(void) {
@@ -253,11 +176,12 @@ static void Network_Task_SubTaskMsg(void) {
   // Set_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
   noInterrupts();
   pst_matrixLEDs_msg->str_to_display = "Hello world!";  // @@暫定
+  pst_matrixLEDs_msg->u8_is_updated = m_ON;
   interrupts();
   // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
 
 String GET_Network_WiFi_SSID(void) {
-  return gsstr_wifi_ssid;
+  return gsst_Network_Config.str_ssid;
 }

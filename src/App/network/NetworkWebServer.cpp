@@ -6,16 +6,14 @@
  */
 
 // インクルード
-#include "App/network/NetworkAPControl.h"
+#include "App/network/NetworkWebServer.h"
 
 // 変数宣言
 static WebServer gsst_webserver(80);
-static Network_Config_t gsst_NetworkAP_Network_Config_In;
-static Network_Config_t gsst_NetworkAP_Network_Config_Out = { "", "", "" };
 
 // プロトタイプ宣言
 static void Network_Task_AP_EntryPoint_root(void);
-static void Network_Task_AP_EntryPoint_submit(void);
+// static void Network_Task_AP_EntryPoint_submit(void);
 
 // 関数定義
 /**
@@ -23,7 +21,7 @@ static void Network_Task_AP_EntryPoint_submit(void);
  * @note 起動時に1回だけ実行される
  * 
  */
-void Network_Task_Init_APMode(void) {
+void Network_Task_Init_WebServer(void) {
   const String cstr_ap_ssid = Get_VARIANT_MachineName();
 
 
@@ -79,9 +77,4 @@ static void Network_Task_AP_EntryPoint_root(void) {
  */
 void Network_Task_RunAPMode(void) {
   gsst_webserver.handleClient();
-}
-
-// インタフェース関数
-Network_Config_t Get_NetworkAP_Network_Config(void) {
-  return gsst_NetworkAP_Network_Config_Out;
 }

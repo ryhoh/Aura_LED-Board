@@ -111,14 +111,11 @@ void LED_Task_Main(void) {
  */
 static void LED_Task_ConfigureDisplayData(void) {
   const uint8_t cu8_system_state = Get_SYSCTL_SystemState();
+  const Network_Config_t cst_Network_Config = Get_NVM_Network_Config();
 
   if (cu8_system_state == m_SYSCTL_STATE_LED_READY) {
     // LEDは使えるがネットワークが準備中なら
-    const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
-    LED_Task_ScrollLoop(str_msg);
-  } else if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
-    // APモードで設定中なら
-    const String str_msg = gsst_displayInfo_msg.str_to_display;
+    const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + cst_Network_Config.str_ssid;
     LED_Task_ScrollLoop(str_msg);
   } else if ((cu8_system_state == m_SYSCTL_STATE_NETWORK_READY)
            || (cu8_system_state == m_SYSCTL_STATE_DRIVE)) {
@@ -230,7 +227,7 @@ static void LED_Task_SubTaskDate(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   // 内容が更新された場合のみ再描画
-  if (gsst_displayInfo_date.u8_is_updated == m_ON) {
+  // if (gsst_displayInfo_date.u8_is_updated == m_ON) {
     for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
       matrixLEDs_date[j].fill(false);
     }
@@ -245,9 +242,9 @@ static void LED_Task_SubTaskDate(void) {
 
     gsst_displayInfo_date.u8_is_updated = m_OFF;
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
-  } else {
-    gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
-  }
+  // } else {
+  //   gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
+  // }
 }
 
 /**

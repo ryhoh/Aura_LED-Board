@@ -17,6 +17,7 @@
 #include "App/task/LEDTask.h"
 
 // プロトタイプ宣言
+void Network_Task_Init_WebServer(void);
 void Network_Task_RunAPMode(void);
 Network_Config_t Get_NetworkAP_Network_Config(void);
 

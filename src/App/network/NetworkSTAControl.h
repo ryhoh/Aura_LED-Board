@@ -19,6 +19,6 @@
 // プロトタイプ宣言
 void Network_Task_Init(void);
 void Network_Task_Main(void);
-String GET_Network_WiFi_SSID(void);
+uint8_t GET_Network_Task_WiFi_Connected(void);
 
 #endif  /* _NETWORKSTACONTROL_H_ */

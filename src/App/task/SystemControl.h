@@ -12,7 +12,7 @@
 #include "Driver/DeviceInterface.h"
 #include "App/Common.h"
 #include "App/task/LEDTask.h"
-#include "App/network/NetworkAPControl.h"
+#include "App/network/NetworkWebServer.h"
 #include "App/network/NetworkSTAControl.h"
 #include "App/nvm/NVM.h"
 
@@ -33,7 +33,7 @@
 #define m_SYSCTL_STATE_NETWORK_READY (3)  // ネットワーク初期設定完了状態。WiFiクライアントモードで、インターネットに接続する。
 #define m_SYSCTL_STATE_DRIVE         (4)  // ドライブモード。
 
-#define m_SYSCTL_STATE_TRANSITION_NUM (5)  // 状態遷移数
+#define m_SYSCTL_STATE_TRANSITION_NUM (4)  // 状態遷移数
 
 // プロトタイプ宣言
 void SYSCTL_Init(void);

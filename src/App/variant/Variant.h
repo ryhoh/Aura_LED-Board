@@ -20,6 +20,8 @@
 #define m_VARIANT_LED_BRIGHTNESS_MAX (9)
 #define m_VARIANT_LED_BRIGHTNESS_MIN (1)
 
+#define m_VARIANT_LED_MODE_PIN_NOUSE (255)
+
 // 構造体定義
 typedef struct _Variant {
   /*  0-19 */  char i8_machine_name[m_VARIANT_MACHINE_NAME_SIZE];

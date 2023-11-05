@@ -19,6 +19,34 @@
 #include <WebServer.h>
 #endif
 
+#ifdef SIMULATOR
+#include <string>
+#include <unistd.h>
+#include <random>
+#include "../../MCU_Simulator/mock/NetworkMock.h"
+#include "../../MCU_Simulator/mock/NVMMock.h"
+#include "../../MCU_Simulator/mock/Max7219Mock.h"
+
+#define INPUT (0)
+#define OUTPUT (1)
+#define INPUT_PULLUP (2)
+#define INPUT_PULLDOWN (3)
+#define HIGH (1)
+#define LOW (0)
+#define delay(ms) (void)0
+#define delayMicroseconds(us) (void)0
+#define MSBFIRST (0)
+#define LSBFIRST (1)
+
+#define substring(begin, end) substr(begin, end)
+
+using String = std::string;
+
+void noInterrupts();
+void interrupts();
+
+#endif
+
 /* デバイスの差異を吸収する共通の関数群 */
 
 /* -- Definition -- */

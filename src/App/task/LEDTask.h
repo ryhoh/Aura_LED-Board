@@ -21,6 +21,8 @@
 // 構造体定義
 typedef struct _DisplayInfo {
     uint32_t u32_offset_from_left;
+    uint8_t u8_is_updated;
+    uint8_t u8_dummy[3];
     String str_to_display;
 } DisplayInfo_t;
 
@@ -35,6 +37,7 @@ typedef struct _DisplayInfo {
 void LED_Task_Init(void);
 void LED_Task_FirstTimeToRunningState(void);
 void LED_Task_Main(void);
+uint8_t GET_LED_Task_Setup_Done(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoClock(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoDate(void);
 DisplayInfo_t *GET_LED_Task_DisplayInfoMsg(void);

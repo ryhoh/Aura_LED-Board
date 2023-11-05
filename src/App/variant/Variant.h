@@ -17,8 +17,8 @@
 #define m_VARIANT_TYPE_NAME_SIZE (5)
 #define m_VARIANT_MACHINE_NAME_SIZE (20)
 
-#define m_VARIANT_LED_BRIGHTNESS_MAX (9)
-#define m_VARIANT_LED_BRIGHTNESS_MIN (1)
+#define m_VARIANT_LED_BRIGHTNESS_MAX (0x0F)
+#define m_VARIANT_LED_BRIGHTNESS_MIN (0x00)
 
 // 構造体定義
 typedef struct _Variant {

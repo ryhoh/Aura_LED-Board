@@ -25,11 +25,12 @@ struct Max7219 {
   uint8_t dat;  ///< Pin number connecting dat
   uint8_t lat;  ///< Pin number connecting lat (or cs)
   uint8_t clk;  ///< Pin number connecting clk
+  uint32_t cascading_num;  ///< Number of cascading Max7219
 
   /**
    * @brief Initialize Max7219.
   */
-  Max7219(): dat(0), lat(0), clk(0) {}
+  Max7219(): dat(0), lat(0), clk(0), cascading_num(1) {}
 
   /**
    * @brief Initialize Max7219.
@@ -38,7 +39,7 @@ struct Max7219 {
    * @param clk [in] clk pin.
    * @param brightness [in] Integer between [0, 9].
   */
-  Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness);
+  Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness, uint32_t cascading_num);
 
   /**
    * @brief Destroy Max7219.

@@ -72,7 +72,8 @@ void LED_Task_Init(void) {
   const uint8_t cu8_cs_pin = Get_VARIANT_SPICSPin();
   const uint8_t cu8_clk_pin = Get_VARIANT_SPIClockPin();
   const uint8_t cu8_brightness = Get_VARIANT_Brightness();
-  gsst_max7219 = Max7219(cu8_data_pin, cu8_cs_pin, cu8_clk_pin, cu8_brightness);
+  const uint32_t cu32_cascading_num = Get_VARIANT_MatrixNum();
+  gsst_max7219 = Max7219(cu8_data_pin, cu8_cs_pin, cu8_clk_pin, cu8_brightness, cu32_cascading_num);
 
   // ディスプレイ表示初期化
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);

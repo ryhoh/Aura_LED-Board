@@ -182,3 +182,15 @@ static void Network_Task_SubTaskMsg(void) {
 uint8_t GET_Network_Task_WiFi_Connected(void) {
   return gsu8_WiFi_Connected;
 }
+
+IPAddress_t GET_Network_Local_IPAddress() {
+  IPAddress st_ipaddress = WiFi.localIP();
+  IPAddress_t st_ipaddress_ret = {
+    st_ipaddress[0],
+    st_ipaddress[1],
+    st_ipaddress[2],
+    st_ipaddress[3]
+  };
+
+  return st_ipaddress_ret;
+}

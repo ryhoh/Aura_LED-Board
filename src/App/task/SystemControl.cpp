@@ -61,7 +61,7 @@ void SYSCTL_Init(void) {
   Network_Task_Init();
 
   // Webサーバのセットアップを行う
-  // Network_Task_Init_WebServer();
+  Network_Task_Init_WebServer();
 }
 
 /**
@@ -94,8 +94,15 @@ void SYSCTL_Priority_Task_Main(void) {
  * 
  */
 static void SYSCTL_SystemControl_Task_Main(void) {
+  uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
+
   // 状態遷移
   SYSCTL_State_Control();
+
+  // WebServer
+  if (cu8_wifi_connected_flg = m_ON) {  /* WiFiが接続できている場合 */
+    Network_Task_WebServer_Main();
+  }
 }
 
 /**

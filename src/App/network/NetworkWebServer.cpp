@@ -12,7 +12,7 @@
 static WebServer gsst_webserver(80);
 
 // プロトタイプ宣言
-static void Network_Task_AP_EntryPoint_root(void);
+static void Network_Task_WebServer_EntryPoint_root(void);
 // static void Network_Task_AP_EntryPoint_submit(void);
 
 // 関数定義
@@ -25,7 +25,7 @@ void Network_Task_Init_WebServer(void) {
   const String cstr_ap_ssid = Get_VARIANT_MachineName();
 
 
-  gsst_webserver.on("/", HTTP_GET, Network_Task_AP_EntryPoint_root);
+  gsst_webserver.on("/", HTTP_GET, Network_Task_WebServer_EntryPoint_root);
   // gsst_webserver.on("/submit", HTTP_POST, Network_Task_AP_EntryPoint_submit);
   gsst_webserver.onNotFound([]() {
     gsst_webserver.send(404, "<html><body>404 Not Found</body></html>");
@@ -34,7 +34,7 @@ void Network_Task_Init_WebServer(void) {
   gsst_webserver.begin();
 }
 
-static void Network_Task_AP_EntryPoint_root(void) {
+static void Network_Task_WebServer_EntryPoint_root(void) {
   #include "App/task/root.html"
   gsst_webserver.send(200, "text/html", cstr_html);
 }
@@ -75,6 +75,6 @@ static void Network_Task_AP_EntryPoint_root(void) {
  *       128ms周期で実行される
  * 
  */
-void Network_Task_RunAPMode(void) {
+void Network_Task_WebServer_Main(void) {
   gsst_webserver.handleClient();
 }

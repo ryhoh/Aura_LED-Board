@@ -18,7 +18,7 @@
 
 // プロトタイプ宣言
 void Network_Task_Init_WebServer(void);
-void Network_Task_RunAPMode(void);
+void Network_Task_WebServer_Main(void);
 Network_Config_t Get_NetworkAP_Network_Config(void);
 
 #endif  /* _NETWORKAPCONTROL_H_ */

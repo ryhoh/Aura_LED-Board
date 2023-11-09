@@ -255,7 +255,6 @@ static void LED_Task_SubTaskDate(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   // 内容が更新された場合のみ再描画
-  // if (gsst_displayInfo_date.u8_is_updated == m_ON) {
     for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
       matrixLEDs_date[j].fill(false);
     }
@@ -270,9 +269,6 @@ static void LED_Task_SubTaskDate(void) {
 
     gsst_displayInfo_date.u8_is_updated = m_OFF;
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
-  // } else {
-  //   gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
-  // }
 }
 
 /**

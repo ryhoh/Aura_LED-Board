@@ -143,6 +143,7 @@ static void LED_Task_ConfigureDisplayData(void) {
         M_CLIP_INC(su16_ipaddr_displayed_cnt, UINT16_MAX);
       } else {
         su8_ipaddr_displayed_flg = m_ON;
+        LED_Task_SubTaskMsg("", true);  // 暫定 メッセージスクロールをリセット
       }
     } else {
       // 通常モード

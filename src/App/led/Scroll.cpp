@@ -17,7 +17,7 @@ uint8_t writeScrollAscii(
   for (uint8_t i = 0; i < ledlen; ++i)
     matrixLEDs[i].fill(false);
 
-  if(writeAsciisToMatrixLEDs(matrixLEDs, 8, string, offset) == 0)
+  if(writeAsciisToMatrixLEDs(matrixLEDs, ledlen, string, offset) == 0)
     return 1;
   return 0;
 }
@@ -39,7 +39,7 @@ uint8_t writeScrollJIS(
   for (uint8_t i = 0; i < ledlen; ++i)
     matrixLEDs[i].fill(false);
 
-  if(writeJISsToMatrixLEDs(matrixLEDs, 8, string, offset) == 0)
+  if(writeJISsToMatrixLEDs(matrixLEDs, ledlen, string, offset) == 0)
     return 1;
   return 0;
 }

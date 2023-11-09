@@ -12,12 +12,15 @@
 #include "Driver/DeviceInterface.h"
 #include "App/Common.h"
 #include "App/task/LEDTask.h"
-#include "App/task/NetworkTask.h"
+#include "App/network/NetworkWebServer.h"
+#include "App/network/NetworkSTAControl.h"
 #include "App/nvm/NVM.h"
 
 // マクロ定義
-#define m_SYSCTL_CALL_ITVL (16)  // [ms,1]
-#define m_SYSCTL_CALL_ITVL_NETWORK (320)  // [ms,1]
+#define m_SYSCTL_CALL_ITVL_PRIORITY   (1)   // [ms,1]
+#define m_SYSCTL_CALL_ITVL_BACKGROUND (32)  // [ms,1]
+
+#define m_SYSCTL_SUBTASK_INVL_NETWORK (128)  // [ms,1]
 
 #define m_SYSCTL_BLOCKING_LEVEL_ALL     (0)
 #define m_SYSCTL_BLOCKING_LEVEL_LED     (1)
@@ -30,16 +33,17 @@
 #define m_SYSCTL_STATE_NETWORK_READY (3)  // ネットワーク初期設定完了状態。WiFiクライアントモードで、インターネットに接続する。
 #define m_SYSCTL_STATE_DRIVE         (4)  // ドライブモード。
 
-#define m_SYSCTL_STATE_TRANSITION_NUM (5)  // 状態遷移数
+#define m_SYSCTL_STATE_TRANSITION_NUM (4)  // 状態遷移数
 
 // プロトタイプ宣言
 void SYSCTL_Init(void);
-void Main_Task(void);
+void SYSCTL_Priority_Task_Main(void);
 void SYSCTL_WaitForBlockingLevel(uint8_t u8_level);
 void Set_SYSCTL_Blocking_Level(uint8_t u8_level);
 void Unset_SYSCTL_Blocking_Level(uint8_t u8_level);
 void Set_SYSCTL_LEDSetupState(uint8_t u8_done);
 void Set_SYSCTL_NetworkSetupState(uint8_t u8_done);
+void SYSCTL_Background_Task_Main(void);
 uint8_t Get_SYSCTL_SystemState(void);
 // uint8_t *Get_SYSCTL_SetupState(void);
 // uint8_t *Get_SYSCTL_NetworkSetupState(void);

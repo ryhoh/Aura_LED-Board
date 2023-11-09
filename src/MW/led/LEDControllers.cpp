@@ -1,32 +1,54 @@
 #include "LEDControllers.h"
 
-Max7219::Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness)
+Max7219::Max7219(uint8_t dat, uint8_t lat, uint8_t clk, uint8_t brightness, uint32_t cascading_num)
 {
+#ifdef ARDUINO
+
   this->dat = dat;
   this->lat = lat;
   this->clk = clk;
+  this->cascading_num = cascading_num;
+
+  uint8_t brightness_tmp = brightness;
 
   call_pinMode(dat, OUTPUT);
   call_pinMode(lat, OUTPUT);
   call_pinMode(clk, OUTPUT);
-
-  this->send(0x0c, 0x01);  // シャットダウン -> オペレート
-  this->send(0x0b, 0x07);  // スキャンリミット設定 -> 8桁
-  this->send(0x09, 0x00);  // デコードモード -> No decodeモード
-
-  // 残留表示を消去
-  for (uint8_t addr_i = 1; addr_i < 9; ++addr_i) {
-    this->send(addr_i, 0x0F);  // 文字blankを送信
-  }
+  call_digitalWrite(this->lat, HIGH);
 
   // 輝度設定
-  if (9 < brightness)
-    brightness = 9;
-  this->send(0x0a, brightness);
+  if (9 < brightness_tmp) {
+    brightness_tmp = 9;
+  }
+
+  /* 項目ごとに全チップへ送信する */
+  for (uint32_t ul_i = 0; ul_i < cascading_num; ++ul_i) {
+    this->send(0x09, 0x00);  // デコードモード -> No decodeモード
+  }
+
+  for (uint32_t ul_i = 0; ul_i < cascading_num; ++ul_i) {
+    this->send(0x0A, brightness_tmp);  // 輝度設定
+  }
+
+  for (uint32_t ul_i = 0; ul_i < cascading_num; ++ul_i) {
+    this->send(0x0B, 0x07);  // スキャンリミット設定 -> 8桁
+  }
+
+  for (uint32_t ul_i = 0; ul_i < cascading_num; ++ul_i) {
+    this->send(0x0F, 0x00);  // ディスプレイテストモード -> テストモード終了
+  }
+  
+  for (uint32_t ul_i = 0; ul_i < cascading_num; ++ul_i) {
+    this->send(0x0C, 0x01);  // シャットダウン -> オペレート
+  }
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::testRun(uint8_t step)
 {
+#ifndef SIMULATOR  // シミュレータでは設定不要
+
   switch (step) {
   case 0:
     // ディスプレイテストモード（全点灯）
@@ -45,20 +67,30 @@ void Max7219::testRun(uint8_t step)
   default:
     break;
   }
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::flushMatrixLED(MatrixLED &matrixLED)
 {
+#ifdef SIMULATOR
+  Mock_Max7219_flushMatrixLED(matrixLED);
+#else  /* SIMULATOR */
+
   call_digitalWrite(this->lat, LOW);
   for (uint8_t row_i = 0; row_i < 8; ++row_i) {
     this->shiftOut(row_i + 1, *(matrixLED.buffer + row_i));
   }
   call_digitalWrite(this->lat, HIGH);
-  call_digitalWrite(this->lat, LOW);
+
+#endif  /* SIMULATOR */
 }
 
 void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
 {
+#ifdef SIMULATOR
+  Mock_Max7219_flushMatrixLEDs(matrixLEDs, length);
+#else  /* SIMULATOR */
 
   for (uint8_t row_i = 0; row_i < 8; ++row_i) {
     call_digitalWrite(this->lat, LOW);
@@ -66,8 +98,9 @@ void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
         this->shiftOut(row_i + 1, *((matrixLEDs + matrix_i)->buffer + row_i));
     }
     call_digitalWrite(this->lat, HIGH);
-    call_digitalWrite(this->lat, LOW);
   }
+
+#endif  /* SIMULATOR */
 }
 
 inline void Max7219::shiftOut(uint8_t addr, uint8_t data)
@@ -81,5 +114,4 @@ inline void Max7219::send(uint8_t addr, uint8_t data)
   call_digitalWrite(this->lat, LOW);
   this->shiftOut(addr, data);
   call_digitalWrite(this->lat, HIGH);
-  call_digitalWrite(this->lat, LOW);
 }

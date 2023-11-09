@@ -8,6 +8,11 @@
 // インクルード
 #include "App/task/LEDTask.h"
 
+// 定数
+
+/* 以下は暫定で、本来はスクロール1周完了を検知すべき */
+#define m_LED_TASK_IPADDRESS_DISPLAY_TIME (800)  // IPアドレス表示時間 [ms,16] 12.8秒
+
 // 変数宣言
 static DisplayInfo_t gsst_displayInfo_clock = DisplayInfo_t {
   .u32_offset_from_left = 0,
@@ -112,18 +117,38 @@ void LED_Task_Main(void) {
  */
 static void LED_Task_ConfigureDisplayData(void) {
   const uint8_t cu8_system_state = Get_SYSCTL_SystemState();
+  const Network_Config_t cst_Network_Config = Get_NVM_Network_Config();
+  const IPAddress_t cst_IPAddress = GET_Network_Local_IPAddress();
+
+  static uint8_t su8_ipaddr_displayed_flg = m_OFF;
+  static uint16_t su16_ipaddr_displayed_cnt = 0;
 
   if (cu8_system_state == m_SYSCTL_STATE_LED_READY) {
     // LEDは使えるがネットワークが準備中なら
-    const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + GET_Network_WiFi_SSID();
-    LED_Task_ScrollLoop(str_msg);
-  } else if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
-    // APモードで設定中なら
-    const String str_msg = gsst_displayInfo_msg.str_to_display;
+    const String str_msg = String(m_LED_TASK_CONNECTING_MSG) + cst_Network_Config.str_ssid;
     LED_Task_ScrollLoop(str_msg);
   } else if ((cu8_system_state == m_SYSCTL_STATE_NETWORK_READY)
            || (cu8_system_state == m_SYSCTL_STATE_DRIVE)) {
-    LED_Task_RunningState();
+    // 初めてネットワークが準備完了したときに、スクロールメッセージにIPアドレスを表示する
+    if (su8_ipaddr_displayed_flg == m_OFF) {
+      const String str_msg =
+          String(cst_IPAddress.u8_octet1) + "."
+        + String(cst_IPAddress.u8_octet2) + "."
+        + String(cst_IPAddress.u8_octet3) + "."
+        + String(cst_IPAddress.u8_octet4);
+      LED_Task_ScrollLoop(str_msg);
+
+      // 表示状態を維持する
+      if (su16_ipaddr_displayed_cnt < m_LED_TASK_IPADDRESS_DISPLAY_TIME) {
+        M_CLIP_INC(su16_ipaddr_displayed_cnt, UINT16_MAX);
+      } else {
+        su8_ipaddr_displayed_flg = m_ON;
+        LED_Task_SubTaskMsg("", true);  // 暫定 メッセージスクロールをリセット
+      }
+    } else {
+      // 通常モード
+      LED_Task_RunningState();
+    }
   }
 
   // @@暫定 スクロールではLEDの表示更新要求フラグは常にONにする
@@ -136,8 +161,8 @@ static void LED_Task_ConfigureDisplayData(void) {
  * 
  */
 static void LED_Task_ScrollLoop(const String str_msg) {
-  static uint8_t su8_msg_end = true;
-  static String sstr_msg_old = String("");
+  static uint8_t su8_msg_end = true;  /* メッセージスクロール終了フラグ */
+  static String sstr_msg_old = String("");  /* メッセージ前回値 */
   
   // 表示内容が変わったらリセット
   if (sstr_msg_old != str_msg) {
@@ -231,7 +256,6 @@ static void LED_Task_SubTaskDate(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   // 内容が更新された場合のみ再描画
-  if (gsst_displayInfo_date.u8_is_updated == m_ON) {
     for (uint8_t j = 0; j < cu8_matrix_num; ++j) {
       matrixLEDs_date[j].fill(false);
     }
@@ -246,9 +270,6 @@ static void LED_Task_SubTaskDate(void) {
 
     gsst_displayInfo_date.u8_is_updated = m_OFF;
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
-  } else {
-    gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
-  }
 }
 
 /**

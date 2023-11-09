@@ -16,15 +16,9 @@
 #include "App/task/SystemControl.h"
 #include "App/task/LEDTask.h"
 
-// これらはProfile.hかどこかに移動するべき
-#define m_NETWORK_TASK_AP_PASSWD (String("luminous-ryhoh"))
-#define m_NETWORK_TASK_AP_IP (IPAddress(192, 168, 1, 1))
-#define m_NETWORK_TASK_AP_GATEWAY (IPAddress(192, 168, 1, 10))
-#define m_NETWORK_TASK_AP_SUBNET (IPAddress(255, 255, 255, 0))
-
 // プロトタイプ宣言
-void Network_Task_Init_APMode(void);
-void Network_Task_RunAPMode(void);
+void Network_Task_Init_WebServer(void);
+void Network_Task_WebServer_Main(void);
 Network_Config_t Get_NetworkAP_Network_Config(void);
 
 #endif  /* _NETWORKAPCONTROL_H_ */

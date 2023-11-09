@@ -21,7 +21,7 @@
 // インクルード
 #include "Driver/DeviceInterface.h"
 #include "App/Type.h"
-#include "App/network/NetworkAPControl.h"
+#include "App/network/NetworkWebServer.h"
 
 // マクロ定義
 #define m_NVM_BUFFER_SIZE (31)  // バッファサイズ

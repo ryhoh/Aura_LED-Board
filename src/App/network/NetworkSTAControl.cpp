@@ -18,6 +18,7 @@
 // 変数宣言
 static const char gscc_weekday[m_NETWORK_TASK_WEEKDAY_STR_SIZE] = "日月火水木金土";
 static Network_Config_t gsst_Network_Config;
+static uint8_t gsu8_WiFi_Connected = m_OFF;
 
 // プロトタイプ宣言
 static void Network_Task_Make_Connection(void);
@@ -33,8 +34,6 @@ static void Network_Task_SubTaskMsg(void);
  * 
  */
 void Network_Task_Init(void) {
-  // ssid はNVMから読み込む
-  char u8_buffer[31] = { 0 };
   gsst_Network_Config = Get_NVM_Network_Config();
   WiFi.mode(WIFI_STA);
   WiFi.begin(gsst_Network_Config.str_ssid.c_str(), gsst_Network_Config.str_passwd.c_str());
@@ -51,9 +50,7 @@ void Network_Task_Main(void) {
   static int32_t last_mday = -1;
   uint8_t u8_system_State = Get_SYSCTL_SystemState();
 
-  if (u8_system_State != m_SYSCTL_STATE_CONFIGURE) {
-    Network_Task_Make_Connection();
-  }
+  Network_Task_Make_Connection();
 
   if ((u8_system_State == m_SYSCTL_STATE_NETWORK_READY)
    || (u8_system_State == m_SYSCTL_STATE_DRIVE)) {
@@ -81,7 +78,7 @@ void Network_Task_Main(void) {
 
 static void Network_Task_Make_Connection(void) {
   if (WiFi.status() == WL_CONNECTED) {
-    Set_SYSCTL_NetworkSetupState(m_ON);
+    gsu8_WiFi_Connected = m_ON;
   }
 }
 
@@ -181,7 +178,19 @@ static void Network_Task_SubTaskMsg(void) {
   // Unset_SYSCTL_Blocking_Level(m_SYSCTL_BLOCKING_LEVEL_LED);
 }
 
+// IF
+uint8_t GET_Network_Task_WiFi_Connected(void) {
+  return gsu8_WiFi_Connected;
+}
 
-String GET_Network_WiFi_SSID(void) {
-  return gsst_Network_Config.str_ssid;
+IPAddress_t GET_Network_Local_IPAddress() {
+  IPAddress st_ipaddress = WiFi.localIP();
+  IPAddress_t st_ipaddress_ret = {
+    st_ipaddress[0],
+    st_ipaddress[1],
+    st_ipaddress[2],
+    st_ipaddress[3]
+  };
+
+  return st_ipaddress_ret;
 }

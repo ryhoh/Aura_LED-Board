@@ -17,14 +17,13 @@ OBJECTS  = DeviceInterface
 OBJECTS += MatrixLED LEDControllers
 OBJECTS += AsciiMatrix JISMatrix Scroll
 OBJECTS += StatusClient NVM
-OBJECTS += NetworkAPControl NetworkSTAControl
+OBJECTS += NetworkWebServer NetworkSTAControl
 OBJECTS += LEDTask SystemControl Variant
 OBJECTS += NetworkMock NVMMock Max7219Mock
 OBJECTS.o       = $(addsuffix .o  , $(OBJECTS))
 
-.PHONY:	test
-test:	simulator.out
-	./simulator.out
+.PHONY:	build
+build:	simulator.out simulator.o $(OBJECTS.o)	# 中間ファイルを残す意図
 
 .PHONY:	clean
 clean:

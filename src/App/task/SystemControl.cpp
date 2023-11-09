@@ -9,7 +9,6 @@
 #include "SystemControl.h"
 
 // 変数宣言
-static uint8_t gsu8_is_network_setup_done = m_OFF;  // ネットワークセットアップ完了フラグ
 static uint8_t gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_POWER_ON;  // システム制御状態
 
 static uint8_t gsu8_SYSCTL_Blocking_Flags[m_SYSCTL_BLOCKING_LEVEL_NUM] = { 0 };  // 割り込み禁止フラグ
@@ -33,9 +32,7 @@ static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITI
   /* Judge                       Entry                        Do                    Exit */
   { NULL,                        NULL,                        NULL,                 NULL },  // (PowerOn)
   { &SYSCTL_Judge_LED_Ready,     &SYSCTL_Entry_LED_Ready,     NULL,                 NULL },  // PowerOn      -> LEDReady
-  { &SYSCTL_Judge_Configure,     &SYSCTL_Entry_Configure,     &SYSCTL_Do_Configure, NULL },  // LEDReady     -> Configure
   { &SYSCTL_Judge_Network_Ready, &SYSCTL_Entry_Network_Ready, NULL,                 NULL },  // LEDReady     -> NetworkReady
-  { &SYSCTL_Judge_Drive,         &SYSCTL_Entry_Drive,         &SYSCTL_Do_Drive,     NULL },  // NetworkReady -> Drive
 };
 
 // 関数定義
@@ -55,13 +52,15 @@ void SYSCTL_Init(void) {
   call_pinMode(Get_VARIANT_SPIDataPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPICSPin(), OUTPUT);
   call_pinMode(Get_VARIANT_SPIClockPin(), OUTPUT);
-  call_pinMode(Get_VARIANT_ModePin(), INPUT_PULLDOWN);
 
   // LED のセットアップを行う
   LED_Task_Init();
 
   // ネットワークのセットアップを行う
   Network_Task_Init();
+
+  // Webサーバのセットアップを行う
+  Network_Task_Init_WebServer();
 }
 
 /**
@@ -94,8 +93,15 @@ void SYSCTL_Priority_Task_Main(void) {
  * 
  */
 static void SYSCTL_SystemControl_Task_Main(void) {
+  uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
+
   // 状態遷移
   SYSCTL_State_Control();
+
+  // WebServer
+  if (cu8_wifi_connected_flg = m_ON) {  /* WiFiが接続できている場合 */
+    Network_Task_WebServer_Main();
+  }
 }
 
 /**
@@ -149,29 +155,16 @@ static void SYSCTL_Entry_LED_Ready(void) {
   GET_LED_Task_DisplayInfoMsg()->str_to_display = "LED Ready";
 }
 
-static void SYSCTL_Judge_Configure(void) {
-  // 遷移条件は、LED準備完了状態 && モードピン=LOWであること
-  const uint8_t cu8_mode_pin = Get_VARIANT_ModePin();
-  const int32_t i32_mode = call_digitalRead(cu8_mode_pin);
-  if ((gsu8_SYSCTL_SystemState == m_SYSCTL_STATE_LED_READY)
-    && (i32_mode == LOW)) {
-    // 遷移先状態を設定
-    gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_CONFIGURE;
-  }
-}
-
-static void SYSCTL_Entry_Configure(void) {
-  Network_Task_Init_APMode();
-}
-
 static void SYSCTL_Do_Configure(void) {
   // wip
 }
 
 static void SYSCTL_Judge_Network_Ready(void) {
+  uint8_t u8_is_network_setup_done = GET_Network_Task_WiFi_Connected();
+
   // 遷移条件は、(現在LEDReady状態 && ネットワークのセットアップが完了していること)
   if ((gsu8_SYSCTL_SystemState == m_SYSCTL_STATE_LED_READY)
-    && (gsu8_is_network_setup_done == m_ON)) {
+    && (u8_is_network_setup_done == m_ON)) {
     // 遷移先状態を設定
     gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_NETWORK_READY;
   }
@@ -180,83 +173,6 @@ static void SYSCTL_Judge_Network_Ready(void) {
 static void SYSCTL_Entry_Network_Ready(void) {
   // wip
 }
-
-static void SYSCTL_Judge_Drive(void) {
-  // 遷移条件は、(現在NetworkReady状態)
-  if (gsu8_SYSCTL_SystemState == m_SYSCTL_STATE_NETWORK_READY) {
-    // 遷移先状態を設定
-    gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_DRIVE;
-  }
-}
-
-static void SYSCTL_Entry_Drive(void) {
-  // wip
-  LED_Task_FirstTimeToRunningState();
-}
-
-static void SYSCTL_Do_Drive(void) {
-  static uint8_t u8_cnt = 0;
-  ++u8_cnt;
-  M_CLIP_MAX(u8_cnt, UINT8_MAX-1);
-  if (u8_cnt > 100) {
-    WiFi.disconnect();
-  }
-}
-
-/**
- * @brief 割り込み禁止の確認と待機
- * @note 割り込み禁止レベルが指定レベルより緩和されるまで待機する
- * 
- * @param u8_level 
- */
-// void SYSCTL_WaitForBlockingLevel(uint8_t u8_level) {
-//   uint8_t u8_blocked = m_ON;
-
-//   // レベルが範囲外の場合は何もしない
-//   if (u8_level >= m_SYSCTL_BLOCKING_LEVEL_NUM) {
-//     return;
-//   }
-
-//   while (u8_blocked == m_ON) {
-//     // 割り込み禁止されているか確認
-//     u8_blocked = m_OFF;
-//     for (uint8_t i = 0; i <= u8_level; i++) {
-//       if (gsu8_SYSCTL_Blocking_Flags[i] == m_ON) {
-//         u8_blocked = m_ON;
-//         break;
-//       }
-//     }
-
-//     // 割り込み禁止されている場合は待機
-//     call_usleep(100);
-//   }
-// }
-
-// /**
-//  * @brief 割り込み禁止レベルを設定する
-//  * 
-//  * @param u8_level 禁止レベル
-//  */
-// void Set_SYSCTL_Blocking_Level(uint8_t u8_level) {
-//   if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
-//     gsu8_SYSCTL_Blocking_Flags[u8_level] = m_ON;
-//   }
-// }
-
-// /**
-//  * @brief 割り込み禁止レベルを解除する
-//  * 
-//  * @param u8_level 禁止レベル
-//  */
-// void Unset_SYSCTL_Blocking_Level(uint8_t u8_level) {
-//   if (u8_level < m_SYSCTL_BLOCKING_LEVEL_NUM) {
-//     gsu8_SYSCTL_Blocking_Flags[u8_level] = m_OFF;
-//   }
-// }
-
-// void Set_SYSCTL_LEDSetupState(uint8_t u8_done) {
-//     gsu8_is_LED_setup_done = u8_done;
-// }
 
 /**
  * @brief バックグラウンドタスク
@@ -272,11 +188,7 @@ void SYSCTL_Background_Task_Main(void) {
   
   // ネットワークタスク
   if (su32_cnt % m_SYSCTL_SUBTASK_INVL_NETWORK == 0) {
-    if (cu8_system_state == m_SYSCTL_STATE_CONFIGURE) {
-      Network_Task_RunAPMode();
-    } else {
-      Network_Task_Main();
-    }
+    Network_Task_Main();
   }
 
   // カウンタ更新
@@ -285,10 +197,6 @@ void SYSCTL_Background_Task_Main(void) {
   } else {
     su32_cnt += m_SYSCTL_CALL_ITVL_BACKGROUND;
   }
-}
-
-void Set_SYSCTL_NetworkSetupState(uint8_t u8_done) {
-  gsu8_is_network_setup_done = u8_done;
 }
 
 uint8_t Get_SYSCTL_SystemState(void) {

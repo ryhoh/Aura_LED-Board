@@ -11,17 +11,17 @@
 
 // 変数宣言
 static const Variant_t gscst_variant_tbl[m_VARIANT_TABLE_SIZE] = {
-  /* Machine Name        , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin, Lamp Pin, Brightness                  , dummy    */
-  { "LU-LEDB-0001A1     ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "LU-LEDB-0002A1     ",          8,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "LU-LEDB-0003A1     ",         12,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "LU-LEDB-0102A1     ",          8,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
-  { "INVALID-VARIANT    ",          4,       10,      5,         8,        2,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  /* Machine Name        , Matrix Num, Data Pin, CS Pin, Clock Pin, Mode Pin,                     Lamp Pin, Brightness                  , dummy    */
+  { "LU-LEDB-0001A1     ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0002A1     ",          8,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0003A1     ",         12,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "LU-LEDB-0102A1     ",          8,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
+  { "INVALID-VARIANT    ",          4,       10,      5,         8, m_VARIANT_LED_MODE_PIN_NOUSE,        3, m_VARIANT_LED_BRIGHTNESS_MIN, { 0, 0 } },
 };
 
 static uint8_t gsu8_variant_idx = 0;
@@ -63,9 +63,12 @@ uint8_t Get_VARIANT_SPIClockPin(void) {
   return gsst_selected_variant.u8_spi_clock_pin;
 }
 
+/* APモード廃止で切替がなくなるため無効化 */
+#if 0
 uint8_t Get_VARIANT_ModePin(void) {
   return gsst_selected_variant.u8_mode_pin;
 }
+#endif
 
 uint8_t Get_VARIANT_LampPin(void) {
   return gsst_selected_variant.u8_lamp_pin;

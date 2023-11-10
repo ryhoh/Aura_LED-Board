@@ -13,6 +13,12 @@
 /* 以下は暫定で、本来はスクロール1周完了を検知すべき */
 #define m_LED_TASK_IPADDRESS_DISPLAY_TIME (800)  // IPアドレス表示時間 [ms,16] 12.8秒
 
+// 構造体定義(内部用)
+typedef struct _ScrollInfo_t {
+  uint32_t u32_msg_ended;
+  uint32_t u32_scroll_step;
+} ScrollInfo_t;
+
 // 変数宣言
 static DisplayInfo_t gsst_displayInfo_clock = DisplayInfo_t {
   .u32_offset_from_left = 0,
@@ -30,6 +36,11 @@ static DisplayInfo_t gsst_displayInfo_msg = DisplayInfo_t {
   .str_to_display = String(""),
 };
 
+static ScrollInfo_t gsst_scrollInfo_msg = ScrollInfo_t {
+  .u32_msg_ended = m_OFF,
+  .u32_scroll_step = 0,
+};
+
 static MatrixLED matrixLEDs_clock[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 時計表示用
 static MatrixLED matrixLEDs_date[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 日付表示用
 static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセージ表示用
@@ -43,11 +54,12 @@ static void LED_Task_ConfigureDisplayData(void);
 static void LED_Task_ScrollLoop(const String str_msg);
 static void LED_Task_RunningState(void);
 static void LED_Task_SubTaskClock(void);
-static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src);
 static void LED_Task_SubTaskDate(void);
 static void LED_Task_OutputMain(void);
-static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
+static uint8_t LED_Task_SubTaskMsg(const String str_msg, ScrollInfo_t *pst_scroll_info);
 static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step);
+static void LED_Task_ResetScrollInfo(ScrollInfo_t *pst_scroll_info);
+static void LED_Task_copyMatrixLEDs(const MatrixLED *src, MatrixLED *dst);
 
 // 関数定義
 /**
@@ -94,7 +106,7 @@ void LED_Task_Init(void) {
  * 
  */
 void LED_Task_FirstTimeToRunningState(void) {
-  LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
+  LED_Task_ResetScrollInfo(&gsst_scrollInfo_msg);  // メッセージ表示用の状態を初期化
 }
 
 /**
@@ -143,7 +155,7 @@ static void LED_Task_ConfigureDisplayData(void) {
         M_CLIP_INC(su16_ipaddr_displayed_cnt, UINT16_MAX);
       } else {
         su8_ipaddr_displayed_flg = m_ON;
-        LED_Task_SubTaskMsg("", true);  // 暫定 メッセージスクロールをリセット
+        LED_Task_ResetScrollInfo(&gsst_scrollInfo_msg);  // 暫定 メッセージスクロールをリセット
       }
     } else {
       // 通常モード
@@ -166,16 +178,16 @@ static void LED_Task_ScrollLoop(const String str_msg) {
   
   // 表示内容が変わったらリセット
   if (sstr_msg_old != str_msg) {
-    su8_msg_end = LED_Task_SubTaskMsg("", true);
+    LED_Task_ResetScrollInfo(&gsst_scrollInfo_msg);
   }
   sstr_msg_old = str_msg;
 
   // スクロール処理
-  su8_msg_end = LED_Task_SubTaskMsg(str_msg, false);
+  su8_msg_end = LED_Task_SubTaskMsg(str_msg, &gsst_scrollInfo_msg);
 
   // スクロール終了時にリセット
   if (su8_msg_end == true) {
-    LED_Task_SubTaskMsg("", true);  // メッセージ表示用の状態を初期化
+    LED_Task_ResetScrollInfo(&gsst_scrollInfo_msg);  // メッセージ表示用の状態を初期化
     su8_msg_end = false;
   }
 }
@@ -197,12 +209,12 @@ static void LED_Task_RunningState(void) {
   } else if (step < STEP_20s) {
     LED_Task_SubTaskDate();
   } else {
-    u8_step_ended = LED_Task_SubTaskMsg(cstr_lastMessage, false);
+    u8_step_ended = LED_Task_SubTaskMsg(cstr_lastMessage, &gsst_scrollInfo_msg);
   }
 
   if (u8_step_ended == true) {
     step = 0;
-    u8_step_ended = LED_Task_SubTaskMsg("", true);
+    LED_Task_ResetScrollInfo(&gsst_scrollInfo_msg);
   } else {
     step++;
   }
@@ -228,22 +240,12 @@ static void LED_Task_SubTaskClock(void) {
       gsst_displayInfo_clock.u32_offset_from_left
     );
     
-    LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_clock);
+    LED_Task_copyMatrixLEDs(matrixLEDs_clock, matrixLEDs_output);
 
     gsst_displayInfo_clock.u8_is_updated = m_OFF;
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
   } else {
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;
-  }
-}
-
-/**
- * @brief matrixLEDs バッファのコピー
- * 
- */
-static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src) {
-  for (uint8_t u8_i = 0; u8_i < m_PROFILE_MAX_DESIGNED_PANEL_NUM; ++u8_i) {
-    dst[u8_i] = src[u8_i];
   }
 }
 
@@ -266,7 +268,7 @@ static void LED_Task_SubTaskDate(void) {
       gsst_displayInfo_date.u32_offset_from_left
     );
     
-    LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_date);
+    LED_Task_copyMatrixLEDs(matrixLEDs_date, matrixLEDs_output);
 
     gsst_displayInfo_date.u8_is_updated = m_OFF;
     gsu8_is_LED_DisplayUpdateRequiredFlg = m_ON;
@@ -279,37 +281,21 @@ static void LED_Task_SubTaskDate(void) {
  * 
  * @return uint8_t スクロール完了時にtrueを返す
  */
-static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required) {
-  static uint32_t u32_msg_ended = false;
-  static uint32_t su32_scroll_step = 0;
-  
-  // SetupState -> RunningStateに移行したときに、スクロールをリセットすることを想定
-  if (u8_reset_required == true) {
-    u32_msg_ended = false;
-    su32_scroll_step = 0;
-  } else {
-    u32_msg_ended = LED_Task_SubTaskMsg_SubRoutine(str_msg, su32_scroll_step);
-    su32_scroll_step++;
-  }
+static uint8_t LED_Task_SubTaskMsg(const String str_msg, ScrollInfo_t *pst_scroll_info) {
+  // 前回値を取得
+  uint32_t u32_msg_ended;
+  uint32_t u32_scroll_step = pst_scroll_info->u32_scroll_step;
 
-  return u32_msg_ended;
-}
+  /* スクロール処理 */
+  u32_msg_ended = LED_Task_SubTaskMsg_SubRoutine(str_msg, u32_scroll_step);
+  M_CLIP_INC(u32_scroll_step, UINT32_MAX);
 
-/**
- * @brief メッセージ表示サブタスクのサブルーチン
- * 
- * @param u32_msg_ended メッセージ終了フラグ
- * @param su32_scroll_step スクロールステップ
- * @note 16ms周期で呼び出し
- * @return uint8_t スクロール完了時にtrueを返す
- */
-static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step) {
-  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
-  uint8_t u8_step_ended;
+  /* スクロール情報を更新 */
+  pst_scroll_info->u32_msg_ended = u32_msg_ended;
+  pst_scroll_info->u32_scroll_step = u32_scroll_step;
 
-  u8_step_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
-  LED_Task_copyMatrixLEDs(matrixLEDs_output, matrixLEDs_msg);
-  return u8_step_ended;
+  /* スクロール完了時にtrueを返す */
+  return pst_scroll_info->u32_msg_ended;
 }
 
 /**
@@ -325,10 +311,45 @@ static void LED_Task_OutputMain(void) {
   }
 }
 
+/* ---------------- 共通関数 ---------------- */
 /**
- * インタフェース
+ * @brief メッセージ表示サブタスクのサブルーチン
+ * 
+ * @param u32_msg_ended メッセージ終了フラグ
+ * @param su32_scroll_step スクロールステップ
+ * @note 16ms周期で呼び出し
+ * @return uint8_t スクロール完了時にtrueを返す
+ */
+static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step) {
+  const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
+  uint8_t u8_step_ended;
+
+  u8_step_ended = writeScrollJIS(matrixLEDs_msg, cu8_matrix_num, str_msg.c_str(), su32_scroll_step / m_LED_TASK_SCROLL_CLOCK);
+  LED_Task_copyMatrixLEDs(matrixLEDs_msg, matrixLEDs_output);
+  return u8_step_ended;
+}
+
+/**
+ * @brief スクロール情報をリセットする
+ * 
+ * @param pst_scroll_info スクロール情報
+ */
+static void LED_Task_ResetScrollInfo(ScrollInfo_t *pst_scroll_info) {
+  pst_scroll_info->u32_msg_ended = m_OFF;
+  pst_scroll_info->u32_scroll_step = 0;
+}
+
+/**
+ * @brief matrixLEDs バッファのコピー
  * 
  */
+static void LED_Task_copyMatrixLEDs(const MatrixLED *src, MatrixLED *dst) {
+  for (uint32_t u32_i = 0; u32_i < m_PROFILE_MAX_DESIGNED_PANEL_NUM; ++u32_i) {
+    dst[u32_i] = src[u32_i];
+  }
+}
+
+/* ---------------- インタフェース ---------------- */
 uint8_t GET_LED_Task_Setup_Done(void) {
   return gsu8_is_LED_setup_done;
 }

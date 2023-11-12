@@ -21,6 +21,12 @@
 #define M_CLIP_MIN(x, min) ((x) < (min) ? (min) : (x))
 #define M_CLIP_INC(x, max) { (x) = ((x) >= (max) ? (max) : ((x) + 1)); }
 
+#ifdef SIMULATOR
+#define DEC2STR(num) std::to_string(num)
+#else
+#define DEC2STR(num) String(num)
+#endif
+
 // 構造体定義
 typedef struct _TransitionTable {
     void (*p_judge)(void);

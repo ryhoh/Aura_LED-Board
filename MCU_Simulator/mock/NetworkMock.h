@@ -25,11 +25,11 @@ struct WebServer {
 };
 
 struct IPAddress {
-    int32_t octet[4];
+    uint8_t octet[4];
 
-    IPAddress (int32_t a, int32_t b, int32_t c, int32_t d);
+    IPAddress (uint8_t a, uint8_t b, uint8_t c, uint8_t d);
 
-    int32_t operator[] (int32_t index) const;
+    uint8_t operator[] (uint8_t index) const;
 };
 
 struct WiFiClass {
@@ -38,6 +38,7 @@ struct WiFiClass {
     void softAP(std::string ssid, std::string password);
     IPAddress softAPIP();
     void softAPConfig(IPAddress ip, IPAddress gateway, IPAddress subnet);
+    IPAddress localIP();
     int32_t status();
     void disconnect();
 };

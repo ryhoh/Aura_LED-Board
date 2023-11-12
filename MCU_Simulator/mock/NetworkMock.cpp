@@ -43,14 +43,14 @@ void WebServer::handleClient() {
 }
 
 // IPAddress
-IPAddress::IPAddress(int32_t a, int32_t b, int32_t c, int32_t d) {
+IPAddress::IPAddress(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
   this->octet[0] = a;
   this->octet[1] = b;
   this->octet[2] = c;
   this->octet[3] = d;
 }
 
-int32_t IPAddress::operator[] (int32_t index) const {
+uint8_t IPAddress::operator[] (uint8_t index) const {
   return this->octet[index];
 }
 
@@ -73,6 +73,10 @@ IPAddress WiFiClass::softAPIP() {
 
 void WiFiClass::softAPConfig(IPAddress ip, IPAddress gateway, IPAddress subnet) {
   return;
+}
+
+IPAddress WiFiClass::localIP() {
+  return IPAddress(192, 168, 1, 60);  // 適当
 }
 
 int32_t WiFiClass::status() {

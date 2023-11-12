@@ -132,10 +132,10 @@ static void LED_Task_ConfigureDisplayData(void) {
     // 初めてネットワークが準備完了したときに、スクロールメッセージにIPアドレスを表示する
     if (su8_ipaddr_displayed_flg == m_OFF) {
       const String str_msg =
-          String(cst_IPAddress.u8_octet1) + "."
-        + String(cst_IPAddress.u8_octet2) + "."
-        + String(cst_IPAddress.u8_octet3) + "."
-        + String(cst_IPAddress.u8_octet4);
+          DEC2STR(cst_IPAddress.u8_octet1) + "."
+        + DEC2STR(cst_IPAddress.u8_octet2) + "."
+        + DEC2STR(cst_IPAddress.u8_octet3) + "."
+        + DEC2STR(cst_IPAddress.u8_octet4);
       LED_Task_ScrollLoop(str_msg);
 
       // 表示状態を維持する

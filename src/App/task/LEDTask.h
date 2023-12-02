@@ -29,7 +29,7 @@ typedef struct _DisplayInfo {
 // マクロ定義
 #define m_LED_TASK_CALL_ITVL (16)  // [ms,1]
 #define m_LED_TASK_10s (10000)  // [ms,1]
-#define m_LED_TASK_SCROLL_ITVL (80)  // [ms/step,1]
+#define m_LED_TASK_SCROLL_ITVL (50)  // [ms/pixel,1] 1pixel=50ms, 1s=20pixels
 #define m_LED_TASK_SCROLL_CLOCK (m_LED_TASK_SCROLL_ITVL / m_LED_TASK_CALL_ITVL)  // [1/step,1]
 #define m_LED_TASK_CONNECTING_MSG ("Connecting to ")
 

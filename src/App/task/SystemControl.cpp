@@ -14,7 +14,6 @@ static uint8_t gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_POWER_ON;  // システ�
 static uint8_t gsu8_SYSCTL_Blocking_Flags[m_SYSCTL_BLOCKING_LEVEL_NUM] = { 0 };  // 割り込み禁止フラグ
 
 // プロトタイプ宣言
-static void SYSCTL_SystemControl_Task_Main(void);
 static void SYSCTL_State_Control(void);
 static void SYSCTL_Judge_LED_Ready(void);
 static void SYSCTL_Entry_LED_Ready(void);
@@ -69,39 +68,8 @@ void SYSCTL_Init(void) {
  * 
  */
 void SYSCTL_Priority_Task_Main(void) {
-  static uint8_t zu8_cnt = 0;
-
-  // システム制御タスク
-  SYSCTL_SystemControl_Task_Main();
-  
-  if (zu8_cnt == 15) {
-    // LEDタスクは16msに一度だけ実行
-    LED_Task_Main();
-  }
-
-  // カウンタ更新
-  if (zu8_cnt == 15) {
-    zu8_cnt = 0;
-  } else {
-    zu8_cnt++;
-  }
-}
-
-/**
- * @brief システム制御タスク
- * @note 16ms周期で呼び出し
- * 
- */
-static void SYSCTL_SystemControl_Task_Main(void) {
-  uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
-
-  // 状態遷移
-  SYSCTL_State_Control();
-
-  // WebServer
-  if (cu8_wifi_connected_flg = m_ON) {  /* WiFiが接続できている場合 */
-    Network_Task_WebServer_Main();
-  }
+  // 出力処理
+  LED_PrimeTask_OutputMain();
 }
 
 /**
@@ -176,12 +144,16 @@ static void SYSCTL_Entry_Network_Ready(void) {
 
 /**
  * @brief バックグラウンドタスク
- * @note 32ms周期で呼び出し
+ * @note 16ms周期で呼び出し
  * 
  */
 void SYSCTL_Background_Task_Main(void) {
   static uint32_t su32_cnt = 0;
   const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
+  uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
+
+  // 状態遷移
+  SYSCTL_State_Control();
 
   // NVMタスク
   NVM_Main();
@@ -190,6 +162,14 @@ void SYSCTL_Background_Task_Main(void) {
   if (su32_cnt % m_SYSCTL_SUBTASK_INVL_NETWORK == 0) {
     Network_Task_Main();
   }
+
+  // WebServer
+  if (cu8_wifi_connected_flg = m_ON) {  /* WiFiが接続できている場合 */
+    Network_Task_WebServer_Main();
+  }
+
+  // LEDメインタスク
+  LED_Task_Main();
 
   // カウンタ更新
   if (su32_cnt == m_SYSCTL_SUBTASK_INVL_NETWORK) {

@@ -45,7 +45,6 @@ static void LED_Task_RunningState(void);
 static void LED_Task_SubTaskClock(void);
 static void LED_Task_copyMatrixLEDs(MatrixLED *dst, MatrixLED *src);
 static void LED_Task_SubTaskDate(void);
-static void LED_Task_OutputMain(void);
 static uint8_t LED_Task_SubTaskMsg(const String str_msg, uint8_t u8_reset_required);
 static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su32_scroll_step);
 
@@ -105,9 +104,6 @@ void LED_Task_FirstTimeToRunningState(void) {
 void LED_Task_Main(void) {
   // 出力データセット処理など
   LED_Task_ConfigureDisplayData();
-
-  // 出力処理
-  LED_Task_OutputMain();
 }
 
 /**
@@ -316,7 +312,7 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
  * @brief LEDの出力処理メイン
  * 
  */
-static void LED_Task_OutputMain(void) {
+void LED_PrimeTask_OutputMain(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
 
   // 表示要求があれば出力

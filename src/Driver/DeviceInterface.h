@@ -61,6 +61,7 @@ void call_nvm_read(int32_t begin_addr, char buf[], uint32_t size);
 void call_nvm_write(int32_t begin_addr, const char buf[], uint32_t size);
 void call_nvm_commit();
 int32_t call_randint(int32_t max);
+uint32_t call_micros();
 /* -------------------- */
 
 #endif  /* _DEVICEINTERFACE_H_ */

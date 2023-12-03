@@ -109,6 +109,16 @@ int32_t call_randint(int32_t max) {
 #endif
 }
 
+uint32_t call_micros() {
+#ifdef ARDUINO
+  return micros();
+#elif defined SIMULATOR
+  return 0;
+#else
+  #error "Not supported."
+#endif
+}
+
 /* -------------------- */
 #ifdef SIMULATOR
 void noInterrupts() {}

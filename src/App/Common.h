@@ -20,6 +20,8 @@
 #define M_CLIP_MAX(x, max) ((x) > (max) ? (max) : (x))
 #define M_CLIP_MIN(x, min) ((x) < (min) ? (min) : (x))
 #define M_CLIP_INC(x, max) { (x) = ((x) >= (max) ? (max) : ((x) + 1)); }
+#define M_ELASPED_TIME(start_time, end_time) ((end_time) < (start_time) ? \
+            (UINT32_MAX - (start_time) + (end_time)) : ((end_time) - (start_time)))
 
 #ifdef SIMULATOR
 #define DEC2STR(num) std::to_string(num)
@@ -34,7 +36,5 @@ typedef struct _TransitionTable {
     void (*p_do)(void);
     void (*p_exit)(void);
 } TransitionTable_t;  // 状態遷移テーブル
-
-
 
 #endif  /* _APP_COMMON_H_ */

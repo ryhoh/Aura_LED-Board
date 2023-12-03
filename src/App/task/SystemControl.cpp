@@ -11,8 +11,6 @@
 // 変数宣言
 static uint8_t gsu8_SYSCTL_SystemState = m_SYSCTL_STATE_POWER_ON;  // システム制御状態
 
-static uint8_t gsu8_SYSCTL_Blocking_Flags[m_SYSCTL_BLOCKING_LEVEL_NUM] = { 0 };  // 割り込み禁止フラグ
-
 // プロトタイプ宣言
 static void SYSCTL_State_Control(void);
 static void SYSCTL_Judge_LED_Ready(void);
@@ -40,6 +38,16 @@ static TransitionTable_t gsst_SYSCTL_StateTransition_Tbl[m_SYSCTL_STATE_TRANSITI
  * 
  */
 void SYSCTL_Init(void) {
+  #if m_SW_DEBUG == 1
+    #ifdef ARDUINO
+    // 処理時間計測
+    Serial.begin(115200);
+    #elif defined SIMULATOR
+      /* シミュレータの場合は計測不要 */
+      /* 上記以外は未対応 */
+    #endif
+  #endif
+
   // NVMの初期化
   NVM_Init();
 
@@ -68,8 +76,30 @@ void SYSCTL_Init(void) {
  * 
  */
 void SYSCTL_Priority_Task_Main(void) {
+  #if m_SW_DEBUG == 1
+  // 処理時間計測
+  uint32_t u32_start_time = 0;
+  uint32_t u32_end_time = 0;
+  uint32_t u32_elapsed_time = 0;
+  u32_start_time = micros();
+  #endif
+
   // 出力処理
   LED_PrimeTask_OutputMain();
+
+  #if m_SW_DEBUG == 1
+  // 処理時間計測
+  u32_end_time = micros();
+  u32_elapsed_time = M_ELASPED_TIME(u32_start_time, u32_end_time);
+
+    #ifdef ARDUINO
+      Serial.print("SYSCTL_Priority_Task_Main: ");
+      Serial.println(u32_elapsed_time);
+    #elif defined SIMULATOR
+      /* シミュレータの場合は計測不要 */
+      /* 上記以外は未対応 */
+    #endif
+  #endif
 }
 
 /**
@@ -150,6 +180,15 @@ static void SYSCTL_Entry_Network_Ready(void) {
 void SYSCTL_Background_Task_Main(void) {
   static uint32_t su32_cnt = 0;
   const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
+
+  #if m_SW_DEBUG == 1
+  // 処理時間計測
+  uint32_t u32_start_time = 0;
+  uint32_t u32_end_time = 0;
+  uint32_t u32_elapsed_time = 0;
+  u32_start_time = call_micros();
+  #endif
+  
   uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
 
   // 状態遷移
@@ -177,6 +216,20 @@ void SYSCTL_Background_Task_Main(void) {
   } else {
     su32_cnt += m_SYSCTL_CALL_ITVL_BACKGROUND;
   }
+
+  #if m_SW_DEBUG == 1
+  // 処理時間計測
+    u32_end_time = call_micros();
+    u32_elapsed_time = M_ELASPED_TIME(u32_start_time, u32_end_time);
+
+    #ifdef ARDUINO
+      Serial.print("SYSCTL_Background_Task_Main: ");
+      Serial.println(u32_elapsed_time);
+    #elif defined SIMULATOR
+      /* シミュレータの場合は計測不要 */
+      /* 上記以外は未対応 */
+    #endif
+  #endif
 }
 
 uint8_t Get_SYSCTL_SystemState(void) {

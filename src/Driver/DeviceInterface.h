@@ -23,9 +23,9 @@
 #include <string>
 #include <unistd.h>
 #include <random>
-#include "../../MCU_Simulator/mock/NetworkMock.h"
-#include "../../MCU_Simulator/mock/NVMMock.h"
-#include "../../MCU_Simulator/mock/Max7219Mock.h"
+#include "../../ECU_Simulator/mock/NetworkMock.h"
+#include "../../ECU_Simulator/mock/NVMMock.h"
+#include "../../ECU_Simulator/mock/Max7219Mock.h"
 
 #define INPUT (0)
 #define OUTPUT (1)

@@ -6,6 +6,7 @@
 #ifdef ARDUINO
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <Wire.h>
 #endif
 
 #ifdef EPS8266
@@ -53,6 +54,12 @@ void interrupts();
 void call_pinMode(uint8_t pin, uint8_t INPUT_or_OUTPUT);
 int32_t call_digitalRead(uint8_t pin);
 void call_digitalWrite(uint8_t pin, uint8_t HIGH_or_LOW);
+void call_i2c_init();
+void call_i2c_beginTransmission(uint8_t i2c_addr);
+void call_i2c_write(uint8_t data);
+uint8_t call_i2c_read();
+void call_i2c_endTransmission();
+void call_i2c_requestFrom(uint8_t i2c_addr, uint8_t size);
 void call_sleep(uint32_t ms);
 void call_usleep(uint32_t us);
 void call_shiftOut(uint8_t data, uint8_t dat_pin, uint8_t clk_pin, uint8_t lat_pin);

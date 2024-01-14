@@ -11,9 +11,13 @@
 // 定数
 
 /* 以下は暫定で、本来はスクロール1周完了を検知すべき */
-#define m_LED_TASK_IPADDRESS_DISPLAY_TIME (800)  // IPアドレス表示時間 [ms,16] 12.8秒
+#define m_LED_TASK_IPADDRESS_DISPLAY_TIME (800)  // LED_IPアドレス表示時間 [ms,16] 12.8秒
 
 // 変数宣言
+/* 出力変数 */
+static uint8_t gsu8_is_LED_setup_done = m_OFF;  // LED_LEDセットアップ完了フラグ
+
+/* 内部変数 */
 static DisplayInfo_t gsst_displayInfo_clock = DisplayInfo_t {
   .u32_offset_from_left = 0,
   .u8_is_updated = m_OFF,
@@ -35,7 +39,6 @@ static MatrixLED matrixLEDs_date[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 日付�
 static MatrixLED matrixLEDs_msg[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // メッセージ表示用
 static MatrixLED matrixLEDs_output[m_PROFILE_MAX_DESIGNED_PANEL_NUM];  // 出力用
 static Max7219 gsst_max7219;
-static uint8_t gsu8_is_LED_setup_done = m_OFF;  // LEDセットアップ完了フラグ
 static uint8_t gsu8_is_LED_DisplayUpdateRequiredFlg = m_OFF;  // LED表示更新要求フラグ
 
 // プロトタイプ宣言

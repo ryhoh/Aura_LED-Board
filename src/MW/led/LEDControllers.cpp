@@ -103,6 +103,39 @@ void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length)
 #endif  /* SIMULATOR */
 }
 
+void Max7219::flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length, uint8_t vertical_invert)
+{
+#ifdef SIMULATOR
+  Mock_Max7219_flushMatrixLEDs(matrixLEDs, length, vertical_invert);  // wip
+#else  /* SIMULATOR */
+  uint8_t temp = 0;
+  
+  if (vertical_invert) {
+    for (uint8_t row_i = 0; row_i < 8; ++row_i) {
+      call_digitalWrite(this->lat, LOW);
+      for (int32_t matrix_i = length-1; matrix_i > -1; --matrix_i) {  // Matrix invert
+          temp = *((matrixLEDs + matrix_i)->buffer + (7 - row_i));
+          
+          // MSB-LSB invert
+          temp = ((temp & 0x01) << 7) | ((temp & 0x02) << 5) | ((temp & 0x04) << 3) | ((temp & 0x08) << 1) |
+                 ((temp & 0x10) >> 1) | ((temp & 0x20) >> 3) | ((temp & 0x40) >> 5) | ((temp & 0x80) >> 7);
+
+          this->shiftOut(row_i + 1, temp);
+      }
+      call_digitalWrite(this->lat, HIGH);
+    }
+  } else {
+    for (uint8_t row_i = 0; row_i < 8; ++row_i) {
+      call_digitalWrite(this->lat, LOW);
+      for (uint8_t matrix_i = 0; matrix_i < length; ++matrix_i) {
+          this->shiftOut(row_i + 1, *((matrixLEDs + matrix_i)->buffer + row_i));
+      }
+      call_digitalWrite(this->lat, HIGH);
+    }
+  }
+#endif  /* SIMULATOR */
+}
+
 inline void Max7219::shiftOut(uint8_t addr, uint8_t data)
 {
   call_shiftOut(this->dat, this->clk, MSBFIRST, addr);

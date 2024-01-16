@@ -17,6 +17,7 @@
 #include "App/task/SystemControl.h"
 #include "App/variant/Variant.h"
 #include "App/variant/Profile.h"
+#include "App/accelsensor/Direction.h"
 
 // 構造体定義
 typedef struct _DisplayInfo {

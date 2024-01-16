@@ -63,6 +63,9 @@ void SYSCTL_Init(void) {
   // LED のセットアップを行う
   LED_Task_Init();
 
+  // 加速度センサのセットアップを行う
+  ACL_Init();
+
   // ネットワークのセットアップを行う
   Network_Task_Init();
 
@@ -76,6 +79,8 @@ void SYSCTL_Init(void) {
  * 
  */
 void SYSCTL_Priority_Task_Main(void) {
+  uint8_t uc_RDS_SL;
+
   #if m_SW_DEBUG == 1
   // 処理時間計測
   uint32_t u32_start_time = 0;
@@ -83,6 +88,12 @@ void SYSCTL_Priority_Task_Main(void) {
   uint32_t u32_elapsed_time = 0;
   u32_start_time = micros();
   #endif
+
+  // 加速度センサタスク
+  uc_RDS_SL = Get_VARIANT_RDS_SupportLevel();
+  if (uc_RDS_SL != m_VARIANT_NO_RDS) {  /* RDSがサポートされている場合 */
+    ACL_Priority_Task_Main();
+  }
 
   // 出力処理
   LED_PrimeTask_OutputMain();
@@ -180,6 +191,8 @@ static void SYSCTL_Entry_Network_Ready(void) {
 void SYSCTL_Background_Task_Main(void) {
   static uint32_t su32_cnt = 0;
   const uint8_t cu8_system_state = gsu8_SYSCTL_SystemState;
+  uint8_t cu8_wifi_connected_flg;
+  uint8_t uc_RDS_SL;
 
   #if m_SW_DEBUG == 1
   // 処理時間計測
@@ -189,7 +202,8 @@ void SYSCTL_Background_Task_Main(void) {
   u32_start_time = call_micros();
   #endif
   
-  uint8_t cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
+  cu8_wifi_connected_flg = GET_Network_Task_WiFi_Connected();
+  uc_RDS_SL = Get_VARIANT_RDS_SupportLevel();
 
   // 状態遷移
   SYSCTL_State_Control();
@@ -205,6 +219,11 @@ void SYSCTL_Background_Task_Main(void) {
   // WebServer
   if (cu8_wifi_connected_flg = m_ON) {  /* WiFiが接続できている場合 */
     Network_Task_WebServer_Main();
+  }
+
+  // 加速度センサタスク
+  if (uc_RDS_SL != m_VARIANT_NO_RDS) {  /* RDSがサポートされている場合 */
+    ACL_Background_Task_Main();
   }
 
   // LEDメインタスク

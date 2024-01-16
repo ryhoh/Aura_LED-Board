@@ -16,9 +16,6 @@ static MPU6050_t zst_ACL_AccelSensor_MovingAverage;  /* ACL_MPU6050_移動平均
 static MPU6050_t zst_ACL_AccelSensor_Output;  /* ACL_MPU6050_出力値 */
 
 /* 関数宣言 */
-void ACL_Init(void);
-void ACL_Priority_Task_Main(void);
-void ACL_Background_Task_Main(void);
 static void ACL_Input(void);
 static void ACL_Store_RingBuff(void);
 static void ACL_Moving_Average(void);
@@ -53,6 +50,8 @@ void ACL_Priority_Task_Main(void) {
 void ACL_Background_Task_Main(void) {
   ACL_Moving_Average();
   ACL_Output();
+
+  ACL_DIR_Main();
 }
 
 /**
@@ -60,9 +59,6 @@ void ACL_Background_Task_Main(void) {
  * 
  */
 static void ACL_Input(void) {
-  uint16_t us_accel_x = 0;
-  uint16_t us_accel_y = 0;
-  uint16_t us_accel_z = 0;
   int16_t s_accel_x = 0;
   int16_t s_accel_y = 0;
   int16_t s_accel_z = 0;
@@ -72,14 +68,9 @@ static void ACL_Input(void) {
   call_i2c_endTransmission();
   call_i2c_requestFrom(Xuc_ACL_I2C_ADDR, 6);
 
-  us_accel_x = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
-  us_accel_y = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
-  us_accel_z = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
-
-  /* 変換 */
-  s_accel_x = (int16_t)((int32_t)us_accel_x - 32768);
-  s_accel_y = (int16_t)((int32_t)us_accel_y - 32768);
-  s_accel_z = (int16_t)((int32_t)us_accel_z - 32768);
+  s_accel_x = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
+  s_accel_y = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
+  s_accel_z = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
 
   /* 出力 */
   zst_ACL_AccelSensor_Raw_Input.s_X = s_accel_x;
@@ -128,3 +119,12 @@ static void ACL_Output(void) {
   zst_ACL_AccelSensor_Output = zst_ACL_AccelSensor_MovingAverage;
 }
 
+/* IF */
+/**
+ * @brief AccelSensorの出力値取得
+ * 
+ * @return MPU6050_t 
+ */
+MPU6050_t get_ACL_Output(void) {
+  return zst_ACL_AccelSensor_Output;
+}

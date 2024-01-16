@@ -22,6 +22,9 @@
 
 #define m_VARIANT_LED_MODE_PIN_NOUSE (255)
 
+#define m_VARIANT_NO_RDS (0)  /* Rotational Display System */
+#define m_VARIANT_RDS1   (1)
+
 // 構造体定義
 typedef struct _Variant {
   /*  0-19 */  char i8_machine_name[m_VARIANT_MACHINE_NAME_SIZE];
@@ -32,7 +35,8 @@ typedef struct _Variant {
   /* 27-27 */  uint8_t u8_mode_pin;
   /* 28-28 */  uint8_t u8_lamp_pin;
   /* 29-29 */  uint8_t u8_brightness;
-  /* 30-31 */  uint8_t u8_dummy[2];
+  /* 30-30 */  uint8_t u8_rds_support_level;
+  /* 31-31 */  uint8_t u8_dummy;
 } Variant_t;
 
 // プロトタイプ宣言
@@ -45,5 +49,6 @@ uint8_t Get_VARIANT_ModePin(void);
 uint8_t Get_VARIANT_LampPin(void);
 uint8_t Get_VARIANT_Brightness(void);
 uint32_t Get_VARIANT_MatrixNum(void);
+uint8_t Get_VARIANT_RDS_SupportLevel(void);
 
 #endif  /* _VARIANT_H_ */

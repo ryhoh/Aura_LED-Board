@@ -58,7 +58,7 @@ void call_i2c_endTransmission() {
 
 void call_i2c_requestFrom(uint8_t i2c_addr, uint8_t size) {
 #ifdef ARDUINO
-  Wire.requestFrom(i2c_addr, size, true);
+  Wire.requestFrom(i2c_addr, (size_t)size, true);
 #endif
 }
 

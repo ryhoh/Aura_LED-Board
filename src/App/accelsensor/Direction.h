@@ -22,6 +22,7 @@
 
 /* functions */
 void ACL_DIR_Main(void);
+uint8_t get_ACL_DIR_X_BottomDirection(void);
 uint8_t get_ACL_DIR_XY_BottomDirection(void);
 
 #endif  /* _DIRECTION_H_ */

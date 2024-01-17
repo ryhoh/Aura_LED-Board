@@ -3,24 +3,31 @@
 
 /* 定義 */
 #define Y_ACL_DIR_G_THRESHOLD (13926)  /* [Q14, g] ACL_重力加速度閾値 13926 / (2^14) = 0.85g */
-static uint8_t zuc_ACL_XY_BottomDirection = Y_ACL_DIR_BOTTOM_NUTRAL;  /* ACL_XY面_下向き方向 */
+#define Y_ACL_DIR_TRANSITION_THRESHOLD (5)  /* [16, ms] ACL_方向転換閾値 */
+static uint8_t zuc_ACL_XY_BottomDirection_Raw        = Y_ACL_DIR_BOTTOM_NUTRAL;   /* ACL_XY面_下向き方向(実測値) */
+static uint8_t zuc_ACL_X_BottomDirection_PLUSorMINUS = Y_ACL_DIR_BOTTOM_X_MINUS;  /* ACL_X軸_下向き方向(正負値) */
 
 /* 関数 */
-void ACL_DIR_Estimate_XY_BottomDirection();
+static void ACL_DIR_Estimate_XY_BottomDirection();
+static void ACL_DIR_X_BottomDirection_Transition(void);
 
 /**
  * @brief 下向き方向の推定メイン
  * 
  */
 void ACL_DIR_Main(void) {
+  /* 下向き方向の推定(XY面) */
   ACL_DIR_Estimate_XY_BottomDirection();
+
+  /* 制御用 下向き方向の決定(XY面) */
+  ACL_DIR_X_BottomDirection_Transition();
 }
 
 /**
  * @brief 下向き方向の推定(XZ面)
  * 
  */
-void ACL_DIR_Estimate_XY_BottomDirection() {
+static void ACL_DIR_Estimate_XY_BottomDirection() {
   MPU6050_t st_ACL_AccelSensor_Output = get_ACL_Output();
   int16_t s_accel_x = st_ACL_AccelSensor_Output.s_X;
   int16_t s_accel_y = st_ACL_AccelSensor_Output.s_Y;
@@ -60,7 +67,32 @@ void ACL_DIR_Estimate_XY_BottomDirection() {
   }
 
   /* 下向き方向の保存 */
-  zuc_ACL_XY_BottomDirection = uc_dir;
+  zuc_ACL_XY_BottomDirection_Raw = uc_dir;
+}
+
+static void ACL_DIR_X_BottomDirection_Transition(void) {
+  uint8_t uc_dir = zuc_ACL_XY_BottomDirection_Raw;
+  uint8_t uc_dir_unneutral = zuc_ACL_X_BottomDirection_PLUSorMINUS;
+
+  if (uc_dir != Y_ACL_DIR_BOTTOM_X_MINUS
+   && uc_dir != Y_ACL_DIR_BOTTOM_X_PLUS) {
+    /* X軸ニュートラル時は制御値を更新しない */
+  } else {
+    /* X軸ニュートラル以外は制御値を更新 */
+    uc_dir_unneutral = uc_dir;
+  }
+
+  /* 出力 */
+  zuc_ACL_X_BottomDirection_PLUSorMINUS = uc_dir_unneutral;
+}
+
+/**
+ * @brief X軸 下向き方向の取得
+ * 
+ * @return uint8_t 下向き方向
+ */
+uint8_t get_ACL_DIR_X_BottomDirection(void) {
+  return zuc_ACL_X_BottomDirection_PLUSorMINUS;
 }
 
 /**
@@ -68,6 +100,6 @@ void ACL_DIR_Estimate_XY_BottomDirection() {
  * 
  * @return uint8_t 下向き方向
  */
-uint8_t get_ACL_DIR_XY_BottomDirection(void) {
-  return zuc_ACL_XY_BottomDirection;
-}
+// uint8_t get_ACL_DIR_XY_BottomDirection(void) {
+//   return zuc_ACL_XY_BottomDirection_UnNeutral;
+// }

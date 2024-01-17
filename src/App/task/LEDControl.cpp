@@ -316,7 +316,7 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
 void LED_PrimeTask_OutputMain(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
   uint8_t uc_RDS_SL = Get_VARIANT_RDS_SupportLevel();
-  uint8_t uc_RDS_BottomDirection = get_ACL_DIR_XY_BottomDirection();
+  uint8_t uc_RDS_BottomDirection = get_ACL_DIR_X_BottomDirection();
 
   // 表示要求があれば出力
   if (gsu8_is_LED_DisplayUpdateRequiredFlg == m_ON) {
@@ -328,7 +328,7 @@ void LED_PrimeTask_OutputMain(void) {
       } else if (uc_RDS_BottomDirection == Y_ACL_DIR_BOTTOM_X_PLUS) {
         gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num, m_ON);
       } else {
-        gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num, m_OFF);  // @@@暫定
+        /* ここには入らないはず */
       }
     } else {
       // RDS非対応ならそのまま出力

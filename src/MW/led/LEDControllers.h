@@ -65,6 +65,15 @@ struct Max7219 {
   */
   void flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length);
 
+  /**
+   * @brief Flush data from multiple MatrixLEDs to Max7219.
+   * @param matrixLEDs [in] Pointer of MatrixLED-Array to read.
+   * @param length [in] Length of MatrixLED-Array.
+   * @param vertical_invert [in] Invert data vertically or not.
+   * @note When length is 1, same to flushMatrixLEDByMax7219.
+  */
+  void flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length, uint8_t vertical_invert);
+
   // params: レジスタアドレス, データ
   // ラッチ操作を行わないバージョン
   inline void shiftOut(uint8_t addr, uint8_t data);

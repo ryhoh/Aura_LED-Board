@@ -17,7 +17,7 @@
 /*                    || | +--------- Minor Version Decimal              */
 /*                    || | | +------- Patch Version Decimal              */
 /*                    || | | |+------ Series Code: "Advanced"            */
-#define m_SW_VERSION "LBv2.3.0A"  /* Version ID                         */
+#define m_SW_VERSION "LBv2.4.0A"  /* Version ID                         */
 
 /* ---------------- コンパイルスイッチ ---------------- */
 #define m_SW_DEBUG (0)  /* デバッグモード (1: ON, 0: OFF) ※リリース時は0にすること */

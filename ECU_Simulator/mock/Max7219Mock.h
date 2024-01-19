@@ -14,6 +14,7 @@
 void Mock_Max7219_init(void);
 void Mock_Max7219_flushMatrixLED(MatrixLED &matrixLED);
 void Mock_Max7219_flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length);
+void Mock_Max7219_flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length, uint8_t vertical_invert);
 void Mock_Max7219_PrintToStdout(void);
 
 #endif  /* _MAX7219MOCK_H_ */

@@ -29,6 +29,16 @@ void Mock_Max7219_flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length) {
   }
 }
 
+void Mock_Max7219_flushMatrixLEDs(MatrixLED *matrixLEDs, uint8_t length, uint8_t vertical_invert) {
+  if (vertical_invert) {
+    for (uint8_t matrix_i = 0; matrix_i < length; ++matrix_i) {
+      Mock_Max7219_flushMatrixLED(*(matrixLEDs + length - matrix_i - 1));  // @@@反転未対応
+    }
+  } else {
+    Mock_Max7219_flushMatrixLEDs(matrixLEDs, length);
+  }
+}
+
 void Mock_Max7219_PrintToStdout(void) {
   // 画面表示用バッファを標準出力に出力
 

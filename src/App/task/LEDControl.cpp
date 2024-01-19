@@ -311,13 +311,29 @@ static uint8_t LED_Task_SubTaskMsg_SubRoutine(const String str_msg, uint32_t su3
 /**
  * @brief LEDの出力処理メイン
  * 
+ * @note 4ms周期で呼び出し
  */
 void LED_PrimeTask_OutputMain(void) {
   const uint8_t cu8_matrix_num = (uint8_t)(Get_VARIANT_MatrixNum() & 0xFF);
+  uint8_t uc_RDS_SL = Get_VARIANT_RDS_SupportLevel();
+  uint8_t uc_RDS_BottomDirection = get_ACL_DIR_X_BottomDirection();
 
   // 表示要求があれば出力
   if (gsu8_is_LED_DisplayUpdateRequiredFlg == m_ON) {
-    gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
+    // RDS対応レベルに応じて出力方法を変更
+    if (uc_RDS_SL == m_VARIANT_RDS1) {
+      // 上下の反転を検出して、反転させる
+      if (uc_RDS_BottomDirection == Y_ACL_DIR_BOTTOM_X_MINUS) {
+        gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num, m_OFF);
+      } else if (uc_RDS_BottomDirection == Y_ACL_DIR_BOTTOM_X_PLUS) {
+        gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num, m_ON);
+      } else {
+        /* ここには入らないはず */
+      }
+    } else {
+      // RDS非対応ならそのまま出力
+      gsst_max7219.flushMatrixLEDs(matrixLEDs_output, cu8_matrix_num);
+    }
   }
 }
 

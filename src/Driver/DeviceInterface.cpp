@@ -24,6 +24,44 @@ void call_digitalWrite(uint8_t pin, uint8_t HIGH_or_LOW) {
 #endif
 }
 
+void call_i2c_init() {
+#ifdef ARDUINO
+  Wire.begin();
+#endif
+}
+
+void call_i2c_beginTransmission(uint8_t i2c_addr) {
+#ifdef ARDUINO
+  Wire.beginTransmission(i2c_addr);
+#endif
+}
+
+void call_i2c_write(uint8_t data) {
+#ifdef ARDUINO
+  Wire.write(data);
+#endif
+}
+
+uint8_t call_i2c_read() {
+#ifdef ARDUINO
+  return (uint8_t)(Wire.read() & 0xFF);
+#else
+  return 0;
+#endif
+}
+
+void call_i2c_endTransmission() {
+#ifdef ARDUINO
+  Wire.endTransmission();
+#endif
+}
+
+void call_i2c_requestFrom(uint8_t i2c_addr, uint8_t size) {
+#ifdef ARDUINO
+  Wire.requestFrom(i2c_addr, (size_t)size, true);
+#endif
+}
+
 void call_sleep(uint32_t ms) {
 #ifdef ARDUINO
   delay(ms);

@@ -9,17 +9,25 @@ MACRO         = -DSIMULATOR
 OUTPUT_OPTION = -o $@
 
 VPATH    =:../src/Driver
-VPATH   +=:../src/MW:../src/MW/led
-VPATH   +=:../src/App:../src/App/led:../src/App/network:../src/App/nvm:../src/App/task:../src/App/variant
+VPATH   +=:../src/MW
+VPATH	+=:../src/MW/led
+VPATH   +=:../src/App
+VPATH	+=:../src/App/led
+VPATH	+=:../src/App/network
+VPATH	+=:../src/App/nvm
+VPATH	+=:../src/App/task
+VPATH	+=:../src/App/variant
+VPATH   +=:../src/App/accelsensor
 VPATH   +=:mock
 
 OBJECTS  = DeviceInterface
 OBJECTS += MatrixLED LEDControllers
 OBJECTS += AsciiMatrix JISMatrix Scroll
-OBJECTS += StatusClient NVM
+OBJECTS += NVM
+OBJECTS += AccelSensor Direction
 OBJECTS += NetworkWebServer NetworkSTAControl
 OBJECTS += LEDControl SystemControl Variant
-OBJECTS += NetworkMock NVMMock Max7219Mock
+OBJECTS += NetworkMock NVMMock Max7219Mock AccelSensorMock
 OBJECTS.o       = $(addsuffix .o  , $(OBJECTS))
 
 .PHONY:	build

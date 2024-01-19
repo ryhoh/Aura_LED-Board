@@ -63,6 +63,12 @@ static void ACL_Input(void) {
   int16_t s_accel_y = 0;
   int16_t s_accel_z = 0;
 
+#ifdef SIMULATOR
+  s_accel_x = Mock_AccelSensor_getX();
+  s_accel_y = Mock_AccelSensor_getY();
+  s_accel_z = Mock_AccelSensor_getZ();
+
+#else
   call_i2c_beginTransmission(Xuc_ACL_I2C_ADDR);
   call_i2c_write(Y_ACL_ACCEL_XOUT_H);
   call_i2c_endTransmission();
@@ -71,6 +77,8 @@ static void ACL_Input(void) {
   s_accel_x = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
   s_accel_y = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
   s_accel_z = (uint16_t)call_i2c_read() << 8 | call_i2c_read();
+
+#endif
 
   /* 出力 */
   zst_ACL_AccelSensor_Raw_Input.s_X = s_accel_x;

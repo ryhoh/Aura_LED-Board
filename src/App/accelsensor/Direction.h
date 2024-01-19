@@ -8,7 +8,7 @@
 #ifndef _DIRECTION_H_
 #define _DIRECTION_H_
 
-#include "App/Type.h"
+#include "App/Common.h"
 #include "App/accelsensor/AccelSensor.h"
 
 /* defines */
